@@ -31,7 +31,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #ov button{padding:16px 48px;font:inherit;font-size:22px;font-weight:bold;border:0;border-radius:14px;background:var(--me);color:#fff}
 #top,#sb,.tabs,#sheet{background:#17274d;color:#fff;border-color:#3a5aa8}
 #top{gap:8px;justify-content:space-around}#top span{background:#0e1a38;border:2px solid #3a5aa8;border-radius:12px;padding:5px 12px;font-size:15px}
-#g::before{content:'\1FA99 '}#lg::before{content:'\1F3C6 '}#n::before{content:'\1F3F0 '}
+#g::before{content:'\1FA99 '}#lg::before{content:'\1F3C6 '}#n::before{content:'\1F3F0 '}#tr::before{content:'\2694\FE0F '}
 .row{border-bottom-color:#2f4680}.row button,.tabs button{color:#fff;border-color:#e0b24a}
 .tabs button.on{background:#e0b24a;color:#17274d}
 #top span{background:linear-gradient(#2e4c92,#0f1c3d);box-shadow:0 2px 0 #e0b24a,0 4px 6px rgba(0,0,0,.4)}.tabs{background:linear-gradient(#233a72,#0f1c3d);border-top:3px solid #e0b24a}.tabs button{font-weight:bold;text-shadow:0 1px 2px #000}
@@ -77,7 +77,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 </head>
 <body>
 <div id="app">
-<div id="top"><span><span id="g">Gold 0</span> <span id="tr" style="margin-left:12px">⚔️ 0</span></span><span id="lg">Bronze</span><span id="n">Castles 1</span></div>
+<div id="top"><span id="g">Gold 0</span><span id="tr">0</span><span id="lg">Bronze</span><span id="n">Castles 1</span></div>
 <canvas id="c"></canvas>
 <div id="cp"></div>
 <div id="sb">Send <input type="range" id="pct" min="10" max="100" step="10" value="50"><b id="pv">50%</b></div>
@@ -146,7 +146,7 @@ ui=(uiT+=dt)>.25;if(ui)uiT=0;window.MYP=mp;if(ui&&!NET)window.BOTP=[sco(2),sco(3
 respT+=dt;if(!G&&respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o===o)&&!armies.some(a=>a.o===o)){let L=cities.filter(c=>c.o===0);if(!L.length){chkIsl();L=cities.filter(c=>c.o===0)}if(L.length){const c=L[Math.random()*L.length|0];c.o=o;c.t=15;c.l=1;c.main=1;if(o===1)toast('Your last castle fell!\nA new castle is yours.')}}})}
 [1,2,3,4].forEach(o=>{if(respT!==0)return;const L=cities.filter(c=>c.o===o);if(L.length&&!L.some(c=>c.main))L.reduce((a,c)=>c.l>a.l?c:a).main=1});
 if(seasonT>=13*DAY)end();
-if(ui){document.getElementById('g').textContent='Gold '+Math.floor(gold);document.getElementById('tr').textContent='⚔️ '+Math.floor(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0));
+if(ui){document.getElementById('g').textContent='Gold '+Math.floor(gold);document.getElementById('tr').textContent=Math.floor(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0));
 document.getElementById('n').textContent='Castles '+mine;
 document.getElementById('lg').textContent=LG[league()][0];{const l=Math.ceil(REG_CD-(T-regT)),b=rgb;if(l>0){b.textContent=l;b.style.opacity=.55;b.style.fontSize='16px'}else{b.textContent='📯';b.style.opacity=1;b.style.fontSize=''}}panel()}}
 function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;
@@ -403,7 +403,7 @@ function pickGhosts(){if(NET){applyGhosts();return}const me=(PROF&&PROF.name||pn
 function applyGhosts(){if(!ghosts||ghosts.length<3)ghosts=GDEF.map(n=>({n,w:0,g:0}));if(NET&&NET.nl)ghosts=NET.nl.slice(1).map(n=>({n,w:0,g:0}));ghosts.forEach((h,i)=>OW[i+2]=h.n+'’s')}
 const gboost=o=>.6;
 const $=i=>document.getElementById(i),ud=k=>DB.collection('users').doc(UID).collection('d').doc(k);
-const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
+const fs=()=>{return;try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
 
 async function submitScore(score){try{if(UID){const k='cl_best_'+curWeek()+'_'+UID;if(score>(+localStorage.getItem(k)||0))localStorage.setItem(k,score)}}catch(_){}if(!DB||!UID)return;try{const ref=DB.collection('weekly').doc(String(SEEDK)).collection('scores').doc(UID),o=await ref.get();if(!o.exists||(+o.data().score||0)<score)await ref.set({name:pname,score,at:Date.now()})}catch(_){}}
 async function weeklyRank(){try{const q=await DB.collection('weekly').doc(String(SEEDK)).collection('scores').orderBy('score','desc').limit(100).get(),i=q.docs.findIndex(x=>x.id===UID);return i<0?0:i+1}catch(_){return 0}}
