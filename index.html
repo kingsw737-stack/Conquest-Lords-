@@ -73,6 +73,37 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #ov input{font:inherit;font-size:18px;text-align:center;padding:12px 14px;border-radius:14px;border:2px solid #e0b24a;background:rgba(255,255,255,.95);color:#2b2418;box-shadow:inset 0 2px 4px rgba(0,0,0,.15)}
 #au button{border-radius:14px}#a_fp{color:#ffe9a8!important;text-shadow:0 1px 2px #000}#a_msg{text-shadow:0 1px 2px #000}
 #a_lb:not(:empty){background:rgba(12,20,52,.62);border:1px solid rgba(224,178,74,.55);border-radius:14px;padding:10px 16px;color:#fff;text-shadow:0 1px 2px #000;text-align:left}
+
+/* ===== Pick panel redesign ===== */
+#pk{left:10px;right:10px;padding:8px 16px 16px;border-radius:24px 24px 20px 20px;border:2px solid #e0b24a;background:radial-gradient(120% 90% at 50% 0%,#2b57b3 0%,#173b86 45%,#0c1736 100%);box-shadow:0 -10px 34px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 4px rgba(14,26,56,.55);animation:pkUp .26s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes pkUp{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+#pk .pg{width:44px;height:5px;border-radius:3px;background:rgba(255,255,255,.28);margin:0 auto 10px}
+#pk .ph{display:flex;align-items:center;gap:12px}
+#pk #pki{flex:none;width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:27px;background:linear-gradient(#f4cf63,#c9962a);border:2px solid #fff3c4;box-shadow:0 3px 8px rgba(0,0,0,.45),inset 0 -3px 0 rgba(0,0,0,.18)}
+#pk .pht{min-width:0}
+#pk #pkt{margin:0;text-align:left;font-size:19px;font-weight:bold;letter-spacing:.3px;text-shadow:0 2px 3px rgba(0,0,0,.6)}
+#pk #pks{margin-top:2px;font-size:13px;color:#a9c0f0;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+#pk #pks b{color:#ffd34a}
+#pk .pn{display:flex;align-items:baseline;justify-content:center;gap:8px;margin:10px 0 0}
+#pk #pkv{font-size:46px;font-weight:bold;line-height:1;color:#ffd34a;text-shadow:0 3px 0 #8a5d10,0 5px 10px rgba(0,0,0,.5)}
+#pk #pkv span{font-size:20px;color:#a9c0f0;text-shadow:none;margin-left:4px}
+#pk .pu{font-size:14px;color:#a9c0f0;letter-spacing:1px;text-transform:uppercase}
+#pk .pr{margin:6px 0 2px;padding:0 2px}
+#pk .pr input{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:0}
+#pk .pr input::-webkit-slider-runnable-track{height:14px;border-radius:8px;background:linear-gradient(90deg,#ffd34a,#e0902a) 0/var(--f,50%) 100% no-repeat,#0a1330;border:2px solid #3a5aa8;box-shadow:inset 0 2px 4px rgba(0,0,0,.6)}
+#pk .pr input::-moz-range-track{height:10px;border-radius:8px;background:#0a1330;border:2px solid #3a5aa8}
+#pk .pr input::-moz-range-progress{height:10px;border-radius:8px;background:linear-gradient(90deg,#ffd34a,#e0902a)}
+#pk .pr input::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;margin-top:-12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6cf,#f2c23a 55%,#b9851c);border:2px solid #fff3c4;box-shadow:0 3px 8px rgba(0,0,0,.6)}
+#pk .pr input::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6cf,#f2c23a 55%,#b9851c);border:2px solid #fff3c4;box-shadow:0 3px 8px rgba(0,0,0,.6)}
+#pk .pq{gap:8px;margin-top:8px}
+#pk .pq button{padding:8px 0;min-height:40px;font-size:15px;border:2px solid #3a5aa8;border-radius:12px;background:linear-gradient(#2a4fa6,#14295e);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 2px 0 #0a1330;transition:transform .08s}
+#pk .pq button:active{transform:translateY(2px);box-shadow:none;border-color:#e0b24a}
+#pk .pb{gap:10px;margin-top:14px}
+#pk .pb button{min-height:52px;font-size:17px;border-radius:14px;transition:transform .08s}
+#pk .pb button:active{transform:translateY(2px)}
+#pk .pb .no{flex:.8;border:2px solid #3a5aa8;background:linear-gradient(#1b2f66,#0c1736);color:#cfdcff}
+#pk .pb .ok{flex:1.4;border:2px solid #fff3c4;background:linear-gradient(#ffd966,#d8a02e 60%,#b9801c);color:#2b1c05;text-shadow:0 1px 0 rgba(255,255,255,.4);box-shadow:0 4px 0 #7a5410,0 8px 14px rgba(0,0,0,.45)}
+#pk .pb .ok:active{box-shadow:0 1px 0 #7a5410}
 </style>
 </head>
 <body>
@@ -84,7 +115,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 <div id="sheet"></div>
 <div class="tabs"><button data-t="0" title="Skills">⚔️</button><button data-t="1" title="Forge">🔨</button><button data-t="2" title="Quests">📜</button><button data-t="3" title="League">🏆</button></div>
 </div>
-<div id="pk"><div id="pkt"></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"><b id="pkv"></b></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><button data-k="w" class="on">This week</button><button data-k="a">All-time</button><button id="lbx">✕</button></div><div id="lbi"></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="toast"></div><div id="zm"><button id="zi">+</button><button id="zo">−</button><button id="hmb" title="Back to main city">🏠</button><button id="mmb">🗺</button><button id="lbz" onclick="lbShow('w')">🏆</button><button id="rgb" title="Regroup all troops to main city">📯</button></div>
+<div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><button data-k="w" class="on">This week</button><button data-k="a">All-time</button><button id="lbx">✕</button></div><div id="lbi"></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="toast"></div><div id="zm"><button id="hmb" title="Back to main city">🏠</button><button id="mmb">🗺</button><button id="lbz" onclick="lbShow('w')">🏆</button><button id="rgb" title="Regroup all troops to main city">📯</button></div>
 <div id="ov"><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When every neutral castle is taken, a new island rises from the clouds. A season lasts 13 days: the lord with the most kingdom points wins.</p><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>/* PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app) */
@@ -183,7 +214,7 @@ let pickN=0,uiT=0,ui=1,regT=-99;const REG_CD=40;
 function setMain(){const c=cities[sel];if(!c||c.o!==1||c.main)return;if(T<mainReady||gold<mainCost)return;gold-=mainCost;cities.forEach(d=>{if(d.o===1)d.main=0});c.main=1;cmd({t:'m',c:sel});mainReady=T+DAY*2;toast('👑 Main castle moved\nNext move in 2 days')}
 function doSend(){openPick()}
 function openPick(){if(sel<0||tgt<0)return;const S=cities[sel],D=cities[tgt],m=Math.floor(S.t);if(S.o!==1||m<1||(D.o!==1&&prot(D)))return;pkr.min=1;pkr.max=m;pkr.value=Math.max(1,Math.round(m*pct.value/100));pk.style.display='block';updPick()}
-function updPick(){const S=cities[sel],D=cities[tgt];pickN=+pkr.value;pkv.textContent=pickN+' / '+pkr.max;pkt.textContent=(D.o===1?'Reinforce your castle':'Attack '+OW[D.o]+' castle')}
+function updPick(){const S=cities[sel],D=cities[tgt];pickN=+pkr.value;const mx=+pkr.max,own=D.o===1;pkv.innerHTML=pickN+'<span>/ '+mx+'</span>';pkt.textContent=own?'Reinforce your castle':'Attack '+OW[D.o]+' castle';pki.textContent=own?'🛡️':'⚔️';pkok.textContent=own?'Send reinforcements':'Send troops';{const[ax,ay]=WP(S),[bx,by]=WP(D),e=Math.hypot(ax-bx,ay-by)/spd(pickN);pks.innerHTML='Arrives in <b>'+(e>=60?Math.floor(e/60)+'m '+Math.round(e%60)+'s':e.toFixed(1)+'s')+'</b>'}pkr.style.setProperty('--f',(mx>1?(pickN-1)/(mx-1)*100:100)+'%')}
 function quick(f){pkr.value=Math.max(1,Math.round(+pkr.max*f));updPick()}
 function closePick(){pickN=0;pk.style.display='none'}
 function confirmPick(){if(sel>=0&&tgt>=0){const S=cities[sel];if(S.o===1){const v=Math.min(pickN,Math.floor(S.t));if(v>=1)send(sel,tgt,(v+.01)/S.t)}}closePick()}
