@@ -394,7 +394,7 @@ function zoomTo(z,cx,cy){const r=C.getBoundingClientRect(),sx=cx-r.left,sy=cy-r.
 const ptr=new Map();let pinch=null;
 C.addEventListener('wheel',e=>{e.preventDefault();zoomTo(Z*(e.deltaY<0?1.12:.89),e.clientX,e.clientY)},{passive:false});
 const mid=()=>{const r=C.getBoundingClientRect();return[r.left+W/2,r.top+H/2]};
-zi.onclick=()=>zoomTo(Z*1.25,...mid());zo.onclick=()=>zoomTo(Z/1.25,...mid());mmb.onclick=()=>{showMap=!showMap};
+mmb.onclick=()=>{showMap=!showMap};
 hmb.onclick=()=>{if(!run)return;const m=cities.find(c=>c.o===1&&c.main);if(!m){toast('No main city yet');return}glide={x:m.x-W/Z/2,y:m.y-H/Z/2}};
 rgb.onclick=()=>{if(!run)return;const left=REG_CD-(T-regT);if(left>0){toast('Regroup ready in '+Math.ceil(left)+'s');return}const mi=cities.findIndex(c=>c.o===1&&c.main);if(mi<0){toast('No main city to regroup to');return}let n=0;cities.forEach((c,i)=>{if(i!==mi&&c.o===1&&Math.floor(c.t)>=1&&islands[c.isl].open){const b=armies.length;send(i,mi,1);if(armies.length>b)n++}});if(!n){toast('No troops to regroup');return}regT=T;toast('📯 '+n+' castle'+(n>1?'s':'')+' sending troops to your main city');hmb.onclick()};
 C.addEventListener('pointerdown',e=>{if(!run)return;glide=null;ptr.set(e.pointerId,[e.clientX,e.clientY]);if(ptr.size===2){const[a,b]=[...ptr.values()];pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1]),z:Z};drag=null;return}drag={sx:e.clientX,sy:e.clientY,cx:cam.x,cy:cam.y,m:0}});
