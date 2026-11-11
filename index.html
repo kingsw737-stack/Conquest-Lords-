@@ -49,7 +49,8 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #sheet{position:fixed;left:6px;right:58px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);max-height:50%;z-index:6;border:2px solid #e0b24a;border-radius:14px}
 #cp{display:none!important}.tabs{display:none!important}
 #ov.hide{display:none}#sb{display:none!important}#pk{display:none;position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:8;background:linear-gradient(#17469a,#0f1c3d);border:2px solid #e0b24a;border-radius:16px;padding:12px;color:#fff}#pkt{font-weight:bold;font-size:16px;text-align:center;margin-bottom:8px}#pk .pr{display:flex;align-items:center;gap:10px}#pk .pr input{flex:1;height:32px}#pk .pr b{min-width:70px;text-align:right;font-size:18px;color:#ffd34a}#pk .pq,#pk .pb{display:flex;gap:8px;margin-top:10px}#pk button{flex:1;font:inherit;font-weight:bold;font-size:15px;padding:11px 4px;border-radius:12px;border:2px solid #e0b24a;background:#2a58b8;color:#fff}#pk button.ok{background:#e0b24a;color:#17274d}#pk button.no{background:#17274d}#nm{font:inherit;font-size:18px;padding:10px 14px;border-radius:12px;border:2px solid #e0b24a;text-align:center;width:min(260px,80%);background:#fff;color:#2b2418}#d{white-space:pre-line}#sd{position:fixed;right:8px;top:calc(env(safe-area-inset-top,0px) + 10px);background:linear-gradient(#17469a,#0f1c3d);color:#ffd34a;border:2px solid #e0b24a;border-radius:14px;padding:5px 10px;font-weight:bold;font-size:13px;z-index:4;text-align:center;line-height:1.25;pointer-events:none;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#toast{white-space:pre-line;position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 110px);transform:translateX(-50%);background:#17469a;color:#ffd34a;border:2px solid #fff;border-radius:12px;padding:10px 16px;font-weight:bold;z-index:7;opacity:0;transition:opacity .4s;pointer-events:none;text-align:center;max-width:80%}
-#au input{font:inherit;font-size:17px;padding:10px 14px;border-radius:12px;border:2px solid #e0b24a;background:#fff;color:#2b2418;width:100%}#au button{padding:12px;font-size:16px;width:100%}#au a{color:inherit;font-size:14px}#a_msg{min-height:18px;font-size:14px}#a_so{font-size:14px!important;padding:8px 20px!important;background:none!important;border:2px solid currentColor!important;color:inherit!important}</style>
+#au input{font:inherit;font-size:17px;padding:10px 14px;border-radius:12px;border:2px solid #e0b24a;background:#fff;color:#2b2418;width:100%}#au button{padding:12px;font-size:16px;width:100%}#au a{color:inherit;font-size:14px}#a_msg{min-height:18px;font-size:14px}#a_so{font-size:14px!important;padding:8px 20px!important;background:none!important;border:2px solid currentColor!important;color:inherit!important}#lbp{display:none;position:fixed;inset:0;z-index:30;background:#0f1c3d;color:#fff;flex-direction:column;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px calc(env(safe-area-inset-bottom,0px) + 12px)}#lbp.on{display:flex}#lbh{display:flex;gap:8px}#lbh button{flex:1;font:inherit;font-weight:bold;padding:10px 4px;border:2px solid #e0b24a;border-radius:12px;background:#17274d;color:#fff}#lbh button.on{background:#e0b24a;color:#17274d}#lbh #lbx{flex:none;width:46px}#lbi{font-size:13px;color:#ffd34a;text-align:center}#lbl{flex:1;overflow-y:auto;min-height:0}#lbl p{text-align:center}.lr{display:flex;align-items:center;gap:10px;padding:9px 10px;border-bottom:1px solid #2f4680;font-size:15px}.lr span{width:30px;text-align:center}.lr b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lr em{font-style:normal;color:#ffd34a}.lr.me{background:#2a58b8;border-radius:10px}#lbm{text-align:center;font-weight:bold;color:#ffd34a;padding-top:4px}
+</style>
 </head>
 <body>
 <div id="app">
@@ -60,8 +61,8 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 <div id="sheet"></div>
 <div class="tabs"><button data-t="0" title="Skills">⚔️</button><button data-t="1" title="Forge">🔨</button><button data-t="2" title="Quests">📜</button><button data-t="3" title="League">🏆</button></div>
 </div>
-<div id="pk"><div id="pkt"></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"><b id="pkv"></b></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" onclick="confirmPick()">Send troops</button></div></div><div id="toast"></div><div id="zm"><button id="zi">+</button><button id="zo">−</button><button id="mmb">🗺</button></div>
-<div id="ov"><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When every neutral castle is taken, a new island rises from the clouds. A season lasts 13 days: the lord with the most kingdom points wins.</p><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
+<div id="pk"><div id="pkt"></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"><b id="pkv"></b></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><button data-k="w" class="on">This week</button><button data-k="a">All-time</button><button id="lbx">✕</button></div><div id="lbi"></div><div id="lbl"></div><div id="lbm"></div></div><div id="toast"></div><div id="zm"><button id="zi">+</button><button id="zo">−</button><button id="mmb">🗺</button></div>
+<div id="ov"><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When every neutral castle is taken, a new island rises from the clouds. A season lasts 13 days: the lord with the most kingdom points wins.</p><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>/* PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app) */
 const FIREBASE_CONFIG={apiKey:"AIzaSyAXXAi5J4KNCfsfZDjRRqMZekNZHSRTzEk",authDomain:"conquers-c9bfd.firebaseapp.com",projectId:"conquers-c9bfd",appId:"1:668836838322:web:eba1f6eccf116dc92ac2ab"};</script>
@@ -81,21 +82,21 @@ addEventListener('resize',size);
 const WP=c=>[c.x,c.y];
 const P=c=>{const[x,y]=WP(c);return[(x-cam.x)*Z,(y-cam.y)*Z]};
 const CELLS=[[1,1],[1,0],[2,1],[1,2],[0,1],[2,0],[2,2],[0,2],[0,0]];
-function spawnIsl(k){const CW=2400,CH=2250,rnd=(a,b)=>a+Math.random()*(b-a),[cx,cy]=cellOf(k),x=cx*CW+(k?rnd(-60,60):0),y=cy*CH+(k?rnd(-60,60):0),rx=1100+rnd(0,100),ry=920+rnd(0,90),pts=[];
+function spawnIsl(k){RG=mulberry(SEEDK*1009+k*7919+1);const CW=2400,CH=2250,rnd=(a,b)=>a+RG()*(b-a),[cx,cy]=cellOf(k),x=cx*CW+(k?rnd(-60,60):0),y=cy*CH+(k?rnd(-60,60):0),rx=1100+rnd(0,100),ry=920+rnd(0,90),pts=[];
 for(let j=0;j<30;j++){const a=j/30*6.283+rnd(-.1,.1);pts.push({x:x+Math.cos(a)*rx*.74,y:y+Math.sin(a)*ry*.72,r:rnd(190,250)})}
-for(let j=0;j<26;j++){const a=rnd(0,6.283),d=Math.sqrt(Math.random())*.55;pts.push({x:x+Math.cos(a)*rx*d,y:y+Math.sin(a)*ry*d,r:rnd(230,320)})}
-const s={x,y,rx,ry,pts,k,seed:k*7919+13,open:true,grow:k?0:1};s.ox=x-rx-170;s.oy=y-ry-170;s.w=2*rx+340;s.h=2*ry+450;islands.push(s);const mine=[];let n=k?22:24,tr=0;
-while(n>0&&tr++<3000){const a=rnd(0,6.283),d=Math.sqrt(Math.random())*.68,px=x+Math.cos(a)*rx*d,py=y+Math.sin(a)*ry*d;
-if(cities.every(c=>Math.hypot(c.x-px,c.y-py)>170)){const c={x:px,y:py,o:0,l:1+(Math.random()<.3?1:0)+(k>3?1:0),t:4+Math.random()*8+k*2,isl:k};cities.push(c);mine.push(c);n--}}
+for(let j=0;j<26;j++){const a=rnd(0,6.283),d=Math.sqrt(RG())*.55;pts.push({x:x+Math.cos(a)*rx*d,y:y+Math.sin(a)*ry*d,r:rnd(230,320)})}
+const s={x,y,rx,ry,pts,k,seed:k*7919+13+SEEDK%9973,open:true,grow:k?0:1};s.ox=x-rx-170;s.oy=y-ry-170;s.w=2*rx+340;s.h=2*ry+450;islands.push(s);const mine=[];let n=k?22:24,tr=0;
+while(n>0&&tr++<3000){const a=rnd(0,6.283),d=Math.sqrt(RG())*.68,px=x+Math.cos(a)*rx*d,py=y+Math.sin(a)*ry*d;
+if(cities.every(c=>Math.hypot(c.x-px,c.y-py)>170)){const c={x:px,y:py,o:0,l:1+(RG()<.3?1:0)+(k>3?1:0),t:4+RG()*8+k*2,isl:k};cities.push(c);mine.push(c);n--}}
 const give=(c0,m)=>mine.filter(c=>!c.o).sort((a,b)=>Math.hypot(a.x-c0.x,a.y-c0.y)-Math.hypot(b.x-c0.x,b.y-c0.y)).slice(0,m).forEach(c=>{c.o=c0.o;c.t=10+k});
 if(k===0){const sc=c=>Math.hypot(c.x-x+rx*.4,c.y-y-ry*.4),pc=mine.reduce((a,b)=>sc(a)<sc(b)?a:b),pi=cities.indexOf(pc);[cities[0],cities[pi]]=[cities[pi],cities[0]];pc.o=1;pc.t=20;pc.main=1;
 const dp=c=>Math.hypot(c.x-pc.x,c.y-pc.y),rd=mine.filter(c=>c!==pc).reduce((a,b)=>dp(a)>dp(b)?a:b);rd.o=2;rd.t=20;rd.main=1;give(rd,2)}
-if(k===1||k===3||(k>3&&k%2===1)){const c=mine[Math.random()*mine.length|0];c.o=k===1?3:k===3?4:2+((k>>1)%3);c.t=20+k;if(k<4)c.main=1;give(c,2)}
-for(let q=0;q<(k===0?2:1);q++){const L=mine.filter(c=>!c.o&&!c.tp);if(L.length){const c=L[Math.random()*L.length|0];c.tp=1;c.t=25}}
+if(k===1||k===3||(k>3&&k%2===1)){const c=mine[RG()*mine.length|0];c.o=k===1?3:k===3?4:2+((k>>1)%3);c.t=20+k;if(k<4)c.main=1;give(c,2)}
+for(let q=0;q<(k===0?2:1);q++){const L=mine.filter(c=>!c.o&&!c.tp);if(L.length){const c=L[RG()*L.length|0];c.tp=1;c.t=25}}
 islands.slice(0,-1).forEach(o=>{if(Math.hypot(o.x-s.x,o.y-s.y)<CW*1.3)bridges.push(mkBr(o,s,k))});
 return s}
-function gen(){size();seasonT=0;respT=0;cam={x:0,y:0};Z=1;cities=[];armies=[];sel=-1;T=0;tgt=-1;gold=0;lv={gl:0,al:0,dl:0};own={};stats={caps:0,sent:0,earned:0};claimed=[];glide=null;islands=[];bridges=[];mainReady=0;closePick();
-buildSky();spawnIsl(0);sand=[];mtn=[];trees=[];cam={x:cities[0].x-W/2,y:cities[0].y-H/2+40}}
+function gen(){size();SEEDK=curWeek();seasonT=0;respT=0;cam={x:0,y:0};Z=1;cities=[];armies=[];sel=-1;T=0;tgt=-1;gold=0;lv={gl:0,al:0,dl:0};own={};stats={caps:0,sent:0,earned:0};claimed=[];glide=null;islands=[];bridges=[];mainReady=0;closePick();
+pickGhosts();buildSky();spawnIsl(0);sand=[];mtn=[];trees=[];cam={x:cities[0].x-W/2,y:cities[0].y-H/2+40}}
 function send(f,t,fr=.5){const a=cities[f],b=cities[t],n=Math.floor(a.t*fr);if(n<1||!islands[a.isl].open||!islands[b.isl].open||(a.o!==b.o&&prot(b)))return;a.t-=n;if(a.o===1)stats.sent++;
 const[ax,ay]=WP(a),[bx,by]=WP(b);armies.push({f,to:t,o:a.o,n,p:0,d:Math.hypot(ax-bx,ay-by)/spd(n)})}
 function arrive(a){const c=cities[a.to];if(c.o===a.o){c.t+=a.n;return}if(c.main)return;
@@ -103,7 +104,7 @@ const df=1+.25*(c.l-1)+(c.o===1?dm()-1:0),dmg=(a.o===1?a.n*am():a.n)/df;c.t-=dmg
 function ai(){cities.forEach((s,i)=>{if(s.o>=2&&s.l<5&&s.t>12&&Math.random()<.04)s.l++;if(s.o<2||s.t<14||!islands[s.isl].open)return;const sx=s.x,sy=s.y;let best=-1,bd=1e9;
 cities.forEach((c,j)=>{if(c.o===s.o||prot(c)||!islands[c.isl].open)return;const cx=c.x,cy=c.y,d=Math.hypot(cx-sx,cy-sy);if(c.t*1.1*(1+.25*(c.l-1)+(c.o===1?dm()-1:0))<s.t/2&&d<bd){bd=d;best=j}});if(best>=0)send(i,best)})}
 function upd(dt){T+=dt;chkIsl();islands.forEach(q=>{q.grow=Math.min(1,q.grow+dt*.7)});if(glide){cam.x+=(glide.x-cam.x)*Math.min(1,dt*2.2);cam.y+=(glide.y-cam.y)*Math.min(1,dt*2.2);if(Math.hypot(glide.x-cam.x,glide.y-cam.y)<4)glide=null}
-const tpc={};cities.forEach(c=>{if(c.tp)tpc[c.o]=(tpc[c.o]||0)+1});const gmv=gm();cities.forEach(c=>{if(c.o===0){if(c.t<(c.tp?30:10))c.t+=.15*dt}else if(c.t<40+30*c.l)c.t+=dt*.5*(c.main?1.5:1)*(1+.4*(c.l-1))*(c.o===1?gmv:1+.15*(tpc[c.o]||0))});
+const tpc={};cities.forEach(c=>{if(c.tp)tpc[c.o]=(tpc[c.o]||0)+1});const gmv=gm();cities.forEach(c=>{if(c.o===0){if(c.t<(c.tp?30:10))c.t+=.15*dt}else if(c.t<40+30*c.l)c.t+=dt*.5*(c.main?1.5:1)*(1+.4*(c.l-1))*(c.o===1?gmv:(1+.15*(tpc[c.o]||0))*gboost(c.o))});
 armies.forEach(a=>a.p+=dt/a.d);armies.filter(a=>a.p>=1).forEach(arrive);armies=armies.filter(a=>a.p<1);
 acc+=dt;if(acc>=1){acc=0;const m=cities.filter(c=>c.o===1).reduce((s,c)=>s+.5+.5*c.l,0)*(1+.1*cities.filter(c=>c.o===1&&c.tp).length);gold+=m;stats.earned+=m;if(tab>=0)render()}
 aiT+=dt;if(aiT>2.5){aiT=0;ai()}
@@ -116,11 +117,11 @@ if(seasonT>=13*DAY)end();
 if(ui){document.getElementById('g').textContent='Gold '+Math.floor(gold);
 document.getElementById('n').textContent='Castles '+mine;
 document.getElementById('lg').textContent=LG[league()][0];panel()}}
-function end(){run=false;closePick();try{loadLb()}catch(_){}try{if(DB)ud('save').delete().catch(()=>{})}catch(_){}const N=[pname,'Red lord','Purple lord','Orange lord'],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+10+5*c.l,0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;
-if(w){wins++;try{if(DB)ud('profile').set({name:pname,wins}).catch(()=>{});DB.collection('leaderboard').doc(UID).set({name:pname,wins}).catch(()=>{})}catch(_){}}
+function end(){run=false;closePick();try{loadLb()}catch(_){}try{if(DB)ud('save').delete().catch(()=>{})}catch(_){}const N=[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+10+5*c.l,0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;
+submitScore(R[p-1][1]).then(weeklyRank).then(r=>{if(r&&!run)$('d').textContent+='\n🌍 Weekly rank: #'+r});if(w){wins++;try{if(DB)ud('profile').set({name:pname,wins}).catch(()=>{});DB.collection('leaderboard').doc(UID).set({name:pname,wins}).catch(()=>{})}catch(_){}}
 document.getElementById('t').textContent=w?'Season won! 🏆':'Season over · you placed #'+p;
-document.getElementById('d').textContent=R.map((r,i)=>(i+1)+'. '+r[0]+' — '+r[1]+' pts').join('\\n')+(w?'\\nVictories: '+wins:'');
-play.textContent='New season';mode=2;nw.style.display='none';nm.style.display='none';play.style.display='';ov.classList.remove('hide')}
+document.getElementById('d').textContent=R.map((r,i)=>(i+1)+'. '+r[0]+(r[2]>1&&ghosts[r[2]-2].g?' 👻':'')+' — '+r[1]+' pts').join('\\n')+(w?'\\nVictories: '+wins:'');
+play.textContent='New season';mode=2;$('lbb').style.display='';nw.style.display='none';nm.style.display='none';play.style.display='';ov.classList.remove('hide')}
 function col(o){return o===1?css('--me'):o===2?css('--foe'):o===3?css('--foe2'):o===4?'#d98a1a':css('--neu')}
 function castle(x,y,o,t,on){const ink=css('--ink'),f=col(o);
 if(on){g.strokeStyle=css('--ring');g.lineWidth=4;g.beginPath();g.ellipse(x,y+2,31,27,0,0,7);g.stroke()}
@@ -193,7 +194,7 @@ function buildSky(){TS=.5;TER=document.createElement('canvas');TER.width=512;TER
 t.fillStyle='#e0903a';t.fillRect(0,0,1024,1024);
 for(let i=0;i<26;i++){const x=rnd(0,1024),y=rnd(0,1024),r=rnd(110,260),c=Math.random()<.5?'rgba(244,168,66,.55)':'rgba(190,100,30,.35)';for(const ox of[-1024,0,1024])for(const oy of[-1024,0,1024]){const gr=t.createRadialGradient(x+ox,y+oy,r*.1,x+ox,y+oy,r);gr.addColorStop(0,c);gr.addColorStop(1,'rgba(0,0,0,0)');t.fillStyle=gr;t.beginPath();t.arc(x+ox,y+oy,r,0,7);t.fill()}}}
 function mkBr(a,b,k){const dx=b.x-a.x,dy=b.y-a.y,D=Math.hypot(dx,dy),ux=dx/D,uy=dy/D,pts=[],f=(q,p,m)=>((p.x-q.x)/(q.rx*m))**2+((p.y-q.y)/(q.ry*m))**2<1;
-for(let d=0;d<=D;d+=110){const w=Math.sin(d/D*6.283)*40,p={x:a.x+ux*d-uy*w,y:a.y+uy*d+ux*w,r:165+Math.random()*50};if(!f(a,p,.7)&&!f(b,p,.7)){p.g=!f(a,p,.95)&&!f(b,p,.95);pts.push(p)}}
+for(let d=0;d<=D;d+=110){const w=Math.sin(d/D*6.283)*40,p={x:a.x+ux*d-uy*w,y:a.y+uy*d+ux*w,r:165+RG()*50};if(!f(a,p,.7)&&!f(b,p,.7)){p.g=!f(a,p,.95)&&!f(b,p,.95);pts.push(p)}}
 const x0=Math.min(...pts.map(p=>p.x-p.r))-60,y0=Math.min(...pts.map(p=>p.y-p.r))-60,x1=Math.max(...pts.map(p=>p.x+p.r))+60,y1=Math.max(...pts.map(p=>p.y+p.r))+260;
 return{pts,k,seed:5000+k*31+a.k,ox:x0,oy:y0,w:x1-x0,h:y1-y0}}
 function mkBridge(b){const SS=Math.min(1,devicePixelRatio||1,1700/Math.max(b.w,b.h)),cv=document.createElement('canvas');cv.width=b.w*SS;cv.height=b.h*SS;const t=cv.getContext('2d');t.scale(SS,SS);t.translate(-b.ox,-b.oy);const G=b.pts.filter(p=>p.g),A=b.pts;
@@ -325,26 +326,43 @@ function claim(i){if(!claimed[i]&&QS[i][1]()>=QS[i][2]){claimed[i]=1;gold+=QS[i]
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{const t=+b.dataset.t;tab=tab===t?-1:t;
 document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',+x.dataset.t===tab));sheet.classList.toggle('open',tab>=0);if(tab>=0)render();setTimeout(size,0)});
 pct.oninput=()=>pv.textContent=pct.value+'%';
-let DB=null,UID=null,PROF=null,SAVE=null,mode=2;
+let DB=null,UID=null,PROF=null,SAVE=null,mode=2,LBD=[],ghosts=[],RG=Math.random,SEEDK=curWeek();
+function curWeek(){return Math.floor(Date.now()/604800000)}
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const GDEF=['Red lord','Purple lord','Orange lord'];
+function pickGhosts(){const me=(PROF&&PROF.name||pname||'').toLowerCase(),pool=LBD.filter(d=>d.name&&String(d.name).toLowerCase()!==me).sort(()=>Math.random()-.5).slice(0,3);ghosts=[0,1,2].map(i=>pool[i]?{n:String(pool[i].name),w:+pool[i].wins||0,g:1}:{n:GDEF[i],w:0,g:0});applyGhosts()}
+function applyGhosts(){if(!ghosts||ghosts.length<3)ghosts=GDEF.map(n=>({n,w:0,g:0}));ghosts.forEach((h,i)=>OW[i+2]=h.n+'’s')}
+const gboost=o=>{const h=ghosts[o-2];return h?1+Math.min(.3,.02*h.w):1};
 const $=i=>document.getElementById(i),ud=k=>DB.collection('users').doc(UID).collection('d').doc(k);
 const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
-function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,stats,claimed,seasonT,mainReady,T,Z,cam},(k,v)=>k==='cv'?undefined:v)}
+
+async function submitScore(score){if(!DB||!UID)return;try{const ref=DB.collection('weekly').doc(String(SEEDK)).collection('scores').doc(UID),o=await ref.get();if(!o.exists||(+o.data().score||0)<score)await ref.set({name:pname,score,at:Date.now()})}catch(_){}}
+async function weeklyRank(){try{const q=await DB.collection('weekly').doc(String(SEEDK)).collection('scores').orderBy('score','desc').limit(100).get(),i=q.docs.findIndex(x=>x.id===UID);return i<0?0:i+1}catch(_){return 0}}
+let lbTab='w';
+async function lbShow(k){lbTab=k||lbTab;const P=$('lbp'),L=$('lbl'),M=$('lbm'),I=$('lbi');P.classList.add('on');P.querySelectorAll('[data-k]').forEach(b=>b.classList.toggle('on',b.dataset.k===lbTab));L.textContent='Loading…';M.textContent='';
+const wk=lbTab==='w',left=(curWeek()+1)*604800000-Date.now(),dd=Math.floor(left/864e5),hh=Math.floor(left%864e5/36e5);
+I.textContent=wk?'Same world for every lord · resets in '+dd+'d '+hh+'h':'Season victories, all time';
+try{const q=wk?await DB.collection('weekly').doc(String(curWeek())).collection('scores').orderBy('score','desc').limit(50).get():await DB.collection('leaderboard').orderBy('wins','desc').limit(50).get();
+let me=0,h='';q.docs.forEach((x,i)=>{const v=x.data(),val=wk?(+v.score||0)+' pts':(+v.wins||0)+' 🏆',mine=x.id===UID;if(mine)me=i+1;h+='<div class="lr'+(mine?' me':'')+'"><span>'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</span><b>'+esc(String(v.name||'?'))+'</b><em>'+val+'</em></div>'});
+L.innerHTML=h||'<p>No scores yet. Be the first!</p>';M.textContent=me?'Your rank: #'+me:(q.size>=50?'You are outside the top 50':'You have no score yet')}catch(e){L.textContent='Could not load the leaderboard.'}}
+$('lbb').onclick=()=>lbShow('w');$('lbx').onclick=()=>$('lbp').classList.remove('on');$('lbp').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lbShow(b.dataset.k));
+function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,stats,claimed,seasonT,mainReady,T,Z,cam,ghosts,SEEDK},(k,v)=>k==='cv'?undefined:v)}
 const LK=()=>'cl_save_'+UID;
 function saveLocal(){if(!UID||!run)return;try{localStorage.setItem(LK(),JSON.stringify({s:snap(),at:Date.now()}))}catch(_){}}
 function saveNow(){if(!UID||!run)return;const s=snap(),at=Date.now();try{localStorage.setItem(LK(),JSON.stringify({s,at}))}catch(_){}if(!DB)return;try{ud('save').set({s,at}).catch(()=>{})}catch(_){}}
-function loadGame(d){size();closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;stats=d.stats;claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
-function startGame(d){if(d){try{loadGame(d)}catch(_){gen()}}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');run=true;last=performance.now();requestAnimationFrame(loop)}
+function loadGame(d){size();closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;stats=d.stats;claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;ghosts=d.ghosts||[];applyGhosts();SEEDK=d.SEEDK||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
+function startGame(d){if(d){try{loadGame(d)}catch(_){gen()}}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');run=true;last=performance.now();requestAnimationFrame(loop);if(ghosts.some(h=>h.g))toast('👻 Rival lords this season:\n'+ghosts.map(h=>h.n).join(' · '))}
 function menu(){const a=$('t'),b=$('d');nm.style.display=PROF?'none':'';nw.style.display='none';play.style.display='';mode=PROF?(SAVE?1:2):0;
 if(!PROF){a.textContent='Conquest Lords';b.textContent='Register your lord name to begin. Your kingdom is saved to your account, so you always continue where you left off.'}
 else if(SAVE){a.textContent='Welcome back, '+PROF.name;b.textContent='Your kingdom is waiting. Day '+Math.min(13,Math.floor((SAVE.seasonT||0)/DAY)+1)+' of 13.';nw.style.display=''}
-else{a.textContent='Welcome, '+PROF.name;b.textContent='Build your kingdom and win the season.'}
-play.textContent=['Register & play','Continue','Play'][mode]}
+else{a.textContent='Welcome, '+PROF.name;b.textContent='Everyone plays the same islands this week. Build your kingdom and climb the leaderboard.'}
+play.textContent=['Register & play','Continue','Play'][mode];$('lbb').style.display=''}
 play.onclick=async()=>{fs();if(mode===0){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.focus();return}PROF={name:n,wins:0};try{await ud('profile').set(PROF)}catch(_){}}
 pname=PROF.name;OW[1]=pname;startGame(mode===1?SAVE:null)};
 nw.onclick=()=>{fs();SAVE=null;try{localStorage.removeItem(LK())}catch(_){}try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGame(null)};
 setInterval(saveLocal,10000);setInterval(saveNow,60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 play.style.display='none';nm.style.display='none';$('d').textContent='Signing in…';
-async function loadLb(){try{const q=await DB.collection('leaderboard').orderBy('wins','desc').limit(10).get();$('a_lb').textContent=q.empty?'':'🏆 Top lords\n'+q.docs.map((d,i)=>(i+1)+'. '+d.data().name+' — '+d.data().wins).join('\n')}catch(_){}}
+async function loadLb(){try{const q=await DB.collection('leaderboard').orderBy('wins','desc').limit(20).get();LBD=q.docs.map(d=>d.data());$('a_lb').textContent=q.empty?'':'🏆 Top lords\n'+q.docs.slice(0,10).map((d,i)=>(i+1)+'. '+d.data().name+' — '+d.data().wins).join('\n')}catch(_){}}
 (async()=>{const T1=$('t'),D1=$('d'),msg=t=>$('a_msg').textContent=t||'';
 if(typeof firebase==='undefined'||String(FIREBASE_CONFIG.apiKey).startsWith('PASTE')){T1.textContent='Setup needed';D1.textContent='Add your Firebase config at the top of this file (see SETUP.md).';return}
 firebase.initializeApp(FIREBASE_CONFIG);const auth=firebase.auth();DB=firebase.firestore();
@@ -356,7 +374,7 @@ $('a_go').onclick=()=>{msg();auth.signInWithPopup(new firebase.auth.GoogleAuthPr
 $('a_fp').onclick=e=>{e.preventDefault();if(!em()){msg('Enter your email first.');return}auth.sendPasswordResetEmail(em()).then(()=>msg('Password reset email sent.')).catch(fail)};
 $('a_so').onclick=()=>{saveNow();setTimeout(()=>{run=false;auth.signOut()},600)};
 auth.onAuthStateChanged(async u=>{
-if(!u){UID=null;PROF=null;SAVE=null;run=false;ov.classList.remove('hide');T1.textContent='Conquest Lords';D1.textContent='Sign in or create an account to play.';play.style.display='none';nm.style.display='none';nw.style.display='none';$('a_so').style.display='none';$('au').style.display='flex';msg();loadLb();return}
+if(!u){UID=null;PROF=null;SAVE=null;run=false;ov.classList.remove('hide');T1.textContent='Conquest Lords';D1.textContent='Sign in or create an account to play.';play.style.display='none';nm.style.display='none';nw.style.display='none';$('a_so').style.display='none';$('lbb').style.display='none';$('au').style.display='flex';msg();loadLb();return}
 $('au').style.display='none';D1.textContent='Loading…';UID=u.uid;
 try{const[p,sv]=await Promise.all([ud('profile').get(),ud('save').get()]);PROF=p.exists?p.data():null;SAVE=null;let cAt=0;if(sv.exists){try{SAVE=JSON.parse(sv.data().s);cAt=+sv.data().at||0}catch(_){}}try{const L=JSON.parse(localStorage.getItem(LK())||'null');if(L&&L.s&&(+L.at||0)>cAt){SAVE=JSON.parse(L.s)}}catch(_){}wins=PROF?(+PROF.wins||0):0}
 catch(e){D1.textContent='Could not load your account. Check your connection.';return}
