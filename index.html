@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Conquest Lords</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#17274d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
 <style>
 :root{--bg:#e9a04a;--panel:#f6f1e3;--ink:#2b2418;--neu:#9a8f78;--me:#1f5fbf;--foe:#b8332b;--foe2:#7a3a9a;--ring:#d49a1a;--line:rgba(43,36,24,.12);--sand:#a56f47;--mtn:#82593a;--snow:#e9c99a;--ground:#dc8c36;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -516,7 +521,7 @@ function pickGhosts(){if(NET){applyGhosts();return}const me=(PROF&&PROF.name||pn
 function applyGhosts(){if(!ghosts||ghosts.length<3)ghosts=GDEF.map(n=>({n,w:0,g:0}));if(NET&&NET.nl)ghosts=NET.nl.slice(1).map(n=>({n,w:0,g:0}));ghosts.forEach((h,i)=>OW[i+2]=h.n+'’s')}
 const gboost=o=>.6;
 const $=i=>document.getElementById(i),ud=k=>DB.collection('users').doc(UID).collection('d').doc(k);
-const fs=()=>{return;try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
+const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
 
 async function submitScore(score){try{if(UID){const k='cl_best_'+curWeek()+'_'+UID;if(score>(+localStorage.getItem(k)||0))localStorage.setItem(k,score)}}catch(_){}if(!DB||!UID)return;try{const ref=DB.collection('weekly').doc(String(SEEDK)).collection('scores').doc(UID),o=await ref.get();if(!o.exists||(+o.data().score||0)<score)await ref.set({name:pname,score,at:Date.now()})}catch(_){}}
 async function weeklyRank(){try{const q=await DB.collection('weekly').doc(String(SEEDK)).collection('scores').orderBy('score','desc').limit(100).get(),i=q.docs.findIndex(x=>x.id===UID);return i<0?0:i+1}catch(_){return 0}}
@@ -655,6 +660,12 @@ $('bn').onclick=e=>{if(e.target===$('bn'))$('bnd').onclick()};
 document.querySelectorAll('.bnt button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()});
 bnDraw($('bnp'),B());
 })();
+</script>
+<script>
+(function(){const inFs=()=>document.fullscreenElement||document.webkitFullscreenElement;
+const again=()=>{if(!inFs())fs()};
+['pointerup','click','touchend'].forEach(e=>document.addEventListener(e,again,{passive:true,capture:true}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>{if(!inFs())fs()},0)});})();
 </script>
 </body>
 </html>
