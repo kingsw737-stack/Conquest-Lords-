@@ -50,6 +50,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #cp{display:none!important}.tabs{display:none!important}
 #ov.hide{display:none}#sb{display:none!important}#pk{display:none;position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:8;background:linear-gradient(#17469a,#0f1c3d);border:2px solid #e0b24a;border-radius:16px;padding:12px;color:#fff}#pkt{font-weight:bold;font-size:16px;text-align:center;margin-bottom:8px}#pk .pr{display:flex;align-items:center;gap:10px}#pk .pr input{flex:1;height:32px}#pk .pr b{min-width:70px;text-align:right;font-size:18px;color:#ffd34a}#pk .pq,#pk .pb{display:flex;gap:8px;margin-top:10px}#pk button{flex:1;font:inherit;font-weight:bold;font-size:15px;padding:11px 4px;border-radius:12px;border:2px solid #e0b24a;background:#2a58b8;color:#fff}#pk button.ok{background:#e0b24a;color:#17274d}#pk button.no{background:#17274d}#nm{font:inherit;font-size:18px;padding:10px 14px;border-radius:12px;border:2px solid #e0b24a;text-align:center;width:min(260px,80%);background:#fff;color:#2b2418}#d{white-space:pre-line}#sd{position:fixed;right:8px;top:calc(env(safe-area-inset-top,0px) + 10px);background:linear-gradient(#17469a,#0f1c3d);color:#ffd34a;border:2px solid #e0b24a;border-radius:14px;padding:5px 10px;font-weight:bold;font-size:13px;z-index:4;text-align:center;line-height:1.25;pointer-events:none;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#toast{white-space:pre-line;position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 110px);transform:translateX(-50%);background:#17469a;color:#ffd34a;border:2px solid #fff;border-radius:12px;padding:10px 16px;font-weight:bold;z-index:7;opacity:0;transition:opacity .4s;pointer-events:none;text-align:center;max-width:80%}
 #au input{font:inherit;font-size:17px;padding:10px 14px;border-radius:12px;border:2px solid #e0b24a;background:#fff;color:#2b2418;width:100%}#au button{padding:12px;font-size:16px;width:100%}#au a{color:inherit;font-size:14px}#a_msg{min-height:18px;font-size:14px}#a_so{font-size:14px!important;padding:8px 20px!important;background:none!important;border:2px solid currentColor!important;color:inherit!important}#lbp{display:none;position:fixed;inset:0;z-index:30;background:#0f1c3d;color:#fff;flex-direction:column;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px calc(env(safe-area-inset-bottom,0px) + 12px)}#lbp.on{display:flex}#lbh{display:flex;gap:8px}#lbh button{flex:1;font:inherit;font-weight:bold;padding:10px 4px;border:2px solid #e0b24a;border-radius:12px;background:#17274d;color:#fff}#lbh button.on{background:#e0b24a;color:#17274d}#lbh #lbx{flex:none;width:46px}#lbi{font-size:13px;color:#ffd34a;text-align:center}#lbl{flex:1;overflow-y:auto;min-height:0}#lbl p{text-align:center}.lr{display:flex;align-items:center;gap:10px;padding:9px 10px;border-bottom:1px solid #2f4680;font-size:15px}.lr span{width:30px;text-align:center}.lr b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lr em{font-style:normal;color:#ffd34a}.lr.me{background:#2a58b8;border-radius:10px}#lbm{text-align:center;font-weight:bold;color:#ffd34a;padding-top:4px}
+#mp{display:none;position:fixed;inset:0;z-index:35;background:#0f1c3d;color:#fff;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center}#mp.on{display:flex}#mpl{white-space:pre-line;line-height:1.5;max-width:320px}#mp h2{margin:0;font-size:30px}#mp input{font:inherit;font-size:22px;text-transform:uppercase;text-align:center;padding:10px;border-radius:12px;border:2px solid #e0b24a;width:min(220px,70%);background:#fff;color:#2b2418}#mp button{font:inherit;font-weight:bold;font-size:18px;padding:12px 36px;border-radius:12px;border:2px solid #e0b24a;background:#2a58b8;color:#fff}
 </style>
 </head>
 <body>
@@ -61,14 +62,14 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 <div id="sheet"></div>
 <div class="tabs"><button data-t="0" title="Skills">⚔️</button><button data-t="1" title="Forge">🔨</button><button data-t="2" title="Quests">📜</button><button data-t="3" title="League">🏆</button></div>
 </div>
-<div id="pk"><div id="pkt"></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"><b id="pkv"></b></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><button data-k="w" class="on">This week</button><button data-k="a">All-time</button><button id="lbx">✕</button></div><div id="lbi"></div><div id="lbl"></div><div id="lbm"></div></div><div id="toast"></div><div id="zm"><button id="zi">+</button><button id="zo">−</button><button id="mmb">🗺</button><button id="lbz" onclick="lbShow('w')">🏆</button></div>
-<div id="ov"><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When every neutral castle is taken, a new island rises from the clouds. A season lasts 13 days: the lord with the most kingdom points wins.</p><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
+<div id="pk"><div id="pkt"></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"><b id="pkv"></b></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><button data-k="w" class="on">This week</button><button data-k="a">All-time</button><button id="lbx">✕</button></div><div id="lbi"></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="toast"></div><div id="zm"><button id="zi">+</button><button id="zo">−</button><button id="mmb">🗺</button><button id="lbz" onclick="lbShow('w')">🏆</button></div>
+<div id="ov"><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When every neutral castle is taken, a new island rises from the clouds. A season lasts 13 days: the lord with the most kingdom points wins.</p><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>/* PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app) */
 const FIREBASE_CONFIG={apiKey:"AIzaSyAXXAi5J4KNCfsfZDjRRqMZekNZHSRTzEk",authDomain:"conquers-c9bfd.firebaseapp.com",projectId:"conquers-c9bfd",appId:"1:668836838322:web:eba1f6eccf116dc92ac2ab"};</script>
 <script>
 let C=document.getElementById('c'),g=C.getContext('2d'),ov=document.getElementById('ov'),sheet=document.getElementById('sheet');
-let W,H,dpr,cam={x:0,y:0},Z=1,WW=1000,WH=1000,sand=[],mtn=[],trees=[],drag=null,cities=[],armies=[],sel=-1,gold=0,lv={gl:0,al:0,dl:0},own={},stats,claimed,run=false,last=0,aiT=0,acc=0,tab=-1,wins=0;
+let NET=null,HUM={},CP=[],netT=0,unsubs=[];let W,H,dpr,cam={x:0,y:0},Z=1,WW=1000,WH=1000,sand=[],mtn=[],trees=[],drag=null,cities=[],armies=[],sel=-1,gold=0,lv={gl:0,al:0,dl:0},own={},stats,claimed,run=false,last=0,aiT=0,acc=0,tab=-1,wins=0;
 
 const _cc={},SPR={};let noTxt=0;const css=n=>_cc[n]||(_cc[n]=getComputedStyle(document.documentElement).getPropertyValue(n).trim());matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{for(const k in _cc)delete _cc[k];for(const k in SPR)delete SPR[k]});
 const SK=[['gl','Troop growth','Castles train troops faster'],['al','Attack','Your armies hit harder'],['dl','Castle walls','Your castles resist attacks']];
@@ -76,7 +77,7 @@ const IT=[['sword','Iron sword','+15% attack',40],['banner','War banner','+15% t
 const QS=[['Capture 3 castles',()=>stats.caps,3,25],['Send 10 armies',()=>stats.sent,10,20],['Earn 100 gold',()=>Math.floor(stats.earned),100,30]];
 const LG=[['Bronze',0],['Silver',1],['Gold',3],['Platinum',6],['Diamond',10]];
 const league=()=>{let i=0;LG.forEach((l,k)=>{if(wins>=l[1])i=k});return i};
-const gm=()=>1+.25*lv.gl+(own.banner?.15:0)+.15*cities.filter(c=>c.o===1&&c.tp).length, am=()=>1+.25*lv.al+(own.sword?.15:0), dm=()=>1+.2*lv.dl+(own.shield?.2:0);
+const gm=(o=1)=>{const p=PS(o);return 1+.25*p.lv.gl+(p.own.banner?.15:0)+.15*cities.filter(c=>c.o===o&&c.tp).length}, am=(o=1)=>{const p=PS(o);return 1+.25*p.lv.al+(p.own.sword?.15:0)}, dm=(o=1)=>{const p=PS(o);return 1+.2*p.lv.dl+(p.own.shield?.2:0)};
 function size(){dpr=Math.min(1.5,devicePixelRatio||1);W=C.clientWidth;H=C.clientHeight;C.width=W*dpr;C.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0)}
 addEventListener('resize',size);
 const WP=c=>[c.x,c.y];
@@ -95,33 +96,33 @@ if(k===1||k===3||(k>3&&k%2===1)){const c=mine[RG()*mine.length|0];c.o=k===1?3:k=
 for(let q=0;q<(k===0?2:1);q++){const L=mine.filter(c=>!c.o&&!c.tp);if(L.length){const c=L[RG()*L.length|0];c.tp=1;c.t=25}}
 islands.slice(0,-1).forEach(o=>{if(Math.hypot(o.x-s.x,o.y-s.y)<CW*1.3)bridges.push(mkBr(o,s,k))});
 return s}
-function gen(){size();SEEDK=curWeek();seasonT=0;respT=0;cam={x:0,y:0};Z=1;cities=[];armies=[];sel=-1;T=0;tgt=-1;gold=0;lv={gl:0,al:0,dl:0};own={};stats={caps:0,sent:0,earned:0};claimed=[];glide=null;islands=[];bridges=[];mainReady=0;closePick();
+function gen(){size();SEEDK=NET&&NET.seed!=null?NET.seed:curWeek();CP=[];seasonT=0;respT=0;cam={x:0,y:0};Z=1;cities=[];armies=[];sel=-1;T=0;tgt=-1;gold=0;lv={gl:0,al:0,dl:0};own={};stats={caps:0,sent:0,earned:0};claimed=[];glide=null;islands=[];bridges=[];mainReady=0;closePick();
 pickGhosts();buildSky();spawnIsl(0);sand=[];mtn=[];trees=[];cam={x:cities[0].x-W/2,y:cities[0].y-H/2+40}}
-function send(f,t,fr=.5){const a=cities[f],b=cities[t],n=Math.floor(a.t*fr);if(n<1||!islands[a.isl].open||!islands[b.isl].open||(a.o!==b.o&&prot(b)))return;a.t-=n;if(a.o===1)stats.sent++;
+function send(f,t,fr=.5){const a=cities[f],b=cities[t],n=Math.floor(a.t*fr);if(n<1||!islands[a.isl].open||!islands[b.isl].open||(a.o!==b.o&&prot(b)))return;a.t-=n;if(a.o===1)stats.sent++;cmd({t:'s',f,to:t,fr});
 const[ax,ay]=WP(a),[bx,by]=WP(b);armies.push({f,to:t,o:a.o,n,p:0,d:Math.hypot(ax-bx,ay-by)/spd(n)})}
 function arrive(a){const c=cities[a.to];if(c.o===a.o){c.t+=a.n;return}if(c.main)return;
-const df=1+.25*(c.l-1)+(c.o===1?dm()-1:0),dmg=(a.o===1?a.n*am():a.n)/df;c.t-=dmg;if(c.t<0){if(a.o===1)stats.caps++;c.o=a.o;c.main=0;c.t=-c.t;c.l=Math.max(1,c.l-1)}}
-function ai(){cities.forEach((s,i)=>{if(s.o>=2&&s.l<5&&s.t>12&&Math.random()<.04)s.l++;if(s.o<2||s.t<14||!islands[s.isl].open)return;const sx=s.x,sy=s.y;let best=-1,bd=1e9;
-cities.forEach((c,j)=>{if(c.o===s.o||prot(c)||!islands[c.isl].open)return;const cx=c.x,cy=c.y,d=Math.hypot(cx-sx,cy-sy);if(c.t*1.1*(1+.25*(c.l-1)+(c.o===1?dm()-1:0))<s.t/2&&d<bd){bd=d;best=j}});if(best>=0)send(i,best)})}
-function upd(dt){T+=dt;chkIsl();islands.forEach(q=>{q.grow=Math.min(1,q.grow+dt*.7)});if(glide){cam.x+=(glide.x-cam.x)*Math.min(1,dt*2.2);cam.y+=(glide.y-cam.y)*Math.min(1,dt*2.2);if(Math.hypot(glide.x-cam.x,glide.y-cam.y)<4)glide=null}
-const tpc={};cities.forEach(c=>{if(c.tp)tpc[c.o]=(tpc[c.o]||0)+1});const gmv=gm();cities.forEach(c=>{if(c.o===0){if(c.t<(c.tp?30:10))c.t+=.15*dt}else if(c.t<40+30*c.l)c.t+=dt*.5*(c.main?1.5:1)*(1+.4*(c.l-1))*(c.o===1?gmv:(1+.15*(tpc[c.o]||0))*gboost(c.o))});
-armies.forEach(a=>a.p+=dt/a.d);armies.filter(a=>a.p>=1).forEach(arrive);armies=armies.filter(a=>a.p<1);
+const df=1+.25*(c.l-1)+(HU(c.o)?dm(c.o)-1:0),dmg=(HU(a.o)?a.n*am(a.o):a.n)/df;c.t-=dmg;if(c.t<0){CP[a.o]=(CP[a.o]||0)+1;if(a.o===1)stats.caps++;c.o=a.o;c.main=0;c.t=-c.t;c.l=Math.max(1,c.l-1)}}
+function ai(){cities.forEach((s,i)=>{if(HUM[s.o])return;if(s.o>=2&&s.l<5&&s.t>12&&Math.random()<.04)s.l++;if(s.o<2||s.t<14||!islands[s.isl].open)return;const sx=s.x,sy=s.y;let best=-1,bd=1e9;
+cities.forEach((c,j)=>{if(c.o===s.o||prot(c)||!islands[c.isl].open)return;const cx=c.x,cy=c.y,d=Math.hypot(cx-sx,cy-sy);if(c.t*1.1*(1+.25*(c.l-1)+(HU(c.o)?dm(c.o)-1:0))<s.t/2&&d<bd){bd=d;best=j}});if(best>=0)send(i,best)})}
+function upd(dt){const G=NET&&NET.role==='g';T+=dt;chkIsl();islands.forEach(q=>{q.grow=Math.min(1,q.grow+dt*.7)});if(glide){cam.x+=(glide.x-cam.x)*Math.min(1,dt*2.2);cam.y+=(glide.y-cam.y)*Math.min(1,dt*2.2);if(Math.hypot(glide.x-cam.x,glide.y-cam.y)<4)glide=null}
+const tpc={};cities.forEach(c=>{if(c.tp)tpc[c.o]=(tpc[c.o]||0)+1});const gmv=gm(),gmo={};cities.forEach(c=>{if(c.o===0){if(c.t<(c.tp?30:10))c.t+=.15*dt}else if(c.t<40+30*c.l)c.t+=dt*.5*(c.main?1.5:1)*(1+.4*(c.l-1))*(c.o===1?gmv:HU(c.o)?(gmo[c.o]=gmo[c.o]||gm(c.o)):(1+.15*(tpc[c.o]||0))*gboost(c.o))});
+armies.forEach(a=>a.p+=dt/a.d);armies.filter(a=>a.p>=1).forEach(a=>{if(!G)arrive(a)});armies=armies.filter(a=>a.p<1);
 acc+=dt;if(acc>=1){acc=0;const m=cities.filter(c=>c.o===1).reduce((s,c)=>s+.5+.5*c.l,0)*(1+.1*cities.filter(c=>c.o===1&&c.tp).length);gold+=m;stats.earned+=m;if(tab>=0)render()}
-aiT+=dt;if(aiT>2.5){aiT=0;ai()}
+aiT+=dt;if(aiT>2.5){aiT=0;if(!G)ai()}netT+=dt;if(NET&&NET.role==='h'&&netT>.8){netT=0;pubSnap()}
 const mine=cities.filter(c=>c.o===1).length,foes=cities.filter(c=>c.o>1).length;
 seasonT+=dt;const sco=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+10+5*c.l,0),mp=sco(1),rk=1+[2,3,4].filter(o=>sco(o)>mp).length;
 ui=(uiT+=dt)>.25;if(ui)uiT=0;if(ui)document.getElementById('sd').innerHTML=esc(pname)+'<br>Day '+Math.min(13,Math.floor(seasonT/DAY)+1)+'/13<br>#'+rk+' · '+mp+' pts';window.MYP=mp;
-respT+=dt;if(respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o===o)&&!armies.some(a=>a.o===o)){let L=cities.filter(c=>c.o===0);if(!L.length){chkIsl();L=cities.filter(c=>c.o===0)}if(L.length){const c=L[Math.random()*L.length|0];c.o=o;c.t=15;c.l=1;c.main=1;if(o===1)toast('Your last castle fell!\nA new castle is yours.')}}})}
+respT+=dt;if(!G&&respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o===o)&&!armies.some(a=>a.o===o)){let L=cities.filter(c=>c.o===0);if(!L.length){chkIsl();L=cities.filter(c=>c.o===0)}if(L.length){const c=L[Math.random()*L.length|0];c.o=o;c.t=15;c.l=1;c.main=1;if(o===1)toast('Your last castle fell!\nA new castle is yours.')}}})}
 [1,2,3,4].forEach(o=>{if(respT!==0)return;const L=cities.filter(c=>c.o===o);if(L.length&&!L.some(c=>c.main))L.reduce((a,c)=>c.l>a.l?c:a).main=1});
 if(seasonT>=13*DAY)end();
 if(ui){document.getElementById('g').textContent='Gold '+Math.floor(gold);
 document.getElementById('n').textContent='Castles '+mine;
 document.getElementById('lg').textContent=LG[league()][0];panel()}}
-function end(){run=false;closePick();try{loadLb()}catch(_){}try{if(DB)ud('save').delete().catch(()=>{})}catch(_){}const N=[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+10+5*c.l,0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;
-submitScore(R[p-1][1]).then(weeklyRank).then(r=>{if(r&&!run)$('d').textContent+='\n🌍 Weekly rank: #'+r});if(w){wins++;try{if(DB)ud('profile').set({name:pname,wins}).catch(()=>{});DB.collection('leaderboard').doc(UID).set({name:pname,wins}).catch(()=>{})}catch(_){}}
+function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+10+5*c.l,0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;
+(mp?Promise.resolve(0):submitScore(R[p-1][1])).then(()=>mp?0:weeklyRank()).then(r=>{if(r&&!run)$('d').textContent+='\n🌍 Weekly rank: #'+r});if(w&&!mp){wins++;try{if(DB)ud('profile').set({name:pname,wins}).catch(()=>{});DB.collection('leaderboard').doc(UID).set({name:pname,wins}).catch(()=>{})}catch(_){}}
 document.getElementById('t').textContent=w?'Season won! 🏆':'Season over · you placed #'+p;
-document.getElementById('d').textContent=R.map((r,i)=>(i+1)+'. '+r[0]+(r[2]>1&&ghosts[r[2]-2].g?' 👻':'')+' — '+r[1]+' pts').join('\\n')+(w?'\\nVictories: '+wins:'');
-play.textContent='New season';mode=2;$('lbb').style.display='';nw.style.display='none';nm.style.display='none';play.style.display='';ov.classList.remove('hide')}
+document.getElementById('d').textContent=R.map((r,i)=>(i+1)+'. '+r[0]+(r[2]>1&&!mp&&ghosts[r[2]-2].g?' 👻':'')+' — '+r[1]+' pts').join('\\n')+(w?'\\nVictories: '+wins:'');
+play.textContent='New season';mode=2;$('lbb').style.display='';$('mpb').style.display='';nw.style.display='none';nm.style.display='none';play.style.display='';ov.classList.remove('hide')}
 function col(o){return o===1?css('--me'):o===2?css('--foe'):o===3?css('--foe2'):o===4?'#d98a1a':css('--neu')}
 function castle(x,y,o,t,on){const ink=css('--ink'),f=col(o);
 if(on){g.strokeStyle=css('--ring');g.lineWidth=4;g.beginPath();g.ellipse(x,y+2,31,27,0,0,7);g.stroke()}
@@ -146,9 +147,9 @@ g.fillStyle=f;g.beginPath();g.moveTo(bx,by+30);g.lineTo(bx+30,by+30);g.lineTo(bx
 g.fillStyle='#fff';g.font='bold 15px Georgia,serif';g.fillText(Math.floor(t),x,by+38)}
 let TER=null,TS=1,T=0,tgt=-1,curLv=1,curMain=0,curTp=0,curT=0,lastCP='';
 const spd=n=>Math.max(25,90/Math.sqrt(1+n/60)),prot=c=>!!c.main,OW=['Neutral','You','Red lord','Purple lord','Orange lord'];
-function upg(){const c=cities[sel];if(!c||c.o!==1||c.l>=5)return;const k=20*c.l*c.l;if(gold<k)return;gold-=k;c.l++}
+function upg(){const c=cities[sel];if(!c||c.o!==1||c.l>=5)return;const k=20*c.l*c.l;if(gold<k)return;gold-=k;c.l++;cmd({t:'u',c:sel})}
 let pickN=0,uiT=0,ui=1;
-function setMain(){const c=cities[sel];if(!c||c.o!==1||c.main)return;if(T<mainReady||gold<mainCost)return;gold-=mainCost;cities.forEach(d=>{if(d.o===1)d.main=0});c.main=1;mainReady=T+DAY*2;toast('👑 Main castle moved\nNext move in 2 days')}
+function setMain(){const c=cities[sel];if(!c||c.o!==1||c.main)return;if(T<mainReady||gold<mainCost)return;gold-=mainCost;cities.forEach(d=>{if(d.o===1)d.main=0});c.main=1;cmd({t:'m',c:sel});mainReady=T+DAY*2;toast('👑 Main castle moved\nNext move in 2 days')}
 function doSend(){openPick()}
 function openPick(){if(sel<0||tgt<0)return;const S=cities[sel],D=cities[tgt],m=Math.floor(S.t);if(S.o!==1||m<1||(D.o!==1&&prot(D)))return;pkr.min=1;pkr.max=m;pkr.value=Math.max(1,Math.round(m*pct.value/100));pk.style.display='block';updPick()}
 function updPick(){const S=cities[sel],D=cities[tgt];pickN=+pkr.value;pkv.textContent=pickN+' / '+pkr.max;pkt.textContent=(D.o===1?'Reinforce your castle':'Attack '+OW[D.o]+' castle')}
@@ -161,7 +162,7 @@ let mbtn=[],aim=false,islands=[],glide=null,showMap=false,MM=null,tt,seasonT=0,r
 function cellOf(k){if(!k)return[0,0];let x=0,y=0,dx=0,dy=-1;for(let i=0;i<k;i++){if(x===y||(x<0&&x===-y)||(x>0&&x===1-y)){const t=dx;dx=-dy;dy=t}x+=dx;y+=dy}return[x,y]}
 function toast(m){const e=document.getElementById("toast");e.textContent=m;e.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>e.style.opacity=0,3800)}
 
-function chkIsl(){if(!islands.length||cities.some(c=>c.o===0))return;const q=spawnIsl(islands.length);toast("🏝️ A new island rises!\nNew neutral castles to capture");glide={x:q.x-W/Z/2,y:q.y-H/Z/2}}
+function chkIsl(){if(NET&&NET.role==='g')return;if(!islands.length||cities.some(c=>c.o===0))return;const q=spawnIsl(islands.length);toast("🏝️ A new island rises!\nNew neutral castles to capture");glide={x:q.x-W/Z/2,y:q.y-H/Z/2}}
 function hexb(x,y,r,c,ic,lb,dis){g.save();g.globalAlpha=dis?.5:1;g.beginPath();for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/2;g.lineTo(x+r*Math.cos(a),y+r*Math.sin(a))}g.closePath();g.fillStyle=c;g.fill();g.lineWidth=3;g.strokeStyle='#0f1c3d';g.stroke();g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.font=Math.round(r*.9)+'px serif';g.fillText(ic,x,y);if(lb){g.font='bold 12px Georgia,serif';const w=g.measureText(lb).width+12;g.fillStyle='#0f1c3d';g.beginPath();g.roundRect(x-w/2,y+r-8,w,17,7);g.fill();g.fillStyle='#fff';g.fillText(lb,x,y+r+1)}g.restore()}
 function drawMenu(){mbtn=[];const S=sel>=0?cities[sel]:null;if(tgt>=0&&!(S&&S.o===1))tgt=-1;const ai=tgt>=0?tgt:sel;if(ai<0)return;
 if(aim&&tgt<0){const bw=Math.min(W-24,300),bx=W/2-bw/2,by=H-76;g.save();g.fillStyle='#17469a';g.strokeStyle='#e0b24a';g.lineWidth=3;g.beginPath();g.roundRect(bx,by,bw,48,14);g.fill();g.stroke();g.fillStyle='#fff';g.textAlign='left';g.textBaseline='middle';g.font='bold 15px Georgia,serif';g.fillText('⚔️ Tap a castle to attack',bx+14,by+24);g.fillStyle='#b8332b';g.beginPath();g.arc(bx+bw-28,by+24,18,0,7);g.fill();g.strokeStyle='#fff';g.lineWidth=2;g.stroke();g.fillStyle='#fff';g.textAlign='center';g.fillText('✕',bx+bw-28,by+25);g.restore();mbtn.push({x:bx+bw-28,y:by+24,r:26,id:'canaim',dis:0});return}
@@ -320,8 +321,8 @@ if(tab===2)QS.forEach((q,i)=>{const v=Math.min(q[2],q[1]()),done=v>=q[2];h+=`<di
 if(tab===3){const i=league(),nx=LG[i+1];h+=`<div class="row"><div><b>${LG[i][0]} league</b><br>Victories: ${wins}${nx?'<br>Next: '+nx[0]+' at '+nx[1]+' victories':'<br>Top league reached'}</div></div>`;
 LG.forEach((l,k)=>{h+=`<div class="row"><div>${k<=i?'● ':'○ '}${l[0]} · ${l[1]}+ victories</div></div>`})}
 sheet.innerHTML=h}
-function buy(k){const c=15+15*lv[k];if(gold>=c&&lv[k]<5){gold-=c;lv[k]++;render()}}
-function craft(k){const s=IT.find(i=>i[0]===k);if(gold>=s[3]&&!own[k]){gold-=s[3];own[k]=1;render()}}
+function buy(k){const c=15+15*lv[k];if(gold>=c&&lv[k]<5){gold-=c;lv[k]++;pushPl();render()}}
+function craft(k){const s=IT.find(i=>i[0]===k);if(gold>=s[3]&&!own[k]){gold-=s[3];own[k]=1;pushPl();render()}}
 function claim(i){if(!claimed[i]&&QS[i][1]()>=QS[i][2]){claimed[i]=1;gold+=QS[i][3];render()}}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{const t=+b.dataset.t;tab=tab===t?-1:t;
 document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',+x.dataset.t===tab));sheet.classList.toggle('open',tab>=0);if(tab>=0)render();setTimeout(size,0)});
@@ -330,8 +331,8 @@ let DB=null,UID=null,PROF=null,SAVE=null,mode=2,LBD=[],ghosts=[],RG=Math.random,
 function curWeek(){return Math.floor(Date.now()/604800000)}
 function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const GDEF=['Red lord','Purple lord','Orange lord'];
-function pickGhosts(){const me=(PROF&&PROF.name||pname||'').toLowerCase(),pool=LBD.filter(d=>d.name&&String(d.name).toLowerCase()!==me).sort(()=>Math.random()-.5).slice(0,3);ghosts=[0,1,2].map(i=>pool[i]?{n:String(pool[i].name),w:+pool[i].wins||0,g:1}:{n:GDEF[i],w:0,g:0});applyGhosts()}
-function applyGhosts(){if(!ghosts||ghosts.length<3)ghosts=GDEF.map(n=>({n,w:0,g:0}));ghosts.forEach((h,i)=>OW[i+2]=h.n+'’s')}
+function pickGhosts(){if(NET){applyGhosts();return}const me=(PROF&&PROF.name||pname||'').toLowerCase(),pool=LBD.filter(d=>d.name&&String(d.name).toLowerCase()!==me).sort(()=>Math.random()-.5).slice(0,3);ghosts=[0,1,2].map(i=>pool[i]?{n:String(pool[i].name),w:+pool[i].wins||0,g:1}:{n:GDEF[i],w:0,g:0});applyGhosts()}
+function applyGhosts(){if(!ghosts||ghosts.length<3)ghosts=GDEF.map(n=>({n,w:0,g:0}));if(NET&&NET.nl)ghosts=NET.nl.slice(1).map(n=>({n,w:0,g:0}));ghosts.forEach((h,i)=>OW[i+2]=h.n+'’s')}
 const gboost=o=>{const h=ghosts[o-2];return h?1+Math.min(.3,.02*h.w):1};
 const $=i=>document.getElementById(i),ud=k=>DB.collection('users').doc(UID).collection('d').doc(k);
 const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
@@ -348,19 +349,19 @@ L.innerHTML=h||'<p>No scores yet. Be the first!</p>';M.textContent=me?'Your rank
 $('lbb').onclick=()=>lbShow('w');$('lbx').onclick=()=>$('lbp').classList.remove('on');$('lbp').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lbShow(b.dataset.k));
 function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,stats,claimed,seasonT,mainReady,T,Z,cam,ghosts,SEEDK},(k,v)=>k==='cv'?undefined:v)}
 const LK=()=>'cl_save_'+UID;
-function saveLocal(){if(!UID||!run)return;try{localStorage.setItem(LK(),JSON.stringify({s:snap(),at:Date.now()}))}catch(_){}}
-function saveNow(){if(!UID||!run)return;const s=snap(),at=Date.now();try{localStorage.setItem(LK(),JSON.stringify({s,at}))}catch(_){}if(!DB)return;try{ud('save').set({s,at}).catch(()=>{})}catch(_){}}
+function saveLocal(){if(!UID||!run||NET)return;try{localStorage.setItem(LK(),JSON.stringify({s:snap(),at:Date.now()}))}catch(_){}}
+function saveNow(){if(!UID||!run||NET)return;const s=snap(),at=Date.now();try{localStorage.setItem(LK(),JSON.stringify({s,at}))}catch(_){}if(!DB)return;try{ud('save').set({s,at}).catch(()=>{})}catch(_){}}
 function loadGame(d){size();closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;stats=d.stats;claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;ghosts=d.ghosts||[];applyGhosts();SEEDK=d.SEEDK||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
 function startGame(d){if(d){try{loadGame(d)}catch(_){gen()}}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');run=true;last=performance.now();requestAnimationFrame(loop);if(ghosts.some(h=>h.g))toast('👻 Rival lords this season:\n'+ghosts.map(h=>h.n).join(' · '))}
 function menu(){const a=$('t'),b=$('d');nm.style.display=PROF?'none':'';nw.style.display='none';play.style.display='';mode=PROF?(SAVE?1:2):0;
 if(!PROF){a.textContent='Conquest Lords';b.textContent='Register your lord name to begin. Your kingdom is saved to your account, so you always continue where you left off.'}
 else if(SAVE){a.textContent='Welcome back, '+PROF.name;b.textContent='Your kingdom is waiting. Day '+Math.min(13,Math.floor((SAVE.seasonT||0)/DAY)+1)+' of 13.';nw.style.display=''}
 else{a.textContent='Welcome, '+PROF.name;b.textContent='Everyone plays the same islands this week. Build your kingdom and climb the leaderboard.'}
-play.textContent=['Register & play','Continue','Play'][mode];$('lbb').style.display=''}
+play.textContent=['Register & play','Continue','Play'][mode];$('lbb').style.display='';$('mpb').style.display=PROF?'':'none'}
 play.onclick=async()=>{fs();if(mode===0){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.focus();return}PROF={name:n,wins:0};try{await ud('profile').set(PROF)}catch(_){}}
 pname=PROF.name;OW[1]=pname;startGame(mode===1?SAVE:null)};
 nw.onclick=()=>{fs();SAVE=null;try{localStorage.removeItem(LK())}catch(_){}try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGame(null)};
-setInterval(saveLocal,10000);setInterval(()=>{if(run&&window.MYP>0)submitScore(window.MYP)},20000);setInterval(saveNow,60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
+setInterval(saveLocal,10000);setInterval(()=>{if(run&&!NET&&window.MYP>0)submitScore(window.MYP)},20000);setInterval(saveNow,60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 play.style.display='none';nm.style.display='none';$('d').textContent='Signing in…';
 async function loadLb(){try{const q=await DB.collection('leaderboard').orderBy('wins','desc').limit(20).get();LBD=q.docs.map(d=>d.data());$('a_lb').textContent=q.empty?'':'🏆 Top lords\n'+q.docs.slice(0,10).map((d,i)=>(i+1)+'. '+d.data().name+' — '+d.data().wins).join('\n')}catch(_){}}
 (async()=>{const T1=$('t'),D1=$('d'),msg=t=>$('a_msg').textContent=t||'';
@@ -374,11 +375,54 @@ $('a_go').onclick=()=>{msg();auth.signInWithPopup(new firebase.auth.GoogleAuthPr
 $('a_fp').onclick=e=>{e.preventDefault();if(!em()){msg('Enter your email first.');return}auth.sendPasswordResetEmail(em()).then(()=>msg('Password reset email sent.')).catch(fail)};
 $('a_so').onclick=()=>{saveNow();setTimeout(()=>{run=false;auth.signOut()},600)};
 auth.onAuthStateChanged(async u=>{
-if(!u){UID=null;PROF=null;SAVE=null;run=false;ov.classList.remove('hide');T1.textContent='Conquest Lords';D1.textContent='Sign in or create an account to play.';play.style.display='none';nm.style.display='none';nw.style.display='none';$('a_so').style.display='none';$('lbb').style.display='none';$('au').style.display='flex';msg();loadLb();return}
+if(!u){UID=null;PROF=null;SAVE=null;run=false;ov.classList.remove('hide');T1.textContent='Conquest Lords';D1.textContent='Sign in or create an account to play.';play.style.display='none';nm.style.display='none';nw.style.display='none';$('a_so').style.display='none';$('lbb').style.display='none';$('mpb').style.display='none';$('au').style.display='flex';msg();loadLb();return}
 $('au').style.display='none';D1.textContent='Loading…';UID=u.uid;
 try{const[p,sv]=await Promise.all([ud('profile').get(),ud('save').get()]);PROF=p.exists?p.data():null;SAVE=null;let cAt=0;if(sv.exists){try{SAVE=JSON.parse(sv.data().s);cAt=+sv.data().at||0}catch(_){}}try{const L=JSON.parse(localStorage.getItem(LK())||'null');if(L&&L.s&&(+L.at||0)>cAt){SAVE=JSON.parse(L.s)}}catch(_){}wins=PROF?(+PROF.wins||0):0}
 catch(e){D1.textContent='Could not load your account. Check your connection.';return}
 menu();$('a_so').style.display='';loadLb()})})();
+
+/* ===== LIVE MULTIPLAYER: host runs the sim, guests send commands and get snapshots ===== */
+const RR=()=>DB.collection('rooms'),HU=o=>o===1||!!HUM[o],cmd=m=>{if(NET&&NET.role==='g')NET.out(m)};
+const PS=o=>o===1?{lv,own}:(NET&&NET.pl&&NET.pl[o])||{lv:{gl:0,al:0,dl:0},own:{}};
+const NOLV={gl:0,al:0,dl:0};
+function mpStop(){unsubs.forEach(f=>{try{f()}catch(_){}});unsubs=[];NET=null;HUM={}}
+function mpShow(on,t){$('mp').classList.toggle('on',on);if(t!=null)$('mpl').textContent=t}
+function pushPl(){if(!NET||NET.role!=='g'||!NET.me)return;NET.me.set({lv,own,at:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(()=>{})}
+function ctl(a,b,c,d){$('mph').style.display=a;$('mpj').style.display=a;$('mpc').style.display=a;$('mps').style.display=b}
+function pubSnap(){const t=Date.now();for(const o in HUM){const p=NET.pl[o];if(p&&p.at&&t-p.at>45000)delete HUM[o]}
+const s={ni:islands.length,T:+T.toFixed(2),st:+seasonT.toFixed(1),c:cities.map(c=>[c.o,c.l,+c.t.toFixed(1),c.main?1:0,c.tp?1:0]),a:armies.map(a=>[a.f,a.to,a.o,a.n,+a.p.toFixed(3),+a.d.toFixed(2)]),cp:[1,2,3,4].map(o=>CP[o]||0)};
+NET.ref.collection('live').doc('s').set({j:JSON.stringify(s),at:t}).catch(()=>{})}
+function hcmd(m){const k=m.s;if(!HUM[k])return;
+if(m.t==='s'){const c=cities[m.f];if(c&&c.o===k)send(m.f,m.to,m.fr)}
+else if(m.t==='u'){const c=cities[m.c];if(c&&c.o===k&&c.l<5)c.l++}
+else if(m.t==='m'){const c=cities[m.c];if(c&&c.o===k&&!c.main){cities.forEach(d=>{if(d.o===k)d.main=0});c.main=1}}}
+function applySnap(s){if(!NET||NET.role!=='g'||!islands.length)return;const k=NET.slot,sw=o=>o===1?k:o===k?1:o;
+let nw0=0;while(islands.length<s.ni){spawnIsl(islands.length);nw0=1}if(nw0)toast('🏝️ A new island rises!');
+s.c.forEach((v,i)=>{const c=cities[i];if(c){c.o=sw(v[0]);c.l=v[1];c.t=v[2];c.main=v[3];c.tp=v[4]}});
+armies=s.a.map(v=>({f:v[0],to:v[1],o:sw(v[2]),n:v[3],p:v[4],d:v[5]}));
+T=s.T;seasonT=s.st;stats.caps=s.cp[k-1]||0;
+if(!NET.cam){NET.cam=1;const m=cities.find(c=>c.o===1&&c.main)||cities.find(c=>c.o===1);if(m)cam={x:m.x-W/Z/2,y:m.y-H/Z/2+40}}}
+function startMP(){pname=PROF.name;OW[1]=pname;startGame(null);
+if(NET.role==='h'){unsubs.push(NET.ref.collection('cmds').onSnapshot(q=>q.docChanges().forEach(ch=>{if(ch.type==='added'&&run)hcmd(ch.doc.data())})))}
+else{NET.out=m=>{m.s=NET.slot;NET.ref.collection('cmds').add(m).catch(()=>{})};pushPl();const id=setInterval(pushPl,15000);unsubs.push(()=>clearInterval(id));
+unsubs.push(NET.ref.collection('live').doc('s').onSnapshot(d=>{if(d.exists&&run)try{applySnap(JSON.parse(d.data().j))}catch(_){}}))}}
+$('mpb').onclick=()=>{ctl('','none');mpShow(1,'Host a room and share the 4-letter code, or join a friend’s room.')};
+$('mpx').onclick=()=>{if(NET){if(NET.role==='g'&&NET.me)NET.me.delete().catch(()=>{});if(NET.role==='h')NET.ref.update({state:'closed'}).catch(()=>{})}mpStop();mpShow(0)};
+$('mph').onclick=async()=>{try{const code=Math.random().toString(36).slice(2,6).toUpperCase().padEnd(4,'X'),ref=RR().doc(code);
+await ref.set({host:UID,hn:PROF.name,state:'lobby',at:Date.now()});NET={role:'h',code,ref,pl:{},slots:{},guests:[]};ctl('none','');
+mpShow(1,'Room code: '+code+'\n\nWaiting for players…');
+unsubs.push(ref.collection('players').onSnapshot(q=>{if(!NET)return;const gs=[];q.docs.forEach(d=>{const v=d.data();gs.push({uid:d.id,name:String(v.name||'?').slice(0,14),j:+v.j||0});const sl=NET.slots[d.id];if(sl)NET.pl[sl]={lv:v.lv||NOLV,own:v.own||{},at:v.at&&v.at.toMillis?v.at.toMillis():Date.now()}});
+gs.sort((a,b)=>a.j-b.j);NET.guests=gs;if(!run)mpShow(1,'Room code: '+code+'\n\nPlayers ('+(Math.min(3,gs.length)+1)+'/4):\n'+[PROF.name].concat(gs.slice(0,3).map(x=>x.name)).join('\n')+'\n\nEmpty slots are filled by AI.')}))}catch(e){mpShow(1,'Could not create a room. Check your Firestore rules (see notes).')}};
+$('mps').onclick=()=>{const names=[PROF.name,'Red lord','Purple lord','Orange lord'],slots={};NET.guests.slice(0,3).forEach((p,i)=>{slots[p.uid]=i+2;names[i+1]=p.name;HUM[i+2]=1;NET.pl[i+2]={lv:NOLV,own:{},at:Date.now()}});
+NET.slots=slots;NET.names=names;NET.nl=names;NET.seed=curWeek();NET.ref.update({state:'playing',slots,names,seed:NET.seed}).catch(()=>{});mpShow(0);fs();startMP()};
+$('mpj').onclick=async()=>{const code=$('mpc').value.trim().toUpperCase();if(code.length<4)return;
+try{const ref=RR().doc(code),d=await ref.get();if(!d.exists||d.data().state!=='lobby'){mpShow(1,'Room not found, or the match already started.');return}
+const me=ref.collection('players').doc(UID);await me.set({name:PROF.name,j:Date.now(),lv:NOLV,own:{},at:firebase.firestore.FieldValue.serverTimestamp()});
+NET={role:'g',code,ref,me,pl:{}};ctl('none','none');mpShow(1,'Joined room '+code+'.\nWaiting for the host to start…');
+unsubs.push(ref.onSnapshot(sn=>{const r=sn.data();if(!r||!NET||NET.started)return;if(r.state==='closed'){mpShow(1,'The host closed the room.');return}
+if(r.state==='playing'){const k=r.slots&&r.slots[UID];if(!k){mpShow(1,'The room was full.');return}
+const sw=o=>o===1?k:o===k?1:o;NET.started=1;NET.slot=k;NET.seed=r.seed;NET.names=r.names;NET.nl=[1,2,3,4].map(o=>r.names[sw(o)-1]);mpShow(0);fs();startMP()}}))}catch(e){mpShow(1,'Could not join. Check the code and your connection.')}};
+
 size();
 </script>
 </body>
