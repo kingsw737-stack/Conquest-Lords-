@@ -329,7 +329,9 @@ let DB=null,UID=null,PROF=null,SAVE=null,mode=2;
 const $=i=>document.getElementById(i),ud=k=>DB.collection('users').doc(UID).collection('d').doc(k);
 const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
 function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,stats,claimed,seasonT,mainReady,T,Z,cam},(k,v)=>k==='cv'?undefined:v)}
-function saveNow(){if(!DB||!run)return;try{ud('save').set({s:snap(),at:Date.now()}).catch(()=>{})}catch(_){}}
+const LK=()=>'cl_save_'+UID;
+function saveLocal(){if(!UID||!run)return;try{localStorage.setItem(LK(),JSON.stringify({s:snap(),at:Date.now()}))}catch(_){}}
+function saveNow(){if(!UID||!run)return;const s=snap(),at=Date.now();try{localStorage.setItem(LK(),JSON.stringify({s,at}))}catch(_){}if(!DB)return;try{ud('save').set({s,at}).catch(()=>{})}catch(_){}}
 function loadGame(d){size();closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;stats=d.stats;claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
 function startGame(d){if(d){try{loadGame(d)}catch(_){gen()}}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');run=true;last=performance.now();requestAnimationFrame(loop)}
 function menu(){const a=$('t'),b=$('d');nm.style.display=PROF?'none':'';nw.style.display='none';play.style.display='';mode=PROF?(SAVE?1:2):0;
@@ -339,8 +341,8 @@ else{a.textContent='Welcome, '+PROF.name;b.textContent='Build your kingdom and w
 play.textContent=['Register & play','Continue','Play'][mode]}
 play.onclick=async()=>{fs();if(mode===0){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.focus();return}PROF={name:n,wins:0};try{await ud('profile').set(PROF)}catch(_){}}
 pname=PROF.name;OW[1]=pname;startGame(mode===1?SAVE:null)};
-nw.onclick=()=>{fs();SAVE=null;try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGame(null)};
-setInterval(saveNow,10000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
+nw.onclick=()=>{fs();SAVE=null;try{localStorage.removeItem(LK())}catch(_){}try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGame(null)};
+setInterval(saveLocal,10000);setInterval(saveNow,60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 play.style.display='none';nm.style.display='none';$('d').textContent='Signing in…';
 async function loadLb(){try{const q=await DB.collection('leaderboard').orderBy('wins','desc').limit(10).get();$('a_lb').textContent=q.empty?'':'🏆 Top lords\n'+q.docs.map((d,i)=>(i+1)+'. '+d.data().name+' — '+d.data().wins).join('\n')}catch(_){}}
 (async()=>{const T1=$('t'),D1=$('d'),msg=t=>$('a_msg').textContent=t||'';
@@ -356,7 +358,7 @@ $('a_so').onclick=()=>{saveNow();setTimeout(()=>{run=false;auth.signOut()},600)}
 auth.onAuthStateChanged(async u=>{
 if(!u){UID=null;PROF=null;SAVE=null;run=false;ov.classList.remove('hide');T1.textContent='Conquest Lords';D1.textContent='Sign in or create an account to play.';play.style.display='none';nm.style.display='none';nw.style.display='none';$('a_so').style.display='none';$('au').style.display='flex';msg();loadLb();return}
 $('au').style.display='none';D1.textContent='Loading…';UID=u.uid;
-try{const[p,sv]=await Promise.all([ud('profile').get(),ud('save').get()]);PROF=p.exists?p.data():null;SAVE=null;if(sv.exists){try{SAVE=JSON.parse(sv.data().s)}catch(_){}}wins=PROF?(+PROF.wins||0):0}
+try{const[p,sv]=await Promise.all([ud('profile').get(),ud('save').get()]);PROF=p.exists?p.data():null;SAVE=null;let cAt=0;if(sv.exists){try{SAVE=JSON.parse(sv.data().s);cAt=+sv.data().at||0}catch(_){}}try{const L=JSON.parse(localStorage.getItem(LK())||'null');if(L&&L.s&&(+L.at||0)>cAt){SAVE=JSON.parse(L.s)}}catch(_){}wins=PROF?(+PROF.wins||0):0}
 catch(e){D1.textContent='Could not load your account. Check your connection.';return}
 menu();$('a_so').style.display='';loadLb()})})();
 size();
