@@ -164,6 +164,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 .bnf button:active{transform:translateY(2px)}
 
 /* ===== Profile + HUD layout ===== */
+#sndb{position:fixed;right:8px;top:calc(env(safe-area-inset-top,0px) + 50px);z-index:12;width:36px;height:36px;border-radius:50%;border:2px solid #e0b24a;background:linear-gradient(#2e4c92,#0f1c3d);color:#fff;font-size:17px;padding:0;line-height:1;box-shadow:0 3px 6px rgba(0,0,0,.45)}
 #pf{position:fixed;left:6px;top:calc(env(safe-area-inset-top,0px) + 4px);z-index:4;display:flex;align-items:flex-start;cursor:pointer;-webkit-user-select:none;user-select:none}
 #pfb{position:relative;z-index:2;width:46px;height:60px;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.55))}
 #pf .pl{position:relative;z-index:1;margin:4px 0 0 -16px;width:116px;height:38px;padding:3px 8px 3px 20px;border-radius:0 14px 14px 0;border:2px solid #e0b24a;background:linear-gradient(#2e4c92,#0f1c3d);box-shadow:0 3px 6px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.22);display:flex;flex-direction:column;justify-content:center;color:#fff}
@@ -185,8 +186,10 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 </div>
 <div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><button data-k="w" class="on">This week</button><button data-k="a">All-time</button><button id="lbx">✕</button></div><div id="lbi"></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="ver" style="position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);text-align:center;font:11px Georgia,serif;color:rgba(255,255,255,.55);z-index:11;pointer-events:none">version 3 · Nov 11</div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Back to main city">🏠</button><button id="mmb">🗺</button><button id="lbz" onclick="lbShow('w')">🏆</button><button id="rgb" title="Regroup all troops to main city">📯</button></div>
 <div id="ov"><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When every neutral castle is taken, a new island rises from the clouds. A season lasts 13 days: the lord with the most kingdom points wins.</p><div id="bnrow"><canvas id="bnp" width="64" height="84"></canvas><div class="bnrb"><button id="bne">Design banner</button><button id="bnrn" title="Random banner">🎲</button></div></div><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>/* PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app) */
+/* Optional but recommended: paste your Realtime Database URL here for a free, truly live leaderboard. */
+const RDB_URL="";
 const FIREBASE_CONFIG={apiKey:"AIzaSyAXXAi5J4KNCfsfZDjRRqMZekNZHSRTzEk",authDomain:"conquers-c9bfd.firebaseapp.com",projectId:"conquers-c9bfd",appId:"1:668836838322:web:eba1f6eccf116dc92ac2ab"};</script>
 <script>
 let C=document.getElementById('c'),g=C.getContext('2d'),ov=document.getElementById('ov'),sheet=document.getElementById('sheet');
@@ -228,10 +231,10 @@ islands.slice(0,-1).forEach(o=>{if(Math.hypot(o.x-s.x,o.y-s.y)<CW*1.3)bridges.pu
 return s}
 function gen(){size();SEEDK=NET&&NET.seed!=null?NET.seed:curWeek();aiBanners(NET&&NET.seed!=null?NET.seed:(Math.random()*1e9|0));CP=[];seasonT=0;respT=0;regT=-99;cam={x:0,y:0};Z=1;cities=[];armies=[];sel=-1;T=0;tgt=-1;gold=0;lv={gl:0,al:0,dl:0};own={};stats={caps:0,sent:0,earned:0};claimed=[];glide=null;islands=[];bridges=[];mainReady=0;closePick();
 pickGhosts();buildSky();spawnIsl(0);sand=[];mtn=[];trees=[];cam={x:cities[0].x-W/2,y:cities[0].y-H/2+40}}
-function send(f,t,fr=.5){const a=cities[f],b=cities[t],n=Math.floor(a.t*fr);if(n<1||!islands[a.isl].open||!islands[b.isl].open||(a.o!==b.o&&prot(b)))return;a.t-=n;if(a.o===1)stats.sent++;cmd({t:'s',f,to:t,fr});
+function send(f,t,fr=.5){const a=cities[f],b=cities[t],n=Math.floor(a.t*fr);if(n<1||!islands[a.isl].open||!islands[b.isl].open||(a.o!==b.o&&prot(b)))return;a.t-=n;if(a.o===1){stats.sent++;SFX.play('march')}else if(b.o===1&&a.o!==1)SFX.warn();cmd({t:'s',f,to:t,fr});
 const[ax,ay]=WP(a),[bx,by]=WP(b);armies.push({f,to:t,o:a.o,n,p:0,d:Math.hypot(ax-bx,ay-by)/spd(n)*(HU(a.o)?1:1.6)})}
-function arrive(a){const c=cities[a.to];if(c.o===a.o){c.t+=a.n;return}if(c.main)return;
-const df=1+dfL(c.l)+(HU(c.o)?dm(c.o)-1:0),dmg=(HU(a.o)?a.n*am(a.o):a.n)/df;c.t-=dmg;if(c.t<0){CP[a.o]=(CP[a.o]||0)+1;if(a.o===1)stats.caps++;c.o=a.o;c.main=0;c.t=-c.t;c.l=Math.max(1,c.l-Math.max(1,Math.round(c.l*.2)))}}
+function arrive(a){const c=cities[a.to];if(c.o===a.o){c.t+=a.n;if(a.o===1)SFX.play('reinforce');return}if(c.main)return;const po=c.o;
+const df=1+dfL(c.l)+(HU(c.o)?dm(c.o)-1:0),dmg=(HU(a.o)?a.n*am(a.o):a.n)/df;c.t-=dmg;if(c.t<0){CP[a.o]=(CP[a.o]||0)+1;if(a.o===1)stats.caps++;c.o=a.o;c.main=0;c.t=-c.t;c.l=Math.max(1,c.l-Math.max(1,Math.round(c.l*.2)));SFX.hit(po,a.o,1)}else SFX.hit(po,a.o,0)}
 function ai(){cities.forEach((s,i)=>{if(HUM[s.o])return;{const aiMax=Math.min(MAXL,3+Math.floor(seasonT/DAY)*2),uc=Math.ceil(upCost(s.l)/3);if(s.o>=2&&s.l<aiMax&&s.t>uc+15&&Math.random()<.05){s.t-=uc;s.l++}}if(s.o<2||s.t<30||Math.random()<.5||!islands[s.isl].open)return;const sx=s.x,sy=s.y;let best=-1,bd=1e9;
 cities.forEach((c,j)=>{if(c.o===s.o||prot(c)||!islands[c.isl].open)return;const cx=c.x,cy=c.y,d=Math.hypot(cx-sx,cy-sy);if(c.t*1.1*(1+dfL(c.l)+(HU(c.o)?dm(c.o)-1:0))<s.t/3&&d<bd){bd=d;best=j}});if(best>=0)send(i,best,.4)})}
 function upd(dt){const G=NET&&NET.role==='g';T+=dt;chkIsl();islands.forEach(q=>{q.grow=Math.min(1,q.grow+dt*.7)});if(glide){cam.x+=(glide.x-cam.x)*Math.min(1,dt*2.2);cam.y+=(glide.y-cam.y)*Math.min(1,dt*2.2);if(Math.hypot(glide.x-cam.x,glide.y-cam.y)<4)glide=null}
@@ -248,7 +251,7 @@ if(seasonT>=13*DAY)end();
 if(ui){document.getElementById('g').textContent=Math.floor(gold);if(typeof updPf==='function')updPf();document.getElementById('tr').textContent=Math.floor(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0));
 document.getElementById('n').textContent=mine;
 {const l=Math.ceil(REG_CD-(T-regT)),b=rgb;if(l>0){b.textContent=l;b.style.opacity=.55;b.style.fontSize='16px'}else{b.textContent='📯';b.style.opacity=1;b.style.fontSize=''}}panel()}}
-function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;
+function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;try{SFX.play(w?'win':'lose')}catch(_){}
 (mp?Promise.resolve(0):submitScore(R[p-1][1])).then(()=>mp?0:weeklyRank()).then(r=>{if(r&&!run)$('d').textContent+='\n🌍 Weekly rank: #'+r});if(w&&!mp){wins++;try{if(DB)ud('profile').set({name:pname,wins}).catch(()=>{});DB.collection('leaderboard').doc(UID).set({name:pname,wins}).catch(()=>{})}catch(_){}}
 document.getElementById('t').textContent=w?'Season won! 🏆':'Season over · you placed #'+p;
 document.getElementById('d').textContent=R.map((r,i)=>(i+1)+'. '+r[0]+(r[2]>1&&!mp&&ghosts[r[2]-2].g?' 🤖':'')+' — '+r[1]+' pts').join('\n')+(w?'\nVictories: '+wins:'');
@@ -306,7 +309,7 @@ g.fillStyle=f;g.beginPath();g.moveTo(bx,by+30);g.lineTo(bx+30,by+30);g.lineTo(bx
 g.fillStyle='#fff';g.font='bold 15px Georgia,serif';g.fillText(Math.floor(t),x,by+38)}
 let ALR=new Set(),alT=-99,TER=null,TS=1,T=0,tgt=-1,curLv=1,curRL=0,curMain=0,curTp=0,curT=0,lastCP='';
 const spd=n=>Math.max(25,90/Math.sqrt(1+n/60)),prot=c=>!!c.main,OW=['Neutral','You','Red lord','Purple lord','Orange lord'];
-function upg(){const c=cities[sel];if(!c||c.o!==1||c.l>=MAXL)return;const k=upCost(c.l);if(gold<k)return;gold-=k;c.l++;cmd({t:'u',c:sel})}
+function upg(){const c=cities[sel];if(!c||c.o!==1||c.l>=MAXL)return;const k=upCost(c.l);if(gold<k)return;gold-=k;c.l++;SFX.play('upgrade');cmd({t:'u',c:sel})}
 let pickN=0,uiT=0,ui=1,regT=-99;const REG_CD=40;
 function setMain(){const c=cities[sel];if(!c||c.o!==1||c.main)return;if(T<mainReady||gold<mainCost)return;gold-=mainCost;cities.forEach(d=>{if(d.o===1)d.main=0});c.main=1;cmd({t:'m',c:sel});mainReady=T+DAY*2;toast('👑 Main castle moved\nNext move in 2 days')}
 function doSend(){openPick()}
@@ -533,16 +536,20 @@ const gboost=o=>.6;
 const $=i=>document.getElementById(i),ud=k=>DB.collection('users').doc(UID).collection('d').doc(k);
 const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
 
-async function submitScore(score){try{if(UID){const k='cl_best_'+curWeek()+'_'+UID;if(score>(+localStorage.getItem(k)||0))localStorage.setItem(k,score)}}catch(_){}if(!DB||!UID)return;try{const ref=DB.collection('weekly').doc(String(SEEDK)).collection('scores').doc(UID),o=await ref.get();if(!o.exists||(+o.data().score||0)<score)await ref.set({name:pname,score,at:Date.now()})}catch(_){}}
-async function weeklyRank(){try{const q=await DB.collection('weekly').doc(String(SEEDK)).collection('scores').orderBy('score','desc').limit(100).get(),i=q.docs.findIndex(x=>x.id===UID);return i<0?0:i+1}catch(_){return 0}}
+async function submitScore(score){try{if(UID){const k='cl_best_'+curWeek()+'_'+UID;if(score>(+localStorage.getItem(k)||0))localStorage.setItem(k,score)}}catch(_){}if(!DB||!UID)return;const R=rdb();if(R){try{R.ref('scores/'+SEEDK+'/'+UID).transaction(c=>c&&(+c.score||0)>=score?undefined:{name:pname,score,at:Date.now()})}catch(_){}return}try{const ref=DB.collection('weekly').doc(String(SEEDK)).collection('scores').doc(UID),o=await ref.get();if(!o.exists||(+o.data().score||0)<score)await ref.set({name:pname,score,at:Date.now()})}catch(_){}}
+async function weeklyRank(){try{const R=rdb();if(R){const x=await R.ref('scores/'+SEEDK).orderByChild('score').limitToLast(100).once('value'),a=[];x.forEach(c=>{a.push([c.key,+(c.val()||{}).score||0])});a.sort((p,q)=>q[1]-p[1]);const i=a.findIndex(v=>v[0]===UID);return i<0?0:i+1}const q=await DB.collection('weekly').doc(String(SEEDK)).collection('scores').orderBy('score','desc').limit(100).get(),i=q.docs.findIndex(x=>x.id===UID);return i<0?0:i+1}catch(_){return 0}}
 let lbTab='w',subT=14;
 /* ---- live leaderboard: Firestore snapshot listeners, redrawn every second ---- */
 const LBS={w:{un:null,key:'',data:[],err:0,ok:0,retry:0},a:{un:null,key:'',data:[],err:0,ok:0,retry:0}};
-function lbSub(t){const S=LBS[t];if(!DB)return;const key=t==='w'?'w'+curWeek():'a';if(S.un&&S.key===key)return;if(S.un){try{S.un()}catch(_){}S.un=null}
-if(Date.now()<S.retry)return;S.key=key;S.data=[];S.ok=0;
-try{const q=t==='w'?DB.collection('weekly').doc(String(curWeek())).collection('scores').orderBy('score','desc').limit(100):DB.collection('leaderboard').orderBy('wins','desc').limit(50);
-S.un=q.onSnapshot(x=>{S.err=0;S.ok=1;S.data=x.docs.map(d=>({id:d.id,name:d.data().name,score:+d.data().score||0,wins:+d.data().wins||0}));lbDraw()},
-e=>{S.err=1;try{S.un&&S.un()}catch(_){}S.un=null;S.retry=Date.now()+5000;lbDraw()})}catch(_){S.err=1;S.retry=Date.now()+5000}}
+let RDBI=null;function rdb(){if(RDBI)return RDBI;try{if(RDB_URL&&firebase.database)RDBI=firebase.app().database(RDB_URL)}catch(_){}return RDBI}
+function lbSub(t){const S=LBS[t];if(!DB)return;const wk=t==='w',key=wk?'w'+curWeek():'a',R=wk?rdb():null;
+if(R){if(S.un&&S.key===key)return;if(S.un){try{S.un()}catch(_){}S.un=null}S.key=key;S.data=[];S.ok=0;
+try{const q=R.ref('scores/'+curWeek()).orderByChild('score').limitToLast(50),f=q.on('value',x=>{const a=[];x.forEach(c=>{const v=c.val()||{};a.push({id:c.key,name:v.name,score:+v.score||0,wins:0})});S.err=0;S.ok=1;S.data=a;lbDraw()},e=>{S.err=1;lbDraw()});S.un=()=>q.off('value',f)}catch(_){S.err=1}return}
+/* free fallback: poll Firestore with small reads, only while the panel is open */
+if(S.key!==key){S.key=key;S.data=[];S.ok=0;S.next=0}
+if(S.busy||Date.now()<S.next)return;S.busy=1;S.next=Date.now()+(wk?30000:60000);
+const q=wk?DB.collection('weekly').doc(String(curWeek())).collection('scores').orderBy('score','desc').limit(30):DB.collection('leaderboard').orderBy('wins','desc').limit(50);
+q.get().then(x=>{S.err=0;S.ok=1;S.data=x.docs.map(d=>({id:d.id,name:d.data().name,score:+d.data().score||0,wins:+d.data().wins||0}))}).catch(()=>{S.err=1;S.next=Date.now()+8000}).then(()=>{S.busy=0;lbDraw()})}
 function lbRows(t){const wk=t==='w',S=LBS[t];let rows=S.data.map(v=>Object.assign({},v));
 const bots=fakeBoard();if(wk&&run&&!NET&&window.BOTP)bots.slice(0,3).forEach((b,i)=>{if(window.BOTP[i]!=null)b.score=window.BOTP[i]});
 rows=rows.concat(bots);let me=rows.find(v=>v.id===UID);
@@ -555,12 +562,12 @@ let mr=0,h='';rows.slice(0,50).forEach((v,i)=>{const val=wk?v.score+' pts':v.win
 if(!mr&&me){const p=rows.indexOf(me)+1;h+='<div class="lr me"><span>'+p+'</span><b>'+esc(String(me.name))+'</b><em>'+(wk?me.score+' pts':me.wins+' 🏆')+'</em></div>'}
 const left=(curWeek()+1)*604800000-Date.now(),dd=Math.floor(left/864e5),hh=Math.floor(left%864e5/36e5);
 $('lbi').textContent=(wk?'Same world for every lord · resets in '+dd+'d '+hh+'h':'Season victories, all time')+' · 🤖 = AI lord';
-if(L.innerHTML!==h)L.innerHTML=h;M.textContent=(me?'Your rank: #'+(rows.indexOf(me)+1):'')+(S.err?'  ·  reconnecting to live scores…':'  ·  🟢 live')}
+if(L.innerHTML!==h)L.innerHTML=h;M.textContent=(me?'Your rank: #'+(rows.indexOf(me)+1):'')+(S.err?'  ·  reconnecting to live scores…':(rdb()&&wk?'  ·  🟢 live':'  ·  updates every 30s'))}
 function lbShow(k){lbTab=k||lbTab;const P=$('lbp');P.classList.add('on');P.querySelectorAll('[data-k]').forEach(b=>b.classList.toggle('on',b.dataset.k===lbTab));$('lbm').textContent='';lbSub(lbTab);lbDraw()}
 /* push my score quickly (only when it improves) and keep listeners alive */
-let lastSent=0,lastSentWk=-1;
-function lbPush(){if(!DB||!UID||!run||NET||!(window.MYP>0))return;const wk=curWeek();if(wk!==lastSentWk){lastSentWk=wk;lastSent=0}if(window.MYP>lastSent){lastSent=window.MYP;submitScore(window.MYP)}}
-setInterval(()=>{try{if(DB&&UID){lbSub('w');if($('lbp').classList.contains('on'))lbSub(lbTab);lbPush();lbDraw()}}catch(_){}},1000);
+let lastSent=0,lastSentWk=-1,lastSentAt=0;
+function lbPush(){if(!DB||!UID||!run||NET||!(window.MYP>0))return;const wk=curWeek();if(wk!==lastSentWk){lastSentWk=wk;lastSent=0}if(window.MYP>lastSent&&Date.now()-lastSentAt>15000){lastSent=window.MYP;lastSentAt=Date.now();submitScore(window.MYP)}}
+setInterval(()=>{try{if(DB&&UID){const open=$('lbp').classList.contains('on');if(rdb()||open)lbSub('w');if(open)lbSub(lbTab);lbPush();lbDraw()}}catch(_){}},1000);
 setInterval(()=>{try{if(DB&&UID&&run&&!NET&&window.MYP>0)submitScore(window.MYP)}catch(_){}},30000);
 $('lbb').onclick=()=>lbShow('w');$('lbx').onclick=()=>{$('lbp').classList.remove('on');if(LBS.a.un){try{LBS.a.un()}catch(_){}LBS.a.un=null;LBS.a.key=''}};$('lbp').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lbShow(b.dataset.k));
 function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,stats,claimed,seasonT,mainReady,T,Z,cam,ghosts,SEEDK,bn:[BN[2],BN[3],BN[4]],savedAt:Date.now()},(k,v)=>k==='cv'?undefined:v)}
@@ -688,6 +695,71 @@ bnDraw($('bnp'),B());
 const again=()=>{if(!inFs())fs()};
 ['pointerup','click','touchend'].forEach(e=>document.addEventListener(e,again,{passive:true,capture:true}));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>{if(!inFs())fs()},0)});})();
+</script>
+<script>
+/* ===== SOUND: everything is synthesized (no audio files). Original medieval-style loop. ===== */
+const SFX=(()=>{
+let ctx=null,master,mus,fx,delayIn,mode=0,started=false,timer=null,nextT=0,step=0,loopN=0,lastHit=0,lastWarn=0;
+try{mode=+localStorage.getItem('cl_snd')||0}catch(_){}   /* 0 all on, 1 effects only, 2 muted */
+const mf=m=>440*Math.pow(2,(m-69)/12);
+const EIGHTH=.3;
+const MEL=[[69,0,72,69,67,0,65,64],[62,0,65,64,62,0,0,0],[69,0,72,74,76,0,74,72],[69,0,67,65,64,0,62,0],
+           [74,0,74,72,69,0,72,0],[71,0,69,67,69,0,0,0],[65,0,69,72,74,0,72,69],[67,65,64,62,62,0,0,0]];
+const BASS=[38,38,41,36,43,43,41,45];
+function init(){if(ctx)return true;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;ctx=new AC();
+master=ctx.createGain();master.gain.value=.9;const comp=ctx.createDynamicsCompressor();master.connect(comp);comp.connect(ctx.destination);
+mus=ctx.createGain();mus.gain.value=mode===0?.32:0;mus.connect(master);
+fx=ctx.createGain();fx.gain.value=mode===2?0:.7;fx.connect(master);
+/* soft echo for the music */
+delayIn=ctx.createGain();const d=ctx.createDelay(1),fb=ctx.createGain(),lp=ctx.createBiquadFilter();d.delayTime.value=.45;fb.gain.value=.3;lp.type='lowpass';lp.frequency.value=1800;
+delayIn.connect(d);d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(mus);return true}catch(_){ctx=null;return false}}
+function noise(dur){const n=Math.max(1,ctx.sampleRate*dur|0),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;const s=ctx.createBufferSource();s.buffer=b;return s}
+function env(g,t,a,peak,dec){g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(0.0001,t+a+dec)}
+function tone(o,type,f,t,a,peak,dec,out,f2,filt){const os=ctx.createOscillator(),g=ctx.createGain();os.type=type;os.frequency.setValueAtTime(f,t);if(f2)os.frequency.exponentialRampToValueAtTime(f2,t+dec);env(g,t,a,peak,dec);let n=os;if(filt){const bq=ctx.createBiquadFilter();bq.type='lowpass';bq.frequency.value=filt;os.connect(bq);n=bq}n.connect(g);g.connect(out||o);os.start(t);os.stop(t+a+dec+.05)}
+function thump(t,v,out){tone(null,'sine',130,t,.003,v,.22,out,45);const n=noise(.1),g=ctx.createGain(),f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=500;env(g,t,.002,v*.5,.08);n.connect(f);f.connect(g);g.connect(out);n.start(t);n.stop(t+.12)}
+function pluck(m,t,len,vel,out){const f=mf(m);tone(null,'triangle',f,t,.006,.5*vel,len*1.5,out,0,2600);tone(null,'sine',f*2,t,.004,.12*vel,len*.7,out);}
+function pad(m,t,len,out){[0,7,12].forEach(k=>{const os=ctx.createOscillator(),g=ctx.createGain(),bq=ctx.createBiquadFilter();os.type='sawtooth';os.frequency.value=mf(m+k+12);bq.type='lowpass';bq.frequency.value=520;g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(.045,t+len*.4);g.gain.linearRampToValueAtTime(0.0001,t+len+.2);os.connect(bq);bq.connect(g);g.connect(out);os.start(t);os.stop(t+len+.3)})}
+function sched(){if(!ctx||mode!==0)return;if(ctx.state!=='running')return;
+while(nextT<ctx.currentTime+.6){const bar=(step>>3)&7,i=step&7,t=nextT,v=MEL[bar][i];
+if(v){const o=loopN%2?12:0;pluck(v+o*(bar>3&&loopN%4>1?1:0),t,EIGHTH*2,.9,mus);pluck(v,t,EIGHTH*2,.35,delayIn)}
+if(i===0){pluck(BASS[bar],t,EIGHTH*6,.9,mus);pad(BASS[bar],t,EIGHTH*8,mus)}
+if(i===4)pluck(BASS[bar]+7,t,EIGHTH*3,.55,mus);
+if(i===0)thump(t,.5,mus);else if(i===4)thump(t,.3,mus);
+if(i===2||i===6)tone(null,'square',1900,t,.001,.025,.03,mus,0,4000);
+step++;if(step>=64){step=0;loopN++}nextT+=EIGHTH}}
+function start(){if(started||!init())return;started=true;nextT=ctx.currentTime+.1;timer=setInterval(sched,120)}
+function apply(){if(!ctx)return;mus.gain.setTargetAtTime(mode===0?.32:0,ctx.currentTime,.05);fx.gain.setTargetAtTime(mode===2?0:.7,ctx.currentTime,.05)}
+function wake(){if(!ctx)return;if(ctx.state!=='running'){ctx.resume().then(()=>{nextT=ctx.currentTime+.1}).catch(()=>{})}}
+function ok(){return ctx&&ctx.state==='running'&&mode!==2}
+const clash=(t,low)=>{const n=noise(.12),g=ctx.createGain(),f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=low?900:1800;env(g,t,.002,.35,.1);n.connect(f);f.connect(g);g.connect(fx);n.start(t);n.stop(t+.14);
+[1,1.5].forEach((k,j)=>tone(null,'square',(low?700:1150)*k*(1+Math.random()*.08),t,.001,.09/(j+1),.18,fx,0,5000))};
+const horn=(t,f,dur,vol)=>{[0,.012].forEach(dt=>{const os=ctx.createOscillator(),g=ctx.createGain(),bq=ctx.createBiquadFilter();os.type='sawtooth';os.frequency.setValueAtTime(f*(1+dt),t);bq.type='lowpass';bq.frequency.setValueAtTime(350,t);bq.frequency.linearRampToValueAtTime(1400,t+dur*.4);bq.frequency.linearRampToValueAtTime(500,t+dur);g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(vol,t+.06);g.gain.setValueAtTime(vol,t+dur*.7);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);os.connect(bq);bq.connect(g);g.connect(fx);os.start(t);os.stop(t+dur+.05)})};
+const brass=(t,f,d,v)=>tone(null,'sawtooth',f,t,.02,v,d,fx,0,1800);
+const SND={
+click(t){tone(null,'sine',720,t,.002,.12,.05,fx,520)},
+march(t){horn(t,196,.55,.16);thump(t+.02,.5,fx);thump(t+.3,.4,fx)},
+reinforce(t){tone(null,'triangle',660,t,.004,.2,.25,fx);tone(null,'triangle',880,t+.09,.004,.2,.3,fx)},
+upgrade(t){[0,.14].forEach(d=>{tone(null,'sine',280,t+d,.002,.35,.09,fx,160);const n=noise(.05),g=ctx.createGain();env(g,t+d,.001,.2,.04);n.connect(g);g.connect(fx);n.start(t+d);n.stop(t+d+.06)});[523,659,784].forEach((f,i)=>tone(null,'triangle',f,t+.32+i*.07,.004,.2,.35,fx))},
+warn(t){horn(t,147,.35,.2);horn(t+.45,147,.45,.2)},
+atk(t){clash(t,0);clash(t+.11,0);clash(t+.23,1)},                    /* my attack lands, castle holds */
+def(t){clash(t,1);thump(t+.02,.7,fx);clash(t+.15,0)},                 /* enemy attack bounces off my castle */
+conquer(t){clash(t,0);[392,494,587,784].forEach((f,i)=>brass(t+.2+i*.11,f,.45,.16));brass(t+.2+4*.11,988,.8,.18)},
+lost(t){clash(t,1);thump(t,.8,fx);[392,311,262,196].forEach((f,i)=>tone(null,'square',f,t+.2+i*.2,.02,.12,.4,fx,0,900))},
+win(t){[392,392,392,523,659,523,659,784].forEach((f,i)=>brass(t+i*.16,f,.5,.17));[523,659,784,1047].forEach(f=>brass(t+1.4,f,1.4,.1))},
+lose(t){[330,311,294,262,196].forEach((f,i)=>tone(null,'sawtooth',f,t+i*.35,.03,.14,.7,fx,0,700))}};
+function play(k){try{if(!ok())return;const t=ctx.currentTime+.01;if(SND[k])SND[k](t)}catch(_){}}
+function hit(po,ao,cap){try{if(!ok())return;const mine=po===1,att=ao===1;if(!mine&&!att)return;const n=performance.now();if(n-lastHit<120)return;lastHit=n;
+play(att?(cap?'conquer':'atk'):(cap?'lost':'def'))}catch(_){}}
+function warn(){const n=performance.now();if(n-lastWarn<6000)return;lastWarn=n;play('warn')}
+function cycle(){mode=(mode+1)%3;try{localStorage.setItem('cl_snd',mode)}catch(_){}apply();if(mode===0){start();wake()}return mode}
+const unlock=()=>{start();wake()};
+['pointerdown','touchend','click','keydown'].forEach(e=>document.addEventListener(e,unlock,{passive:true,capture:true}));
+document.addEventListener('visibilitychange',()=>{if(!ctx)return;if(document.hidden)ctx.suspend().catch(()=>{});else wake()});
+return{play,hit,warn,cycle,get mode(){return mode},unlock}})();
+(function(){const b=document.createElement('button');b.id='sndb';const ic=['🔊','🔉','🔇'];const up=()=>{b.textContent=ic[SFX.mode];b.title=['Music & effects','Effects only','Muted'][SFX.mode]};up();
+b.onclick=e=>{e.stopPropagation();SFX.cycle();up();SFX.play('click')};document.body.appendChild(b);
+document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('button')&&e.target.id!=='sndb')SFX.play('click')},{passive:true,capture:true})})();
+
 </script>
 <script>
 let pfKey='';
