@@ -166,7 +166,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 </head>
 <body>
 <div id="app">
-<div id="top"><span id="g">Gold 0</span><span id="tr">0</span><span id="lg">Bronze</span><span id="n">Castles 1</span></div>
+<div id="top"><span id="g">Gold 0</span><span id="tr">0</span><span id="n">Castles 1</span></div>
 <canvas id="c"></canvas>
 <div id="cp"></div>
 <div id="sb">Send <input type="range" id="pct" min="10" max="100" step="10" value="50"><b id="pv">50%</b></div>
@@ -237,7 +237,7 @@ respT+=dt;if(!G&&respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o==
 if(seasonT>=13*DAY)end();
 if(ui){document.getElementById('g').textContent='Gold '+Math.floor(gold);document.getElementById('tr').textContent=Math.floor(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0));
 document.getElementById('n').textContent='Castles '+mine;
-document.getElementById('lg').textContent=LG[league()][0];{const l=Math.ceil(REG_CD-(T-regT)),b=rgb;if(l>0){b.textContent=l;b.style.opacity=.55;b.style.fontSize='16px'}else{b.textContent='📯';b.style.opacity=1;b.style.fontSize=''}}panel()}}
+{const l=Math.ceil(REG_CD-(T-regT)),b=rgb;if(l>0){b.textContent=l;b.style.opacity=.55;b.style.fontSize='16px'}else{b.textContent='📯';b.style.opacity=1;b.style.fontSize=''}}panel()}}
 function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;
 (mp?Promise.resolve(0):submitScore(R[p-1][1])).then(()=>mp?0:weeklyRank()).then(r=>{if(r&&!run)$('d').textContent+='\n🌍 Weekly rank: #'+r});if(w&&!mp){wins++;try{if(DB)ud('profile').set({name:pname,wins}).catch(()=>{});DB.collection('leaderboard').doc(UID).set({name:pname,wins}).catch(()=>{})}catch(_){}}
 document.getElementById('t').textContent=w?'Season won! 🏆':'Season over · you placed #'+p;
