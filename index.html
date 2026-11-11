@@ -110,7 +110,7 @@ acc+=dt;if(acc>=1){acc=0;const m=cities.filter(c=>c.o===1).reduce((s,c)=>s+.5+.5
 aiT+=dt;if(aiT>2.5){aiT=0;ai()}
 const mine=cities.filter(c=>c.o===1).length,foes=cities.filter(c=>c.o>1).length;
 seasonT+=dt;const sco=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+10+5*c.l,0),mp=sco(1),rk=1+[2,3,4].filter(o=>sco(o)>mp).length;
-ui=(uiT+=dt)>.25;if(ui)uiT=0;if(ui)document.getElementById('sd').innerHTML=esc(pname)+'<br>Day '+Math.min(13,Math.floor(seasonT/DAY)+1)+'/13<br>#'+rk+' · '+mp+' pts';
+ui=(uiT+=dt)>.25;if(ui)uiT=0;if(ui)document.getElementById('sd').innerHTML=esc(pname)+'<br>Day '+Math.min(13,Math.floor(seasonT/DAY)+1)+'/13<br>#'+rk+' · '+mp+' pts';window.MYP=mp;
 respT+=dt;if(respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o===o)&&!armies.some(a=>a.o===o)){let L=cities.filter(c=>c.o===0);if(!L.length){chkIsl();L=cities.filter(c=>c.o===0)}if(L.length){const c=L[Math.random()*L.length|0];c.o=o;c.t=15;c.l=1;c.main=1;if(o===1)toast('Your last castle fell!\nA new castle is yours.')}}})}
 [1,2,3,4].forEach(o=>{if(respT!==0)return;const L=cities.filter(c=>c.o===o);if(L.length&&!L.some(c=>c.main))L.reduce((a,c)=>c.l>a.l?c:a).main=1});
 if(seasonT>=13*DAY)end();
@@ -360,7 +360,7 @@ play.textContent=['Register & play','Continue','Play'][mode];$('lbb').style.disp
 play.onclick=async()=>{fs();if(mode===0){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.focus();return}PROF={name:n,wins:0};try{await ud('profile').set(PROF)}catch(_){}}
 pname=PROF.name;OW[1]=pname;startGame(mode===1?SAVE:null)};
 nw.onclick=()=>{fs();SAVE=null;try{localStorage.removeItem(LK())}catch(_){}try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGame(null)};
-setInterval(saveLocal,10000);setInterval(saveNow,60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
+setInterval(saveLocal,10000);setInterval(()=>{if(run&&window.MYP>0)submitScore(window.MYP)},20000);setInterval(saveNow,60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 play.style.display='none';nm.style.display='none';$('d').textContent='Signing in…';
 async function loadLb(){try{const q=await DB.collection('leaderboard').orderBy('wins','desc').limit(20).get();LBD=q.docs.map(d=>d.data());$('a_lb').textContent=q.empty?'':'🏆 Top lords\n'+q.docs.slice(0,10).map((d,i)=>(i+1)+'. '+d.data().name+' — '+d.data().wins).join('\n')}catch(_){}}
 (async()=>{const T1=$('t'),D1=$('d'),msg=t=>$('a_msg').textContent=t||'';
