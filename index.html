@@ -106,9 +106,9 @@ function ai(){cities.forEach((s,i)=>{if(HUM[s.o])return;if(s.o>=2&&s.l<3&&s.t>20
 cities.forEach((c,j)=>{if(c.o===s.o||prot(c)||!islands[c.isl].open)return;const cx=c.x,cy=c.y,d=Math.hypot(cx-sx,cy-sy);if(c.t*1.1*(1+.25*(c.l-1)+(HU(c.o)?dm(c.o)-1:0))<s.t/3&&d<bd){bd=d;best=j}});if(best>=0)send(i,best,.4)})}
 function upd(dt){const G=NET&&NET.role==='g';T+=dt;chkIsl();islands.forEach(q=>{q.grow=Math.min(1,q.grow+dt*.7)});if(glide){cam.x+=(glide.x-cam.x)*Math.min(1,dt*2.2);cam.y+=(glide.y-cam.y)*Math.min(1,dt*2.2);if(Math.hypot(glide.x-cam.x,glide.y-cam.y)<4)glide=null}
 const tpc={};cities.forEach(c=>{if(c.tp)tpc[c.o]=(tpc[c.o]||0)+1});const gmv=gm(),gmo={};cities.forEach(c=>{if(c.o===0){if(c.t<(c.tp?30:10))c.t+=.15*dt}else if(c.t<40+30*c.l)c.t+=dt*.5*(c.main?1.5:1)*(1+.4*(c.l-1))*(c.o===1?gmv:HU(c.o)?(gmo[c.o]=gmo[c.o]||gm(c.o)):(1+.15*(tpc[c.o]||0))*gboost(c.o))});
-armies.forEach(a=>a.p+=dt/a.d);armies.filter(a=>a.p>=1).forEach(a=>{if(!G)arrive(a)});armies=armies.filter(a=>a.p<1);
+armies.forEach(a=>a.p+=dt/a.d);armies.filter(a=>a.p>=1).forEach(a=>{if(!G)arrive(a)});armies=armies.filter(a=>a.p<1);{const inc=armies.filter(a=>a.o!==1&&cities[a.to]&&cities[a.to].o===1),ks=new Set(inc.map(a=>a.f+'>'+a.to+'>'+a.n));let n1=0;ks.forEach(k=>{if(!ALR.has(k))n1++});if(n1&&T-alT>5){alT=T;const gh=ghosts[inc[0].o-2];toast('⚠️ '+(gh?gh.n:'An enemy')+' is attacking your castle!')}ALR=ks}
 acc+=dt;if(acc>=1){acc=0;const m=cities.filter(c=>c.o===1).reduce((s,c)=>s+.5+.5*c.l,0)*(1+.1*cities.filter(c=>c.o===1&&c.tp).length);gold+=m;stats.earned+=m;if(tab>=0)render()}
-aiT+=dt;if(aiT>7){aiT=0;if(!G)ai()}netT+=dt;if(NET&&NET.role==='h'&&netT>.8){netT=0;pubSnap()}
+aiT+=dt;if(aiT>7){aiT=0;if(!G)ai()}netT+=dt;if(NET&&NET.role==='h'&&netT>1){netT=0;pubSnap()}
 const mine=cities.filter(c=>c.o===1).length,foes=cities.filter(c=>c.o>1).length;
 seasonT+=dt;const sco=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+10+5*c.l,0),mp=sco(1),rk=1+[2,3,4].filter(o=>sco(o)>mp).length;
 ui=(uiT+=dt)>.25;if(ui)uiT=0;if(ui)document.getElementById('sd').innerHTML=esc(pname)+'<br>Day '+Math.min(13,Math.floor(seasonT/DAY)+1)+'/13<br>#'+rk+' · '+mp+' pts';window.MYP=mp;if(!NET&&DB&&UID&&(subT+=dt)>15){subT=0;submitScore(mp)}
@@ -145,7 +145,7 @@ const bx=x-15,by=y-96;g.fillStyle=f;g.strokeStyle='#fff';g.lineWidth=2;g.beginPa
 g.fillStyle='#fff';g.beginPath();g.moveTo(x,by+6);g.lineTo(x+8,by+15);g.lineTo(x,by+24);g.lineTo(x-8,by+15);g.closePath();g.fill();
 g.fillStyle=f;g.beginPath();g.moveTo(bx,by+30);g.lineTo(bx+30,by+30);g.lineTo(bx+30,by+42);g.lineTo(x,by+50);g.lineTo(bx,by+42);g.closePath();g.fill();g.strokeStyle='#fff';g.stroke();
 g.fillStyle='#fff';g.font='bold 15px Georgia,serif';g.fillText(Math.floor(t),x,by+38)}
-let TER=null,TS=1,T=0,tgt=-1,curLv=1,curMain=0,curTp=0,curT=0,lastCP='';
+let ALR=new Set(),alT=-99,TER=null,TS=1,T=0,tgt=-1,curLv=1,curMain=0,curTp=0,curT=0,lastCP='';
 const spd=n=>Math.max(25,90/Math.sqrt(1+n/60)),prot=c=>!!c.main,OW=['Neutral','You','Red lord','Purple lord','Orange lord'];
 function upg(){const c=cities[sel];if(!c||c.o!==1||c.l>=5)return;const k=20*c.l*c.l;if(gold<k)return;gold-=k;c.l++;cmd({t:'u',c:sel})}
 let pickN=0,uiT=0,ui=1;
@@ -276,6 +276,37 @@ g.fillStyle='#e0b24a';g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(
 const SW=130,SH=210,SOX=65,SOY=180,SS2=Math.min(2,devicePixelRatio||1)*1.2;
 function spr(c){const k=c.o+'|'+c.l+'|'+(c.tp?1:0);let s=SPR[k];if(s)return s;const cv=document.createElement('canvas');cv.width=SW*SS2;cv.height=SH*SS2;const t=cv.getContext('2d');t.scale(SS2,SS2);t.translate(SOX,SOY);t.textAlign='center';t.textBaseline='middle';const og=g,m=[curLv,curMain,curTp,curT];g=t;curLv=c.l;curMain=0;curTp=c.tp;curT=0;noTxt=1;try{keep2(0,0,c.o,0,false)}finally{noTxt=0;g=og;[curLv,curMain,curTp,curT]=m}return SPR[k]=cv}
 function lbl(l,tv){const by=-146-(l-1)*5,s=tv<0?'?':Math.floor(tv);g.font='bold 16px Georgia,serif';g.lineWidth=3;g.strokeStyle='rgba(0,0,0,.6)';g.textAlign='center';g.textBaseline='middle';g.strokeText(s,0,by+34);g.fillStyle='#fff';g.fillText(s,0,by+34)}
+const visA=a=>a.o===1||(cities[a.to]&&cities[a.to].o===1);
+function ring(c,k,r,w,pl){const[x,y]=P(c),q=(.35+.65*Z)*(1+.07*(c.l-1)),m=pl?1+.1*Math.sin(T*6):1;g.save();g.strokeStyle=k;g.lineWidth=w;g.beginPath();g.ellipse(x,y+10*q,r*q*m,r*.42*q*m,0,0,7);g.stroke();g.restore()}
+function trailLine(A,B,k,p,hot){const[ax,ay]=P(A),[bx,by]=P(B),L=Math.hypot(bx-ax,by-ay);if(L<2)return;const ux=(bx-ax)/L,uy=(by-ay)/L,an=Math.atan2(uy,ux);g.save();g.lineCap='round';g.lineJoin='round';
+g.beginPath();g.moveTo(ax,ay);g.lineTo(bx,by);g.strokeStyle='rgba(50,25,0,.3)';g.lineWidth=8;g.stroke();
+g.setLineDash([12,10]);g.lineDashOffset=-T*30;g.strokeStyle=k;g.lineWidth=4;g.stroke();g.setLineDash([]);
+if(p>0){g.globalAlpha=.55;g.lineWidth=7;g.beginPath();g.moveTo(ax,ay);g.lineTo(ax+(bx-ax)*p,ay+(by-ay)*p);g.stroke();g.globalAlpha=1}
+const off=(T*40)%46;[['rgba(40,20,0,.75)',5.5],['#fff',2.5]].forEach(([c,w])=>{g.strokeStyle=c;g.lineWidth=w;for(let d=30+off;d<L-52;d+=46){g.save();g.translate(ax+ux*d,ay+uy*d);g.rotate(an);g.beginPath();g.moveTo(-5,-6);g.lineTo(3,0);g.lineTo(-5,6);g.stroke();g.restore()}});
+g.save();g.translate(bx-ux*44,by-uy*44);g.rotate(an);g.fillStyle=k;g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(11,0);g.lineTo(-7,-9);g.lineTo(-7,9);g.closePath();g.fill();g.stroke();g.restore();g.restore();
+ring(A,k,30,3,0);ring(B,k,46,4,1);if(hot)ring(B,'#ff3b2a',56,5,1)}
+function soldier(x,y,s,c,fl,ph){g.save();g.translate(x,y);g.scale(s*fl,s);const w=Math.sin(ph)*2.2;
+g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(0,1,5.5,2,0,0,7);g.fill();
+g.strokeStyle='#3a2a1a';g.lineWidth=1.8;g.beginPath();g.moveTo(-1.6,-5);g.lineTo(-1.6+w*.6,0);g.moveTo(1.6,-5);g.lineTo(1.6-w*.6,0);g.stroke();
+g.strokeStyle='#d9d2c0';g.lineWidth=1.3;g.beginPath();g.moveTo(5.5,-1);g.lineTo(5.5,-21);g.stroke();
+g.fillStyle='#eceef4';g.beginPath();g.moveTo(5.5,-26);g.lineTo(4,-21);g.lineTo(7,-21);g.closePath();g.fill();
+g.fillStyle=c;g.strokeStyle='rgba(0,0,0,.55)';g.lineWidth=.9;g.fillRect(-3.6,-13,7.2,9);g.strokeRect(-3.6,-13,7.2,9);
+g.fillStyle='#fff';g.beginPath();g.arc(-4.4,-9,3.4,0,7);g.fill();g.fillStyle=c;g.beginPath();g.arc(-4.4,-9,2.1,0,7);g.fill();
+g.fillStyle='#f0c8a0';g.beginPath();g.arc(0,-16.5,3,0,7);g.fill();g.fillStyle='#aeb4c2';g.beginPath();g.arc(0,-17.2,3.3,Math.PI,0);g.fill();g.restore()}
+function drawArmy(a){const A=cities[a.f],B=cities[a.to],[ax,ay]=P(A),[bx,by]=P(B),p=a.p,x=ax+(bx-ax)*p,y=ay+(by-ay)*p,L=Math.hypot(bx-ax,by-ay)||1,ux=(bx-ax)/L,uy=(by-ay)/L,fl=bx<ax?-1:1,k=col(a.o),s=(.6+.4*Z)*(1+Math.min(.45,Math.log10(1+a.n)*.12)),m=Math.min(8,2+Math.floor(Math.log10(1+a.n)*2.4)),ph=T*9,fm=[];
+if(x<-80||x>W+80||y<-120||y>H+80)return;
+g.save();g.globalAlpha=.28;g.fillStyle='#7a4a1c';for(let i=1;i<=4;i++){g.beginPath();g.arc(x-ux*(i*13+8)*s,y-uy*(i*13+8)*s+3,(6-i)*s*1.5,0,7);g.fill()}g.restore();
+for(let i=0;i<m;i++){const r=(i>>1)+1,sd=i%2?1:-1;fm.push([x-ux*(r*15+4)*s-uy*sd*10*s,y-uy*(r*15+4)*s+ux*sd*5*s,i])}
+fm.sort((u,v)=>u[1]-v[1]).forEach(f=>soldier(f[0],f[1],s,k,fl,ph+f[2]));
+g.save();g.translate(x,y);g.scale(s,s);const wv=Math.sin(T*5+a.f)*2;
+g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(0,2,7,2.6,0,0,7);g.fill();
+g.strokeStyle='#4a3a2a';g.lineWidth=2.4;g.beginPath();g.moveTo(0,2);g.lineTo(0,-54);g.stroke();
+g.fillStyle='#f2c23a';g.beginPath();g.arc(0,-55,2.8,0,7);g.fill();
+g.fillStyle=k;g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(1,-51);g.lineTo(27+wv*.4,-51);g.lineTo(27+wv,-34);g.lineTo(14,-26+wv*.5);g.lineTo(1,-34);g.closePath();g.fill();g.stroke();
+g.strokeStyle='#fff';g.lineWidth=2.3;g.beginPath();g.moveTo(8,-46);g.lineTo(20,-34);g.moveTo(20,-46);g.lineTo(8,-34);g.moveTo(7.5,-41.5);g.lineTo(11.5,-45.5);g.moveTo(16.5,-45.5);g.lineTo(20.5,-41.5);g.stroke();
+g.fillStyle='#17274d';g.strokeStyle='#e0b24a';g.lineWidth=1.5;g.beginPath();g.roundRect(-17,6,34,16,6);g.fill();g.stroke();
+g.fillStyle='#fff';g.font='bold 12px Georgia,serif';g.textAlign='center';g.textBaseline='middle';g.fillText(a.n,0,14.5);
+if(a.o!==1){g.font='14px serif';g.fillText('⚠️',14,-66)}g.restore()}
 function draw(){g.fillStyle='#e0903a';g.fillRect(0,0,W,H);clampCam();
 if(TER){const S=1024*Z,ox=-(((cam.x*Z)%S)+S)%S,oy=-(((cam.y*Z)%S)+S)%S;for(let x=ox;x<W;x+=S)for(let y=oy;y<H;y+=S)g.drawImage(TER,x,y,S+1,S+1)}
 let built=0;islands.forEach(q=>{const e=.6+.4*q.grow,sc=Z*e,x0=(q.x-cam.x)*Z+(q.ox-q.x)*sc,y0=(q.y-cam.y)*Z+(q.oy-q.y)*sc+(1-q.grow)*80*Z,vis=x0<W&&y0<H&&x0+q.w*sc>0&&y0+q.h*sc>0;if(!vis){if(q.cv&&(x0>W*3||y0>H*3||x0+q.w*sc<-W*2||y0+q.h*sc<-H*2))q.cv=null;return}if(!q.cv){if(built++)return;mkIsland(q)}g.globalAlpha=q.grow;g.drawImage(q.cv,x0,y0,q.w*sc,q.h*sc);g.globalAlpha=1});
@@ -286,10 +317,9 @@ g.strokeStyle=css('--line');g.lineWidth=1;
 const tc=['#b5361f','#d4541f','#e8812a','#9c2a1b'];trees.forEach(t=>{const x=t.x-cam.x,y=t.y-cam.y;if(x<-20||y<-20||x>W+20||y>H+20)return;g.fillStyle=tc[t.c];g.beginPath();g.arc(x,y,t.r,0,7);g.fill();g.fillStyle='rgba(255,255,255,.12)';g.beginPath();g.arc(x-t.r*.3,y-t.r*.3,t.r*.5,0,7);g.fill()});
 g.textAlign='center';g.textBaseline='middle';
 cities.forEach(c=>{if(!c.o)return;const[x,y]=P(c);if(x<-130||x>W+130||y<-130||y>H+130)return;g.save();g.setLineDash([2,10]);g.lineCap='round';g.lineWidth=4;g.strokeStyle=col(c.o);g.beginPath();g.arc(x,y,75*Z,0,7);g.globalAlpha=.14;g.fillStyle=col(c.o);g.fill();g.globalAlpha=1;g.stroke();g.restore()});
+armies.filter(visA).forEach(a=>trailLine(cities[a.f],cities[a.to],col(a.o),a.p,a.o!==1));if(sel>=0&&tgt>=0&&cities[sel]&&cities[sel].o===1&&cities[tgt])trailLine(cities[sel],cities[tgt],'#ffd34a',0,0);
 cities.map((c,i)=>[c,i]).sort((a,b)=>a[0].y-b[0].y).forEach(([c,i])=>{const[x,y]=P(c);if(x<-110||x>W+110||y<-70||y>H+300)return;g.save();g.translate(x,y);const q=(.35+.65*Z)*(1+.07*(c.l-1));g.scale(q,q);g.globalAlpha=islands[c.isl].grow;const tv=c.o===1||c.sc>T?c.t:-1,on=i===sel||i===tgt;if(c.main){curLv=c.l;curMain=c.main;curTp=c.tp;curT=T;keep2(0,0,c.o,tv,on)}else{if(on){g.strokeStyle='#fff';g.lineWidth=3;g.setLineDash([6,5]);g.beginPath();g.ellipse(0,10,43,18,0,0,7);g.stroke();g.setLineDash([])}g.drawImage(spr(c),-SOX,-SOY,SW,SH);lbl(c.l,tv)}g.restore()});
-armies.forEach(a=>{const[ax,ay]=P(cities[a.f]),[bx,by]=P(cities[a.to]),x=ax+(bx-ax)*a.p,y=ay+(by-ay)*a.p;
-g.fillStyle=col(a.o);g.beginPath();g.arc(x,y,9+Math.min(10,Math.log10(1+a.n)*4),0,7);g.fill();g.strokeStyle=css('--ink');g.lineWidth=1.5;g.stroke();
-g.fillStyle='#fff';g.font='bold 11px Georgia,serif';g.fillText(a.n,x,y+1)});drawMenu();
+armies.filter(visA).forEach(drawArmy);drawMenu();
 if(showMap){let x0=cam.x,y0=cam.y,x1=cam.x+W/Z,y1=cam.y+H/Z;islands.forEach(q=>{x0=Math.min(x0,q.x-q.rx);x1=Math.max(x1,q.x+q.rx);y0=Math.min(y0,q.y-q.ry);y1=Math.max(y1,q.y+q.ry)});
 const k=118/Math.max(x1-x0,y1-y0),mw=(x1-x0)*k,mh=(y1-y0)*k,mx=8,my=232;MM={x:mx,y:my,w:mw,h:mh,k,bx:x0,by:y0};g.globalAlpha=.9;g.fillStyle=css('--panel');g.fillRect(mx,my,mw,mh);g.globalAlpha=1;g.strokeStyle=css('--ink');g.lineWidth=1.5;g.strokeRect(mx,my,mw,mh);
 g.strokeStyle='#c98f55';g.lineWidth=3;bridges.forEach(b=>{const a=b.pts[0],c=b.pts[b.pts.length-1];g.beginPath();g.moveTo(mx+(a.x-x0)*k,my+(a.y-y0)*k);g.lineTo(mx+(c.x-x0)*k,my+(c.y-y0)*k);g.stroke()});g.lineWidth=1.5;g.strokeStyle=css('--ink');
@@ -360,7 +390,7 @@ function menu(){const a=$('t'),b=$('d');nm.style.display=PROF?'none':'';nw.style
 if(!PROF){a.textContent='Conquest Lords';b.textContent='Register your lord name to begin. Your kingdom is saved to your account, so you always continue where you left off.'}
 else if(SAVE){a.textContent='Welcome back, '+PROF.name;b.textContent='Your kingdom is waiting. Day '+Math.min(13,Math.floor((SAVE.seasonT||0)/DAY)+1)+' of 13.';nw.style.display=''}
 else{a.textContent='Welcome, '+PROF.name;b.textContent='Everyone plays the same islands this week. Build your kingdom and climb the leaderboard.'}
-play.textContent=['Register & play','Continue','Play'][mode];$('lbb').style.display='';$('mpb').style.display=PROF?'':'none'}
+play.textContent=['Register & play','Continue','Play'][mode];$('lbb').style.display='';$('mpb').style.display=''}
 play.onclick=async()=>{fs();if(mode===0){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.focus();return}PROF={name:n,wins:0};try{await ud('profile').set(PROF)}catch(_){}}
 pname=PROF.name;OW[1]=pname;startGame(mode===1?SAVE:null)};
 nw.onclick=()=>{fs();SAVE=null;try{localStorage.removeItem(LK())}catch(_){}try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGame(null)};
@@ -388,13 +418,16 @@ menu();$('a_so').style.display='';loadLb()})})();
 const RR=()=>DB.collection('rooms'),HU=o=>o===1||!!HUM[o],cmd=m=>{if(NET&&NET.role==='g')NET.out(m)};
 const PS=o=>o===1?{lv,own}:(NET&&NET.pl&&NET.pl[o])||{lv:{gl:0,al:0,dl:0},own:{}};
 const NOLV={gl:0,al:0,dl:0};
+const snErr=e=>toast(((e&&e.code)||'').includes('permission')?'⚠️ Multiplayer blocked by\nFirestore rules':'⚠️ Multiplayer connection problem');
+function mpErr(e,t){const c=(e&&e.code)||'error';ctl('','none');mpShow(1,t+'\n'+(c.includes('permission')?'Firestore is blocking rooms (permission-denied).\nAdd the “rooms” rules to your Firestore rules, then try again.':'Problem: '+c))}
+function seatHumans(){[3,4].forEach(o=>{if(!HUM[o]||cities.some(c=>c.o===o))return;const mn=cities.filter(c=>c.o>0&&c.main),L=cities.filter(c=>c.o===0&&c.isl===0&&!c.tp);let b=null,bd=-1;L.forEach(c=>{const d=Math.min(...mn.map(m=>Math.hypot(m.x-c.x,m.y-c.y)));if(d>bd){bd=d;b=c}});if(b){b.o=o;b.t=20;b.l=1;b.main=1}})}
 function mpStop(){unsubs.forEach(f=>{try{f()}catch(_){}});unsubs=[];NET=null;HUM={}}
 function mpShow(on,t){$('mp').classList.toggle('on',on);if(t!=null)$('mpl').textContent=t}
 function pushPl(){if(!NET||NET.role!=='g'||!NET.me)return;NET.me.set({lv,own,at:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(()=>{})}
 function ctl(a,b,c,d){$('mph').style.display=a;$('mpj').style.display=a;$('mpc').style.display=a;$('mps').style.display=b}
 function pubSnap(){const t=Date.now();for(const o in HUM){const p=NET.pl[o];if(p&&p.at&&t-p.at>45000)delete HUM[o]}
 const s={ni:islands.length,T:+T.toFixed(2),st:+seasonT.toFixed(1),c:cities.map(c=>[c.o,c.l,+c.t.toFixed(1),c.main?1:0,c.tp?1:0]),a:armies.map(a=>[a.f,a.to,a.o,a.n,+a.p.toFixed(3),+a.d.toFixed(2)]),cp:[1,2,3,4].map(o=>CP[o]||0)};
-NET.ref.collection('live').doc('s').set({j:JSON.stringify(s),at:t}).catch(()=>{})}
+NET.ref.collection('live').doc('s').set({j:JSON.stringify(s),at:t}).catch(snErr)}
 function hcmd(m){const k=m.s;if(!HUM[k])return;
 if(m.t==='s'){const c=cities[m.f];if(c&&c.o===k)send(m.f,m.to,m.fr)}
 else if(m.t==='u'){const c=cities[m.c];if(c&&c.o===k&&c.l<5)c.l++}
@@ -406,25 +439,25 @@ armies=s.a.map(v=>({f:v[0],to:v[1],o:sw(v[2]),n:v[3],p:v[4],d:v[5]}));
 T=s.T;seasonT=s.st;stats.caps=s.cp[k-1]||0;
 if(!NET.cam){NET.cam=1;const m=cities.find(c=>c.o===1&&c.main)||cities.find(c=>c.o===1);if(m)cam={x:m.x-W/Z/2,y:m.y-H/Z/2+40}}}
 function startMP(){pname=PROF.name;OW[1]=pname;startGame(null);
-if(NET.role==='h'){unsubs.push(NET.ref.collection('cmds').onSnapshot(q=>q.docChanges().forEach(ch=>{if(ch.type==='added'&&run)hcmd(ch.doc.data())})))}
+if(NET.role==='h'){unsubs.push(NET.ref.collection('cmds').onSnapshot(q=>q.docChanges().forEach(ch=>{if(ch.type==='added'&&run)hcmd(ch.doc.data())}),snErr))}
 else{NET.out=m=>{m.s=NET.slot;NET.ref.collection('cmds').add(m).catch(()=>{})};pushPl();const id=setInterval(pushPl,15000);unsubs.push(()=>clearInterval(id));
-unsubs.push(NET.ref.collection('live').doc('s').onSnapshot(d=>{if(d.exists&&run)try{applySnap(JSON.parse(d.data().j))}catch(_){}}))}}
-$('mpb').onclick=()=>{ctl('','none');mpShow(1,'Host a room and share the 4-letter code, or join a friend’s room.')};
+unsubs.push(NET.ref.collection('live').doc('s').onSnapshot(d=>{if(d.exists&&run)try{applySnap(JSON.parse(d.data().j))}catch(_){}},snErr))}}
+$('mpb').onclick=async()=>{if(!PROF){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.style.display='';nm.focus();toast('Type your lord name first');return}PROF={name:n,wins:0};try{await ud('profile').set(PROF)}catch(_){}}ctl('','none');mpShow(1,'Host a room and share the 4-letter code, or join a friend’s room.')};
 $('mpx').onclick=()=>{if(NET){if(NET.role==='g'&&NET.me)NET.me.delete().catch(()=>{});if(NET.role==='h')NET.ref.update({state:'closed'}).catch(()=>{})}mpStop();mpShow(0)};
-$('mph').onclick=async()=>{try{const code=Math.random().toString(36).slice(2,6).toUpperCase().padEnd(4,'X'),ref=RR().doc(code);
+$('mph').onclick=async()=>{try{let code,ref;for(let i=0;i<8;i++){code=Math.random().toString(36).slice(2,6).toUpperCase().padEnd(4,'X');ref=RR().doc(code);if(!(await ref.get()).exists)break}
 await ref.set({host:UID,hn:PROF.name,state:'lobby',at:Date.now()});NET={role:'h',code,ref,pl:{},slots:{},guests:[]};ctl('none','');
 mpShow(1,'Room code: '+code+'\n\nWaiting for players…');
 unsubs.push(ref.collection('players').onSnapshot(q=>{if(!NET)return;const gs=[];q.docs.forEach(d=>{const v=d.data();gs.push({uid:d.id,name:String(v.name||'?').slice(0,14),j:+v.j||0});const sl=NET.slots[d.id];if(sl)NET.pl[sl]={lv:v.lv||NOLV,own:v.own||{},at:v.at&&v.at.toMillis?v.at.toMillis():Date.now()}});
-gs.sort((a,b)=>a.j-b.j);NET.guests=gs;if(!run)mpShow(1,'Room code: '+code+'\n\nPlayers ('+(Math.min(3,gs.length)+1)+'/4):\n'+[PROF.name].concat(gs.slice(0,3).map(x=>x.name)).join('\n')+'\n\nEmpty slots are filled by AI.')}))}catch(e){mpShow(1,'Could not create a room. Check your Firestore rules (see notes).')}};
+gs.sort((a,b)=>a.j-b.j);NET.guests=gs;if(!run)mpShow(1,'Room code: '+code+'\n\nPlayers ('+(Math.min(3,gs.length)+1)+'/4):\n'+[PROF.name].concat(gs.slice(0,3).map(x=>x.name)).join('\n')+'\n\nEmpty slots are filled by AI.')},snErr))}catch(e){mpErr(e,'Could not create a room.')}};
 $('mps').onclick=()=>{const names=[PROF.name,'Red lord','Purple lord','Orange lord'],slots={};NET.guests.slice(0,3).forEach((p,i)=>{slots[p.uid]=i+2;names[i+1]=p.name;HUM[i+2]=1;NET.pl[i+2]={lv:NOLV,own:{},at:Date.now()}});
-NET.slots=slots;NET.names=names;NET.nl=names;NET.seed=curWeek();NET.ref.update({state:'playing',slots,names,seed:NET.seed}).catch(()=>{});mpShow(0);fs();startMP()};
+NET.slots=slots;NET.names=names;NET.nl=names;NET.seed=curWeek();NET.ref.update({state:'playing',slots,names,seed:NET.seed}).catch(snErr);mpShow(0);fs();startMP();seatHumans()};
 $('mpj').onclick=async()=>{const code=$('mpc').value.trim().toUpperCase();if(code.length<4)return;
 try{const ref=RR().doc(code),d=await ref.get();if(!d.exists||d.data().state!=='lobby'){mpShow(1,'Room not found, or the match already started.');return}
 const me=ref.collection('players').doc(UID);await me.set({name:PROF.name,j:Date.now(),lv:NOLV,own:{},at:firebase.firestore.FieldValue.serverTimestamp()});
 NET={role:'g',code,ref,me,pl:{}};ctl('none','none');mpShow(1,'Joined room '+code+'.\nWaiting for the host to start…');
 unsubs.push(ref.onSnapshot(sn=>{const r=sn.data();if(!r||!NET||NET.started)return;if(r.state==='closed'){mpShow(1,'The host closed the room.');return}
 if(r.state==='playing'){const k=r.slots&&r.slots[UID];if(!k){mpShow(1,'The room was full.');return}
-const sw=o=>o===1?k:o===k?1:o;NET.started=1;NET.slot=k;NET.seed=r.seed;NET.names=r.names;NET.nl=[1,2,3,4].map(o=>r.names[sw(o)-1]);mpShow(0);fs();startMP()}}))}catch(e){mpShow(1,'Could not join. Check the code and your connection.')}};
+const sw=o=>o===1?k:o===k?1:o;NET.started=1;NET.slot=k;NET.seed=r.seed;NET.names=r.names;NET.nl=[1,2,3,4].map(o=>r.names[sw(o)-1]);mpShow(0);fs();startMP()}}))}catch(e){mpErr(e,'Could not join.')}};
 
 size();
 </script>
