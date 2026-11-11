@@ -104,6 +104,59 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #pk .pb .no{flex:.8;border:2px solid #3a5aa8;background:linear-gradient(#1b2f66,#0c1736);color:#cfdcff}
 #pk .pb .ok{flex:1.4;border:2px solid #fff3c4;background:linear-gradient(#ffd966,#d8a02e 60%,#b9801c);color:#2b1c05;text-shadow:0 1px 0 rgba(255,255,255,.4);box-shadow:0 4px 0 #7a5410,0 8px 14px rgba(0,0,0,.45)}
 #pk .pb .ok:active{box-shadow:0 1px 0 #7a5410}
+
+/* ===== Compact pick panel ===== */
+#pk{left:8px;right:8px;padding:6px 12px 12px;border-radius:18px 18px 16px 16px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);box-shadow:0 -6px 20px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.25),inset 0 0 0 3px rgba(14,26,56,.5)}
+#pk .pg{width:34px;height:4px;margin:0 auto 6px}
+#pk .ph{gap:10px}
+#pk #pki{width:36px;height:36px;border-radius:11px;font-size:19px;border-width:2px}
+#pk .pht{flex:1}
+#pk #pkt{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pk #pks{font-size:12px;margin-top:0}
+#pk .pn{margin:0;flex-direction:column;align-items:flex-end;gap:0}
+#pk #pkv{font-size:26px;text-shadow:0 2px 0 #8a5d10}
+#pk #pkv span{font-size:13px;margin-left:3px}
+#pk .pu{display:none}
+#pk .pr{margin:2px 0 0}
+#pk .pr input{height:26px}
+#pk .pr input::-webkit-slider-runnable-track{height:10px}
+#pk .pr input::-webkit-slider-thumb{width:26px;height:26px;margin-top:-10px}
+#pk .pq{gap:6px;margin-top:2px}
+#pk .pq button{min-height:32px;padding:4px 0;font-size:13px;border-radius:9px}
+#pk .pb{gap:8px;margin-top:8px}
+#pk .pb button{min-height:42px;font-size:15px;border-radius:11px}
+#pk .pb .ok{box-shadow:0 3px 0 #7a5410,0 5px 10px rgba(0,0,0,.4)}
+
+/* ===== Banner editor ===== */
+#ov{overflow-y:auto}
+#bnrow{display:flex;align-items:center;gap:14px;padding:8px 14px 8px 10px;border-radius:18px;background:linear-gradient(rgba(36,52,110,.85),rgba(14,22,56,.85));border:2px solid #e0b24a;box-shadow:0 6px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2)}
+#bnp{width:48px;height:63px;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.bnrb{display:flex;gap:8px;align-items:center}
+#ov #bne{padding:10px 16px;font-size:16px;border-radius:12px;box-shadow:0 3px 0 #8a5a12,0 5px 8px rgba(0,0,0,.35)}
+#ov #bnrn{padding:8px 11px;font-size:20px;border-radius:12px;min-width:0;background:linear-gradient(#35569f,#0f1c3d);border:2px solid #e0b24a;box-shadow:0 3px 0 #08112b,0 5px 8px rgba(0,0,0,.35);text-shadow:none}
+#bn{display:none;position:fixed;inset:0;z-index:30;background:rgba(5,8,24,.72);align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+#bn.open{display:flex}
+.bnc{width:100%;max-width:520px;max-height:92%;overflow-y:auto;padding:8px 16px calc(14px + env(safe-area-inset-bottom,0px));border-radius:24px 24px 0 0;border:2px solid #e0b24a;border-bottom:0;background:radial-gradient(120% 70% at 50% 0%,#2b57b3 0%,#173b86 40%,#0c1736 100%);color:#fff;text-align:center;box-shadow:0 -10px 34px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.28);animation:pkUp .26s cubic-bezier(.2,.9,.3,1.1);font-family:Georgia,"Times New Roman",serif}
+.bng{width:44px;height:5px;border-radius:3px;background:rgba(255,255,255,.28);margin:0 auto 6px}
+.bnc h2{margin:0 0 4px;font-size:20px;letter-spacing:.5px;text-shadow:0 2px 3px rgba(0,0,0,.6)}
+#bnv{width:112px;height:147px;display:block;margin:2px auto 8px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.55))}
+.bnt{display:flex;gap:6px;padding:4px;border-radius:14px;background:#0a1330;border:2px solid #3a5aa8}
+.bnt button{flex:1;font:inherit;font-weight:bold;font-size:14px;padding:9px 4px;border:0;border-radius:10px;background:transparent;color:#a9c0f0}
+.bnt button.on{background:linear-gradient(#ffd966,#d8a02e);color:#2b1c05;box-shadow:0 2px 0 #7a5410}
+#bnb{margin:10px 0 4px;min-height:132px}
+.bnG{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.bnG button{padding:4px 0 2px;border:2px solid #3a5aa8;border-radius:12px;background:linear-gradient(#1b2f66,#0c1736);display:flex;justify-content:center}
+.bnG button.on{border-color:#ffd34a;box-shadow:0 0 0 2px rgba(255,211,74,.35),0 0 12px rgba(255,211,74,.4)}
+.bnG canvas{width:40px;height:52px;display:block}
+.bnC{display:flex;align-items:center;gap:8px;margin:0 0 8px}
+.bnC span{width:70px;text-align:left;font-size:13px;color:#a9c0f0}
+.bnC div{flex:1;display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.bnC button{aspect-ratio:1;min-width:0;padding:0;border-radius:50%;border:2px solid rgba(255,255,255,.5)}
+.bnC button.on{border:3px solid #ffd34a;box-shadow:0 0 8px rgba(255,211,74,.8);transform:scale(1.12)}
+.bnf{display:flex;gap:10px;margin-top:8px}
+.bnf button{flex:1;font:inherit;font-weight:bold;font-size:16px;min-height:48px;border-radius:13px;border:2px solid #3a5aa8;background:linear-gradient(#1b2f66,#0c1736);color:#cfdcff}
+.bnf #bnd{flex:1.4;border-color:#fff3c4;background:linear-gradient(#ffd966,#d8a02e 60%,#b9801c);color:#2b1c05;box-shadow:0 4px 0 #7a5410}
+.bnf button:active{transform:translateY(2px)}
 </style>
 </head>
 <body>
@@ -115,8 +168,8 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 <div id="sheet"></div>
 <div class="tabs"><button data-t="0" title="Skills">⚔️</button><button data-t="1" title="Forge">🔨</button><button data-t="2" title="Quests">📜</button><button data-t="3" title="League">🏆</button></div>
 </div>
-<div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><button data-k="w" class="on">This week</button><button data-k="a">All-time</button><button id="lbx">✕</button></div><div id="lbi"></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="toast"></div><div id="zm"><button id="hmb" title="Back to main city">🏠</button><button id="mmb">🗺</button><button id="lbz" onclick="lbShow('w')">🏆</button><button id="rgb" title="Regroup all troops to main city">📯</button></div>
-<div id="ov"><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When every neutral castle is taken, a new island rises from the clouds. A season lasts 13 days: the lord with the most kingdom points wins.</p><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
+<div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><button data-k="w" class="on">This week</button><button data-k="a">All-time</button><button id="lbx">✕</button></div><div id="lbi"></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Back to main city">🏠</button><button id="mmb">🗺</button><button id="lbz" onclick="lbShow('w')">🏆</button><button id="rgb" title="Regroup all troops to main city">📯</button></div>
+<div id="ov"><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When every neutral castle is taken, a new island rises from the clouds. A season lasts 13 days: the lord with the most kingdom points wins.</p><div id="bnrow"><canvas id="bnp" width="64" height="84"></canvas><div class="bnrb"><button id="bne">Design banner</button><button id="bnrn" title="Random banner">🎲</button></div></div><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>/* PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app) */
 const FIREBASE_CONFIG={apiKey:"AIzaSyAXXAi5J4KNCfsfZDjRRqMZekNZHSRTzEk",authDomain:"conquers-c9bfd.firebaseapp.com",projectId:"conquers-c9bfd",appId:"1:668836838322:web:eba1f6eccf116dc92ac2ab"};</script>
@@ -158,7 +211,7 @@ if(k===1||k===3||(k>3&&k%2===1)){const c=mine[RG()*mine.length|0];c.o=k===1?3:k=
 for(let q=0;q<(k===0?2:1);q++){const L=mine.filter(c=>!c.o&&!c.tp);if(L.length){const c=L[RG()*L.length|0];c.tp=1;c.t=25}}
 islands.slice(0,-1).forEach(o=>{if(Math.hypot(o.x-s.x,o.y-s.y)<CW*1.3)bridges.push(mkBr(o,s,k))});
 return s}
-function gen(){size();SEEDK=NET&&NET.seed!=null?NET.seed:curWeek();CP=[];seasonT=0;respT=0;regT=-99;cam={x:0,y:0};Z=1;cities=[];armies=[];sel=-1;T=0;tgt=-1;gold=0;lv={gl:0,al:0,dl:0};own={};stats={caps:0,sent:0,earned:0};claimed=[];glide=null;islands=[];bridges=[];mainReady=0;closePick();
+function gen(){size();SEEDK=NET&&NET.seed!=null?NET.seed:curWeek();aiBanners(NET&&NET.seed!=null?NET.seed:(Math.random()*1e9|0));CP=[];seasonT=0;respT=0;regT=-99;cam={x:0,y:0};Z=1;cities=[];armies=[];sel=-1;T=0;tgt=-1;gold=0;lv={gl:0,al:0,dl:0};own={};stats={caps:0,sent:0,earned:0};claimed=[];glide=null;islands=[];bridges=[];mainReady=0;closePick();
 pickGhosts();buildSky();spawnIsl(0);sand=[];mtn=[];trees=[];cam={x:cities[0].x-W/2,y:cities[0].y-H/2+40}}
 function send(f,t,fr=.5){const a=cities[f],b=cities[t],n=Math.floor(a.t*fr);if(n<1||!islands[a.isl].open||!islands[b.isl].open||(a.o!==b.o&&prot(b)))return;a.t-=n;if(a.o===1)stats.sent++;cmd({t:'s',f,to:t,fr});
 const[ax,ay]=WP(a),[bx,by]=WP(b);armies.push({f,to:t,o:a.o,n,p:0,d:Math.hypot(ax-bx,ay-by)/spd(n)*(HU(a.o)?1:1.6)})}
@@ -185,7 +238,36 @@ function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.upda
 document.getElementById('t').textContent=w?'Season won! 🏆':'Season over · you placed #'+p;
 document.getElementById('d').textContent=R.map((r,i)=>(i+1)+'. '+r[0]+(r[2]>1&&!mp&&ghosts[r[2]-2].g?' 🤖':'')+' — '+r[1]+' pts').join('\n')+(w?'\nVictories: '+wins:'');
 play.textContent='New season';mode=2;$('lbb').style.display='';$('mpb').style.display='';nw.style.display='none';nm.style.display='none';play.style.display='';ov.classList.remove('hide')}
-function col(o){return o===1?css('--me'):o===2?css('--foe'):o===3?css('--foe2'):o===4?'#d98a1a':css('--neu')}
+
+/* ===== Banners ===== */
+const BPAL=['#1f5fbf','#b8332b','#7a3a9a','#d98a1a','#1f8f4e','#16a3a3','#d6559a','#6b4a2b','#0e1a38','#8a8f99','#e8c53a','#f2f2f2'];
+const BPN=10,BEN=11;
+let BN={1:{p:'#1f5fbf',s:'#0e2a66',e:'#ffffff',pat:0,em:0},2:{p:'#b8332b',s:'#f2f2f2',e:'#ffffff',pat:0,em:0},3:{p:'#7a3a9a',s:'#f2f2f2',e:'#ffffff',pat:0,em:0},4:{p:'#d98a1a',s:'#f2f2f2',e:'#ffffff',pat:0,em:0}};
+try{const v=JSON.parse(localStorage.getItem('cl_banner')||'null');if(v&&v.p&&v.s&&v.e&&v.pat>=0&&v.em>=0)BN[1]=v}catch(_){}
+function bnSave(){try{localStorage.setItem('cl_banner',JSON.stringify(BN[1]))}catch(_){}}
+function bnClearSpr(){try{for(const k in SPR)delete SPR[k]}catch(_){}}
+function bnRng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function bnRandom(r,avoid){const pick=a=>a[Math.floor(r()*a.length)];let p,tries=0;do{p=pick(BPAL);tries++}while(avoid.includes(p)&&tries<30);let s;tries=0;do{s=pick(BPAL);tries++}while((s===p||(s==='#0e1a38'&&p==='#0e1a38'))&&tries<30);const lum=h=>{const n=parseInt(h.slice(1),16);return(.3*(n>>16)+.59*(n>>8&255)+.11*(n&255))/255};const e=lum(p)>.62&&lum(s)>.62?'#0e1a38':(r()<.5?'#ffd34a':'#ffffff');return{p,s,e,pat:Math.floor(r()*BPN),em:Math.floor(r()*(BEN-1))}}
+function aiBanners(seed){const r=bnRng(seed|0),used=[BN[1].p];for(let o=2;o<=4;o++){BN[o]=bnRandom(r,used);used.push(BN[o].p)}bnClearSpr()}
+function bnEmblem(c,id,cx,cy,r,col){if(id>=BEN-1)return;c.save();c.fillStyle=col;c.strokeStyle=col;c.lineJoin='round';c.lineCap='round';c.beginPath();
+if(id===0){c.moveTo(cx,cy-r*1.15);c.lineTo(cx+r*.85,cy);c.lineTo(cx,cy+r*1.15);c.lineTo(cx-r*.85,cy);c.closePath();c.fill()}
+else if(id===1){for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r*1.1;c[i?'lineTo':'moveTo'](cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)}c.closePath();c.fill()}
+else if(id===2){c.moveTo(cx-r,cy+r*.7);c.lineTo(cx-r,cy-r*.5);c.lineTo(cx-r*.5,cy+r*.1);c.lineTo(cx,cy-r*.8);c.lineTo(cx+r*.5,cy+r*.1);c.lineTo(cx+r,cy-r*.5);c.lineTo(cx+r,cy+r*.7);c.closePath();c.fill()}
+else if(id===3){c.lineWidth=r*.34;c.moveTo(cx-r*.85,cy-r*.85);c.lineTo(cx+r*.85,cy+r*.85);c.moveTo(cx+r*.85,cy-r*.85);c.lineTo(cx-r*.85,cy+r*.85);c.stroke();c.beginPath();c.lineWidth=r*.26;c.moveTo(cx-r*.95,cy-r*.3);c.lineTo(cx-r*.3,cy-r*.95);c.moveTo(cx+r*.95,cy-r*.3);c.lineTo(cx+r*.3,cy-r*.95);c.stroke()}
+else if(id===4){c.moveTo(cx+r*.15,cy-r);c.bezierCurveTo(cx-r*1.4,cy-r*.7,cx-r*1.4,cy+r*.7,cx+r*.15,cy+r);c.bezierCurveTo(cx-r*.5,cy+r*.5,cx-r*.5,cy-r*.5,cx+r*.15,cy-r);c.fill()}
+else if(id===5){c.arc(cx,cy,r*.55,0,7);c.fill();c.beginPath();c.lineWidth=r*.24;for(let i=0;i<8;i++){const a=i*Math.PI/4;c.moveTo(cx+Math.cos(a)*r*.8,cy+Math.sin(a)*r*.8);c.lineTo(cx+Math.cos(a)*r*1.15,cy+Math.sin(a)*r*1.15)}c.stroke()}
+else if(id===6){const t=r*.38;c.rect(cx-t/2,cy-r,t,r*2);c.rect(cx-r*.8,cy-t/2-r*.15,r*1.6,t);c.fill()}
+else if(id===7){c.rect(cx-r*.8,cy-r*.15,r*1.6,r*1.0);c.rect(cx-r*.8,cy-r*.75,r*.45,r*.6);c.rect(cx-r*.225,cy-r*.75,r*.45,r*.6);c.rect(cx+r*.35,cy-r*.75,r*.45,r*.6);c.fill()}
+else if(id===8){c.moveTo(cx+r*.2,cy-r*1.1);c.lineTo(cx-r*.65,cy+r*.1);c.lineTo(cx-r*.05,cy+r*.1);c.lineTo(cx-r*.2,cy+r*1.1);c.lineTo(cx+r*.65,cy-r*.15);c.lineTo(cx+r*.05,cy-r*.15);c.closePath();c.fill()}
+else if(id===9){c.lineWidth=r*.3;c.arc(cx,cy,r*.8,0,7);c.stroke();c.beginPath();c.arc(cx,cy,r*.25,0,7);c.fill()}
+c.restore()}
+function bnArt(c,B,x,y,w,h,cyf){c.save();c.fillStyle=B.p;c.fillRect(x,y,w,h);c.fillStyle=B.s;c.strokeStyle=B.s;
+const R=(a,b,cw,ch)=>c.fillRect(x+a*w,y+b*h,cw*w,ch*h),Pg=pts=>{c.beginPath();pts.forEach(([a,b],i)=>c[i?'lineTo':'moveTo'](x+a*w,y+b*h));c.closePath();c.fill()};
+switch(B.pat){case 1:R(.5,0,.5,1);break;case 2:R(0,.5,1,.5);break;case 3:Pg([[1,0],[1,1],[0,1]]);break;case 4:R(.34,0,.32,1);break;case 5:R(0,.36,1,.26);break;case 6:R(.28,0,.18,1);R(0,.36,1,.18);break;case 7:Pg([[0,.3],[.5,.62],[1,.3],[1,.56],[.5,.88],[0,.56]]);break;case 8:R(0,0,.5,.5);R(.5,.5,.5,.5);break;case 9:c.lineWidth=Math.max(2,w*.16);c.beginPath();c.moveTo(x,y);c.lineTo(x+w,y+h);c.moveTo(x+w,y);c.lineTo(x,y+h);c.stroke();break}
+bnEmblem(c,B.em,x+w/2,y+h*(cyf||.4),Math.min(w,h)*.27,B.e);c.restore()}
+function bnShape(c,x,y,w,h){c.beginPath();c.moveTo(x,y);c.lineTo(x+w,y);c.lineTo(x+w,y+h*.8);c.lineTo(x+w/2,y+h);c.lineTo(x,y+h*.8);c.closePath()}
+function bnDraw(cv,B,ring){const c=cv.getContext('2d'),w=cv.width,h=cv.height,m=Math.max(2,w*.05);c.clearRect(0,0,w,h);c.save();c.shadowColor='rgba(0,0,0,.45)';c.shadowBlur=m*1.5;c.shadowOffsetY=m*.6;bnShape(c,m,m,w-2*m,h-2*m-m*.5);c.fillStyle=B.p;c.fill();c.restore();c.save();bnShape(c,m,m,w-2*m,h-2*m-m*.5);c.clip();bnArt(c,B,m,m,w-2*m,h-2*m-m*.5);const g2=c.createLinearGradient(0,0,0,h);g2.addColorStop(0,'rgba(255,255,255,.16)');g2.addColorStop(.5,'rgba(255,255,255,0)');g2.addColorStop(1,'rgba(0,0,0,.35)');c.fillStyle=g2;c.fillRect(0,0,w,h);c.restore();bnShape(c,m,m,w-2*m,h-2*m-m*.5);c.lineJoin='round';c.lineWidth=Math.max(2,w*.045);c.strokeStyle=ring||'#fff3c4';c.stroke()}
+function col(o){return o>=1&&o<=4&&BN[o]?BN[o].p:css('--neu')}
 function castle(x,y,o,t,on){const ink=css('--ink'),f=col(o);
 if(on){g.strokeStyle=css('--ring');g.lineWidth=4;g.beginPath();g.ellipse(x,y+2,31,27,0,0,7);g.stroke()}
 g.lineWidth=2;g.strokeStyle=ink;g.fillStyle=f;
@@ -242,7 +324,7 @@ const l2=own?'Troops '+Math.floor(c.t)+'/'+capL(c.l)+' \u00b7 +'+(.5*grwL(c.l)*g
 let l3='';if(aim&&!isT&&own)l3='Tap a castle to attack it';else if(isT){const[ax,ay]=WP(S),[bx2,by2]=WP(c),sp=spd(n);l3=pt?'Main castle: can’t be conquered':'Send '+n+' \u00b7 speed '+Math.round(sp)+' \u00b7 arrives '+(Math.hypot(ax-bx2,ay-by2)/sp).toFixed(1)+'s'}else if(!vis)l3='Scout to reveal troops';else l3='Defense +'+df+'%'+(own&&c.l<MAXL?' \u00b7 next level +'+Math.round((dfL(c.l+1)-dfL(c.l))*100)+'% def':'');
 const cx=Math.max(147,Math.min(W-147,x0)),L=cx-147,T0=Math.max(70,y0-130*q-84);
 g.save();g.lineWidth=3;g.strokeStyle='#fff';g.fillStyle='#17469a';g.beginPath();g.roundRect(L+54,T0+4,240,52,6);g.fill();
-g.fillStyle=col(c.o);g.fillRect(L+60,T0+9,42,42);g.fillStyle='#fff';g.beginPath();g.moveTo(L+81,T0+17);g.lineTo(L+93,T0+30);g.lineTo(L+81,T0+43);g.lineTo(L+69,T0+30);g.closePath();g.fill();
+g.fillStyle=col(c.o);g.fillRect(L+60,T0+9,42,42);if(c.o>=1&&BN[c.o]){g.save();g.beginPath();g.rect(L+60,T0+9,42,42);g.clip();bnArt(g,BN[c.o],L+60,T0+9,42,42,.5);g.restore()}else{g.fillStyle='#fff';g.beginPath();g.moveTo(L+81,T0+17);g.lineTo(L+93,T0+30);g.lineTo(L+81,T0+43);g.lineTo(L+69,T0+30);g.closePath();g.fill()}
 g.fillStyle='#2a58b8';g.beginPath();g.moveTo(L,T0);g.lineTo(L+54,T0);g.lineTo(L+54,T0+40);g.lineTo(L+27,T0+60);g.lineTo(L,T0+40);g.closePath();g.fill();g.stroke();
 g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.font='bold 28px Georgia,serif';g.fillText(c.l,L+27,T0+26);
 g.textAlign='left';g.font='bold 14px Georgia,serif';g.fillText(l1,L+110,T0+16);g.font='11px Georgia,serif';g.fillText(l2,L+110,T0+32);g.fillStyle='#ffd34a';g.fillText(l3,L+110,T0+47);g.restore()}
@@ -332,11 +414,11 @@ g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=.8;for(const dx of[-3,0,3]){g.beginP
 if(LV>=2)for(const dx of[-14,14]){g.fillStyle='#ffb43a';g.beginPath();g.arc(x+dx,y+4,2,0,7);g.fill();g.fillStyle='rgba(255,180,60,.3)';g.beginPath();g.arc(x+dx,y+4,5,0,7);g.fill()}
 TW(-27,13,13,32,15);TW(27,13,13,32,15);
 const bx=x-16,by=y-146-(curLv-1)*5;let b=g.createLinearGradient(0,by,0,by+50);b.addColorStop(0,f);b.addColorStop(1,'rgba(0,0,0,.45)');
-g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(bx,by);g.lineTo(bx+32,by);g.lineTo(bx+32,by+42);g.lineTo(x,by+52);g.lineTo(bx,by+42);g.closePath();g.fillStyle=f;g.fill();g.fillStyle=b;g.fill();g.stroke();
-g.fillStyle='#fff';g.beginPath();g.moveTo(x,by+5);g.lineTo(x+8,by+14);g.lineTo(x,by+23);g.lineTo(x-8,by+14);g.closePath();g.fill();
+g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(bx,by);g.lineTo(bx+32,by);g.lineTo(bx+32,by+42);g.lineTo(x,by+52);g.lineTo(bx,by+42);g.closePath();g.fillStyle=f;g.fill();if(o>=1&&BN[o]){g.save();g.clip();bnArt(g,BN[o],bx,by,32,52,.42);g.restore();const sh=g.createLinearGradient(0,by,0,by+52);sh.addColorStop(0,'rgba(255,255,255,.14)');sh.addColorStop(.5,'rgba(255,255,255,0)');sh.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=sh;g.fill()}else{g.fillStyle=b;g.fill()}g.stroke();
+if(!(o>=1&&BN[o])){g.fillStyle='#fff';g.beginPath();g.moveTo(x,by+5);g.lineTo(x+8,by+14);g.lineTo(x,by+23);g.lineTo(x-8,by+14);g.closePath();g.fill()}
 g.fillStyle='#e0b24a';g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(x-36,by+24);g.lineTo(x-17,by+24);g.lineTo(x-17,by+40);g.lineTo(x-26.5,by+50);g.lineTo(x-36,by+40);g.closePath();g.fill();g.stroke();g.fillStyle='#17274d';g.font='bold 15px Georgia,serif';if(!noTxt)shN(curRL||curLv,x-26.5,by+36);g.fillStyle='#fff';g.font='bold 16px Georgia,serif';g.lineWidth=3;g.strokeStyle='rgba(0,0,0,.6)';const s=t<0?'?':Math.floor(t);if(!noTxt){g.strokeText(s,x,by+34);g.fillText(s,x,by+34)}if(curMain){g.font='15px serif';g.fillText('👑',x+22,by+6)}if(curTp){g.font='15px serif';g.fillText('✨',x-22,by+6)}}
 const SW=130,SH=210,SOX=65,SOY=180,SS2=Math.min(2,devicePixelRatio||1)*1.2;
-function spr(c){const k=c.o+'|'+visL(c.l)+'|'+(c.tp?1:0);let s=SPR[k];if(s)return s;const cv=document.createElement('canvas');cv.width=SW*SS2;cv.height=SH*SS2;const t=cv.getContext('2d');t.scale(SS2,SS2);t.translate(SOX,SOY);t.textAlign='center';t.textBaseline='middle';const og=g,m=[curLv,curMain,curTp,curT];g=t;curLv=visL(c.l);curMain=0;curTp=c.tp;curT=0;noTxt=1;try{keep2(0,0,c.o,0,false)}finally{noTxt=0;g=og;[curLv,curMain,curTp,curT]=m}return SPR[k]=cv}
+function spr(c){const k=c.o+'|'+(BN[c.o]?JSON.stringify(BN[c.o]):'')+'|'+visL(c.l)+'|'+(c.tp?1:0);let s=SPR[k];if(s)return s;const cv=document.createElement('canvas');cv.width=SW*SS2;cv.height=SH*SS2;const t=cv.getContext('2d');t.scale(SS2,SS2);t.translate(SOX,SOY);t.textAlign='center';t.textBaseline='middle';const og=g,m=[curLv,curMain,curTp,curT];g=t;curLv=visL(c.l);curMain=0;curTp=c.tp;curT=0;noTxt=1;try{keep2(0,0,c.o,0,false)}finally{noTxt=0;g=og;[curLv,curMain,curTp,curT]=m}return SPR[k]=cv}
 function lbl(l,tv){const by=-146-(visL(l)-1)*5,s=tv<0?'?':Math.floor(tv);g.font='bold 16px Georgia,serif';g.lineWidth=3;g.strokeStyle='rgba(0,0,0,.6)';g.textAlign='center';g.textBaseline='middle';g.strokeText(s,0,by+34);g.fillStyle='#fff';g.fillText(s,0,by+34);shN(l,-26.5,by+36)}
 function shN(l,x,y){g.save();g.textAlign='center';g.textBaseline='middle';g.fillStyle='#17274d';g.font='bold '+(l>99?9:l>9?12:15)+'px Georgia,serif';g.fillText(l,x,y);g.restore()}
 const visA=a=>a.o===1||(cities[a.to]&&cities[a.to].o===1);
@@ -365,8 +447,8 @@ g.save();g.translate(x,y);g.scale(s,s);const wv=Math.sin(T*5+a.f)*2;
 g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(0,2,7,2.6,0,0,7);g.fill();
 g.strokeStyle='#4a3a2a';g.lineWidth=2.4;g.beginPath();g.moveTo(0,2);g.lineTo(0,-54);g.stroke();
 g.fillStyle='#f2c23a';g.beginPath();g.arc(0,-55,2.8,0,7);g.fill();
-g.fillStyle=k;g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(1,-51);g.lineTo(27+wv*.4,-51);g.lineTo(27+wv,-34);g.lineTo(14,-26+wv*.5);g.lineTo(1,-34);g.closePath();g.fill();g.stroke();
-g.strokeStyle='#fff';g.lineWidth=2.3;g.beginPath();g.moveTo(8,-46);g.lineTo(20,-34);g.moveTo(20,-46);g.lineTo(8,-34);g.moveTo(7.5,-41.5);g.lineTo(11.5,-45.5);g.moveTo(16.5,-45.5);g.lineTo(20.5,-41.5);g.stroke();
+g.fillStyle=k;g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(1,-51);g.lineTo(27+wv*.4,-51);g.lineTo(27+wv,-34);g.lineTo(14,-26+wv*.5);g.lineTo(1,-34);g.closePath();g.fill();if(BN[a.o]){g.save();g.clip();bnArt(g,BN[a.o],1,-51,27,25,.45);g.restore()}g.stroke();
+if(!BN[a.o]){g.strokeStyle='#fff';g.lineWidth=2.3;g.beginPath();g.moveTo(8,-46);g.lineTo(20,-34);g.moveTo(20,-46);g.lineTo(8,-34);g.stroke()}
 g.fillStyle='#17274d';g.strokeStyle='#e0b24a';g.lineWidth=1.5;g.beginPath();g.roundRect(-17,6,34,16,6);g.fill();g.stroke();
 g.fillStyle='#fff';g.font='bold 12px Georgia,serif';g.textAlign='center';g.textBaseline='middle';g.fillText(a.n,0,14.5);{const r=Math.max(0,Math.ceil((1-a.p)*a.d)),tx=r>=60?Math.floor(r/60)+':'+String(r%60).padStart(2,'0'):r+'s';g.fillStyle='#17274d';g.strokeStyle=a.o===1?'#e0b24a':'#ff6b5e';g.lineWidth=1.5;g.beginPath();g.roundRect(-21,25,42,16,6);g.fill();g.stroke();g.fillStyle='#fff';g.font='bold 11px Georgia,serif';g.fillText('⏱ '+tx,0,33.5)}
 if(a.o!==1){g.font='14px serif';g.fillText('⚠️',14,-66)}g.restore()}
@@ -454,11 +536,11 @@ let mr=0,h='';rows.slice(0,50).forEach((v,i)=>{const val=wk?v.score+' pts':v.win
 if(!mr&&me){const p=rows.indexOf(me)+1;h+='<div class="lr me"><span>'+p+'</span><b>'+esc(String(me.name))+'</b><em>'+(wk?me.score+' pts':me.wins+' 🏆')+'</em></div>'}
 L.innerHTML=h;M.textContent=(me?'Your rank: #'+(rows.indexOf(me)+1):'')+(err?'  ·  live scores offline, showing AI lords':'')}
 $('lbb').onclick=()=>lbShow('w');$('lbx').onclick=()=>$('lbp').classList.remove('on');$('lbp').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lbShow(b.dataset.k));
-function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,stats,claimed,seasonT,mainReady,T,Z,cam,ghosts,SEEDK,savedAt:Date.now()},(k,v)=>k==='cv'?undefined:v)}
+function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,stats,claimed,seasonT,mainReady,T,Z,cam,ghosts,SEEDK,bn:[BN[2],BN[3],BN[4]],savedAt:Date.now()},(k,v)=>k==='cv'?undefined:v)}
 const LK=()=>'cl_save_'+UID;
 function saveLocal(){if(!UID||!run||NET)return;try{localStorage.setItem(LK(),JSON.stringify({s:snap(),at:Date.now()}))}catch(_){}}
 function saveNow(){if(!UID||!run||NET)return;const s=snap(),at=Date.now();try{localStorage.setItem(LK(),JSON.stringify({s,at}))}catch(_){}if(!DB)return;try{ud('save').set({s,at}).catch(()=>{})}catch(_){}}
-function loadGame(d){size();closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;stats=d.stats;claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;ghosts=d.ghosts||[];applyGhosts();SEEDK=d.SEEDK||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
+function loadGame(d){size();if(d.bn&&d.bn.length===3){BN[2]=d.bn[0];BN[3]=d.bn[1];BN[4]=d.bn[2];bnClearSpr()}closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;stats=d.stats;claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;ghosts=d.ghosts||[];applyGhosts();SEEDK=d.SEEDK||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
 /* Single player only: while you were away the AI lords may raid you. Gentle by design:
    one raid chance per 20 min away, max 3 raids, max 2 castles lost, never the main castle,
    never more than a quarter of your castles, and only if the raiders really outnumber the defenders. */
@@ -552,6 +634,27 @@ if(r.state==='playing'){const k=r.slots&&r.slots[UID];if(!k){mpShow(1,'The room 
 const sw=o=>o===1?k:o===k?1:o;NET.started=1;NET.slot=k;NET.seed=r.seed;NET.names=r.names;NET.nl=[1,2,3,4].map(o=>r.names[sw(o)-1]);mpShow(0);fs();startMP()}}))}catch(e){mpErr(e,'Could not join.')}};
 
 size();
+</script>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+let tab='pat';
+function B(){return BN[1]}
+function refresh(){bnDraw($('bnp'),B());bnDraw($('bnv'),B());render()}
+function commit(){bnSave();bnClearSpr();refresh()}
+function render(){const body=$('bnb');body.innerHTML='';document.querySelectorAll('.bnt button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+if(tab==='pat'||tab==='em'){const g=document.createElement('div');g.className='bnG';const n=tab==='pat'?BPN:BEN,key=tab==='pat'?'pat':'em';
+for(let i=0;i<n;i++){const b=document.createElement('button'),c=document.createElement('canvas');c.width=80;c.height=104;const t=Object.assign({},B());t[key]=i;bnDraw(c,t);b.appendChild(c);if(B()[key]===i)b.classList.add('on');b.onclick=()=>{B()[key]=i;commit()};g.appendChild(b)}body.appendChild(g)}
+else{[['p','Main'],['s','Second'],['e','Emblem']].forEach(([k,lab])=>{const r=document.createElement('div');r.className='bnC';r.innerHTML='<span>'+lab+'</span>';const d=document.createElement('div');BPAL.forEach(cl=>{const b=document.createElement('button');b.style.background=cl;if(B()[k]===cl)b.classList.add('on');b.onclick=()=>{B()[k]=cl;commit()};d.appendChild(b)});r.appendChild(d);body.appendChild(r)})}}
+function rnd(){BN[1]=bnRandom(Math.random,[]);commit()}
+$('bne').onclick=()=>{$('bn').classList.add('open');refresh()};
+$('bnd').onclick=()=>{$('bn').classList.remove('open');bnDraw($('bnp'),B())};
+$('bnr').onclick=rnd;$('bnrn').onclick=rnd;
+$('bn').onclick=e=>{if(e.target===$('bn'))$('bnd').onclick()};
+document.querySelectorAll('.bnt button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()});
+bnDraw($('bnp'),B());
+})();
 </script>
 </body>
 </html>
