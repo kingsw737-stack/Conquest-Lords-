@@ -354,14 +354,13 @@ const tpc={};cities.forEach(c=>{if(c.tp)tpc[c.o]=(tpc[c.o]||0)+1});const gmv=gm(
 armies.forEach(a=>a.p+=dt/a.d);armies.filter(a=>a.p>=1).forEach(a=>{if(!G)arrive(a)});armies=armies.filter(a=>a.p<1);{const inc=armies.filter(a=>a.o!==1&&cities[a.to]&&cities[a.to].o===1),ks=new Set(inc.map(a=>a.f+'>'+a.to+'>'+a.n));let n1=0;ks.forEach(k=>{if(!ALR.has(k))n1++});if(n1&&T-alT>5){alT=T;const gh=ghosts[inc[0].o-2];toast('⚠️ '+(gh?gh.n:'An enemy')+' is attacking your castle!')}ALR=ks}
 acc+=dt;if(acc>=1){acc=0;const m=cities.filter(c=>c.o===1).reduce((s,c)=>s+.5+.5*c.l,0)*(1+.1*cities.filter(c=>c.o===1&&c.tp).length);gold+=m;stats.earned+=m;if(tab>=0)render()}
 aiT+=dt;if(aiT>7){aiT=0;if(!G)ai()}netT+=dt;if(NET&&NET.role==='h'&&netT>1){netT=0;pubSnap()}
-const mine=cities.filter(c=>c.o===1).length,foes=cities.filter(c=>c.o>1).length;
-if(G)seasonT+=dt;else seasonT=(Date.now()-sStart)/1000;const sco=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),mp=sco(1),rk=1+[2,3,4].filter(o=>sco(o)>mp).length;
-ui=(uiT+=dt)>.25;if(ui)uiT=0;const pw=myPower();window.MYP=pw;if(ui&&!NET)window.BOTP=[botPower(2),botPower(3),botPower(4)];if(!NET&&DB&&UID&&(subT+=dt)>15){subT=0;submitScore(pw)}
+if(G)seasonT+=dt;else seasonT=(Date.now()-sStart)/1000;
+ui=(uiT+=dt)>.25;if(ui)uiT=0;const pw=ui?myPower():(window.MYP||0);window.MYP=pw;if(ui&&!NET)window.BOTP=[botPower(2),botPower(3),botPower(4)];if(!NET&&DB&&UID&&(subT+=dt)>15){subT=0;submitScore(pw)}
 respT+=dt;if(!G&&respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o===o)&&!armies.some(a=>a.o===o)){let L=cities.filter(c=>c.o===0);if(!L.length){chkIsl();L=cities.filter(c=>c.o===0)}if(L.length){const c=L[Math.random()*L.length|0];c.o=o;c.t=15;c.l=1;c.main=1;if(o===1)toast('Your last castle fell!\nA new castle is yours.')}}})}
 [1,2,3,4].forEach(o=>{if(respT!==0)return;const L=cities.filter(c=>c.o===o);if(L.length&&!L.some(c=>c.main))L.reduce((a,c)=>c.l>a.l?c:a).main=1});
 if(seasonT>=SEASON_DAYS*SDAY)end();
 if(ui){document.getElementById('g').textContent=fmtN(Math.floor(gold));if(typeof updPf==='function')updPf();document.getElementById('tr').textContent=fmtN(Math.floor(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0)));
-document.getElementById('n').textContent=mine;
+document.getElementById('n').textContent=cities.filter(c=>c.o===1).length;
 {const l=Math.ceil(REG_CD-(T-regT)),b=rgb;if(l>0){b.textContent=l;b.style.opacity=.55;b.style.fontSize='16px'}else{b.textContent='📯';b.style.opacity=1;b.style.fontSize=''}}panel()}}
 function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;try{SFX.play(w?'win':'lose')}catch(_){}
 (mp?Promise.resolve(0):submitScore(window.MYP||0,true)).then(()=>mp?0:weeklyRank()).then(r=>{if(r&&!run)$('d').textContent+='\n🌍 Weekly rank: #'+r});if(w&&!mp){wins++;try{if(DB)ud('profile').set({name:pname,wins}).catch(()=>{});DB.collection('leaderboard').doc(UID).set({name:pname,wins}).catch(()=>{})}catch(_){}}
@@ -735,7 +734,8 @@ if(LV>=3)for(const dx of[-FX*.6,FX*.6]){g.fillStyle=f;g.beginPath();g.moveTo(x+d
 TW(-FX,13,...TC);TW(FX,13,...TC)}
 const by=y+bannerY(curLv,o)-10;tileSet(x,by,o,f);if(!noTxt)info(x,by,curRL||curLv,t<0?'?':Math.floor(t),f);g.save();g.textAlign='center';g.textBaseline='middle';g.font='17px serif';if(curMain)g.fillText('👑',x-26,by-6);if(curTp)g.fillText('✨',x+14,by-2);g.restore()}
 const BK=1.3,SW=170,SH=266,SOX=85,SOY=230,SS2=Math.min(2,devicePixelRatio||1)*1.25;
-function spr(c){const k=c.o+'|'+(BN[c.o]?JSON.stringify(BN[c.o]):'')+'|'+visL(c.l,c.o)+'|'+(c.tp?1:0);let s=SPR[k];if(s)return s;const cv=document.createElement('canvas');cv.width=SW*SS2;cv.height=SH*SS2;const t=cv.getContext('2d');t.scale(SS2,SS2);t.translate(SOX,SOY);t.textAlign='center';t.textBaseline='middle';const og=g,m=[curLv,curMain,curTp,curT];g=t;curLv=visL(c.l,c.o);curMain=0;curTp=c.tp;curT=0;noTxt=1;try{keep2(0,0,c.o,0,false)}finally{noTxt=0;g=og;[curLv,curMain,curTp,curT]=m}return SPR[k]=cv}
+const BNK={};function bnKey(o){return BN[o]?JSON.stringify(BN[o]):''}
+function spr(c){const k=c.o+'|'+(BNK[c.o]!==undefined?BNK[c.o]:bnKey(c.o))+'|'+visL(c.l,c.o)+'|'+(c.tp?1:0);let s=SPR[k];if(s)return s;const cv=document.createElement('canvas');cv.width=SW*SS2;cv.height=SH*SS2;const t=cv.getContext('2d');t.scale(SS2,SS2);t.translate(SOX,SOY);t.textAlign='center';t.textBaseline='middle';const og=g,m=[curLv,curMain,curTp,curT];g=t;curLv=visL(c.l,c.o);curMain=0;curTp=c.tp;curT=0;noTxt=1;try{keep2(0,0,c.o,0,false)}finally{noTxt=0;g=og;[curLv,curMain,curTp,curT]=m}return SPR[k]=cv}
 function lbl(l,tv,o){const by=bannerY(visL(l,o),o)-10;info(0,by,l,tv<0?'?':Math.floor(tv),col(o))}
 /* castle info: emblem tile + level plate (cached with the castle) and a troop ribbon (drawn live) */
 function rr(px,py,w,h,r){g.beginPath();g.moveTo(px+r,py);g.arcTo(px+w,py,px+w,py+h,r);g.arcTo(px+w,py+h,px,py+h,r);g.arcTo(px,py+h,px,py,r);g.arcTo(px,py,px+w,py,r);g.closePath()}
@@ -810,7 +810,7 @@ const TB=[[],[],[],[]];let VG=null,VGk='',CO=null,COn=-1,COf=null;
 function getVG(m){const k=W+'x'+H;if(k!==VGk||!VG){VGk=k;VG=g.createRadialGradient(W/2,H/2,m*.5,W/2,H/2,Math.hypot(W,H)*.62);VG.addColorStop(0,'rgba(90,30,0,0)');VG.addColorStop(1,'rgba(70,20,0,.3)')}return VG}
 function cityOrder(){if(!CO||COn!==cities.length||COf!==cities[0]){COn=cities.length;COf=cities[0];CO=cities.map((c,i)=>[c,i]).sort((a,b)=>a[0].y-b[0].y)}return CO}
 function prebuildNear(){for(const q of islands){if(q.cv||q.grow<1)continue;const x0=(q.ox-cam.x)*Z,y0=(q.oy-cam.y)*Z;if(x0<W*3&&y0<H*3&&x0+q.w*Z>-W*2&&y0+q.h*Z>-H*2){mkIsland(q);return}}for(const b of bridges){if(b.cv||!islands[b.k]||islands[b.k].grow<1)continue;const x0=(b.ox-cam.x)*Z,y0=(b.oy-cam.y)*Z;if(x0<W*3&&y0<H*3&&x0+b.w*Z>-W*2&&y0+b.h*Z>-H*2){mkBridge(b);return}}}
-function draw(){g.fillStyle='#e0903a';g.fillRect(0,0,W,H);clampCam();
+function draw(){for(let o=1;o<=4;o++)BNK[o]=bnKey(o);g.fillStyle='#e0903a';g.fillRect(0,0,W,H);clampCam();
 if(TER){const S=1024*Z,ox=-(((cam.x*Z)%S)+S)%S,oy=-(((cam.y*Z)%S)+S)%S;for(let x=ox;x<W;x+=S)for(let y=oy;y<H;y+=S)g.drawImage(TER,x,y,S+1,S+1)}
 if(CLD.length){const nw=performance.now()/1000;g.save();for(let i=0;i<16;i++){const sp=.5+.2*(i%3),sc=Z*(.8+.12*(i%5)),cw=360*sc,mx=W+cw*1.5,my=H+260*Z,sx=(((i*613+nw*9*(1+.15*(i%4))-cam.x*Z*sp)%mx)+mx)%mx-cw*.75,sy=(((i*389-cam.y*Z*sp)%my)+my)%my-130*Z;g.globalAlpha=.34+.06*(i%3);g.drawImage(CLD[i%5],sx,sy,cw,170*sc)}g.restore()}
 let built=0;islands.forEach(q=>{const e=.6+.4*q.grow,sc=Z*e,x0=(q.x-cam.x)*Z+(q.ox-q.x)*sc,y0=(q.y-cam.y)*Z+(q.oy-q.y)*sc+(1-q.grow)*80*Z,vis=x0<W&&y0<H&&x0+q.w*sc>0&&y0+q.h*sc>0;if(!vis){if(q.cv&&(x0>W*4||y0>H*4||x0+q.w*sc<-W*3||y0+q.h*sc<-H*3))q.cv=null;return}if(!q.cv){if(built++)return;mkIsland(q)}g.globalAlpha=q.grow;g.drawImage(q.cv,x0,y0,q.w*sc,q.h*sc);g.globalAlpha=1});
@@ -948,7 +948,7 @@ setInterval(()=>{try{if(DB&&UID&&run&&!NET&&window.MYP>0)submitScore(window.MYP)
 $('lbb').onclick=()=>lbShow('w');$('lbx').onclick=()=>{$('lbp').classList.remove('on');if(LBS.a.un){try{LBS.a.un()}catch(_){}LBS.a.un=null;LBS.a.key=''}};$('lbp').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lbShow(b.dataset.k));
 function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,stats,claimed,seasonT,mainReady,T,Z,cam,ghosts,SEEDK,bn:[BN[2],BN[3],BN[4]],savedAt:Date.now()},(k,v)=>k==='cv'?undefined:v)}
 const LK=()=>'cl_save_'+UID;
-function saveLocal(){if(!UID||!run||NET)return;try{localStorage.setItem(LK(),JSON.stringify({s:snap(),at:Date.now()}))}catch(_){}}
+let slWait=0;function saveLocal(){if(!UID||!run||NET)return;if(drag||pinch||glide||fling){if(!slWait){slWait=1;setTimeout(()=>{slWait=0;saveLocal()},1200)}return}(window.requestIdleCallback||setTimeout)(()=>{try{localStorage.setItem(LK(),JSON.stringify({s:snap(),at:Date.now()}))}catch(_){}})}
 function saveNow(){if(!UID||!run||NET)return;const s=snap(),at=Date.now();try{localStorage.setItem(LK(),JSON.stringify({s,at}))}catch(_){}if(!DB)return;try{ud('save').set({s,at}).catch(()=>{})}catch(_){}}
 function loadGame(d){size();if(d.bn&&d.bn.length===3){BN[2]=d.bn[0];BN[3]=d.bn[1];BN[4]=d.bn[2];bnClearSpr()}closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;stats=d.stats;if(stats.spent==null)stats.spent=cities.reduce((a,c)=>a+(c.o===1?CUM[Math.min(MAXL,c.l)]:0),0);claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;ghosts=d.ghosts||[];applyGhosts();SEEDK=d.SEEDK||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
 /* Single player only: while you were away the AI lords may raid you. Gentle by design:
