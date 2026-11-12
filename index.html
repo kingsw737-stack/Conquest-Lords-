@@ -243,6 +243,8 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #zm{top:calc(env(safe-area-inset-top,0px) + 94px)!important;left:6px!important}
 #sm{top:calc(env(safe-area-inset-top,0px) + 94px)!important;right:8px!important}
 #g{grid-column:1!important;justify-self:stretch!important;width:auto!important}
+#ov #d,#ov #bnrow{display:none!important}
+#sndb{top:calc(env(safe-area-inset-top,0px) + 50px)!important;right:12px!important}
 </style>
 </head>
 <body>
@@ -277,7 +279,7 @@ grwL=l=>1+.4*(l-1),                                   /* troop growth multiplier
 dfL=l=>l<=1?0:.6*Math.log(l),                         /* defense bonus (soft-capped, ~+97% at lv5, +276% at lv100) */
 ptsL=l=>10+5*Math.min(l,5)+(l>5?Math.floor((l-5)/3):0), /* kingdom points per castle */
 visL=(l,o)=>o===0?0:l>=100?5:l>=60?4:l>=30?3:l>=10?2:1,                                /* art only has 5 looks */
-szL=(l,o)=>(o===0?.78:1)*(.85+.15*Math.sqrt((Math.min(l,MAXL)-1)/(MAXL-1))),BYT=[-148,-166,-186,-208,-230],bannerY=(t,o)=>o===0||t<1?-112:BYT[t-1];
+szL=(l,o)=>1.18*(o===0?.78:1)*(.85+.15*Math.sqrt((Math.min(l,MAXL)-1)/(MAXL-1))),BYT=[-148,-166,-186,-208,-230],bannerY=(t,o)=>o===0||t<1?-112:BYT[t-1];
 const CUM=[0,0];for(let l=1;l<MAXL;l++)CUM[l+1]=CUM[l]+upCost(l); /* total gold to reach level l */
 const troopsOf=o=>cities.reduce((a,c)=>a+(c.o===o?c.t:0),0)+armies.reduce((a,x)=>a+(x.o===o?x.n:0),0),
 myPower=()=>Math.floor((stats.spent||0)+troopsOf(1)),botPower=o=>Math.floor(cities.reduce((a,c)=>a+(c.o===o?CUM[Math.min(MAXL,c.l)]/3:0),0)+troopsOf(o)); /* bots pay 1/3 of the cost in troops */
@@ -738,9 +740,9 @@ function rr(px,py,w,h,r){g.beginPath();g.moveTo(px+r,py);g.arcTo(px+w,py,px+w,py
 function tileSet(x,by,o,f){const TX=x-46;g.save();g.lineJoin='round';
 g.shadowColor='rgba(0,0,0,.5)';g.shadowBlur=6;g.shadowOffsetY=2;rr(TX,by,40,40,7);g.fillStyle=f;g.fill();g.shadowColor='rgba(0,0,0,0)';
 if(o>=1&&BN[o]){g.save();rr(TX,by,40,40,7);g.clip();bnArt(g,BN[o],TX,by,40,40,.42);g.restore()}else{g.fillStyle='#fff';g.beginPath();g.moveTo(TX+20,by+8);g.lineTo(TX+29,by+20);g.lineTo(TX+20,by+32);g.lineTo(TX+11,by+20);g.closePath();g.fill()}
-rr(TX,by,40,40,7);g.lineWidth=5;g.strokeStyle='rgba(8,12,36,.85)';g.stroke();g.lineWidth=2.5;g.strokeStyle='#fff';g.stroke();
+rr(TX,by,40,40,7);g.lineWidth=5.5;g.strokeStyle='rgba(8,12,36,.88)';g.stroke();g.lineWidth=2.5;g.strokeStyle='#ffe08a';g.stroke();rr(TX+3,by+3,34,34,5);g.lineWidth=1.2;g.strokeStyle='rgba(255,255,255,.55)';g.stroke();g.save();rr(TX,by,40,40,7);g.clip();const tg=g.createLinearGradient(0,by,0,by+40);tg.addColorStop(0,'rgba(255,255,255,.28)');tg.addColorStop(.45,'rgba(255,255,255,0)');tg.addColorStop(1,'rgba(0,0,0,.25)');g.fillStyle=tg;g.fillRect(TX,by,40,40);g.restore();
 const pl=()=>{g.beginPath();g.moveTo(TX+2,by+37);g.lineTo(TX+38,by+37);g.lineTo(TX+38,by+53);g.lineTo(TX+20,by+63);g.lineTo(TX+2,by+53);g.closePath()};
-pl();g.lineWidth=5;g.strokeStyle='rgba(8,12,36,.85)';g.stroke();pl();g.fillStyle=f;g.fill();const sh=g.createLinearGradient(0,by+37,0,by+63);sh.addColorStop(0,'rgba(255,255,255,.3)');sh.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=sh;g.fill();g.lineWidth=2.5;g.strokeStyle='#fff';g.stroke();g.restore()}
+pl();g.lineWidth=5;g.strokeStyle='rgba(8,12,36,.85)';g.stroke();pl();g.fillStyle=f;g.fill();const sh=g.createLinearGradient(0,by+37,0,by+63);sh.addColorStop(0,'rgba(255,255,255,.3)');sh.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=sh;g.fill();g.lineWidth=2.5;g.strokeStyle='#ffe08a';g.stroke();g.restore()}
 function crowd(x,y){g.save();g.translate(x,y);g.fillStyle='#fff';g.strokeStyle='rgba(8,12,36,.8)';g.lineWidth=1.3;[[-6,2,3.4],[6,2,3.4],[0,0,4.2]].forEach(p=>{g.beginPath();g.arc(p[0],p[1]-5,p[2]*.8,0,7);g.fill();g.stroke();g.beginPath();g.moveTo(p[0]-p[2]-1,p[1]+6);g.quadraticCurveTo(p[0],p[1]-3,p[0]+p[2]+1,p[1]+6);g.closePath();g.fill();g.stroke()});g.restore()}
 const INFC=new Map(),IW=210,IH=80,IOX=52,IOY=10;
 function info(x,by,l,s,f){s=String(s);const k=l+'|'+s+'|'+f;let cv=INFC.get(k);
@@ -752,7 +754,7 @@ g.font='bold '+(l>99?15:l>9?19:22)+'px Arial,Helvetica,sans-serif';g.lineWidth=4
 s=String(s);g.font='bold '+(s.length>3?19:22)+'px Arial,Helvetica,sans-serif';const tw=g.measureText(s).width,RW=Math.max(62,tw+48),rx=x-8,ry=by+5,rh=27,cy=ry+rh/2+1;
 const rb=()=>{g.beginPath();g.moveTo(rx,ry);g.lineTo(rx+RW,ry);g.lineTo(rx+RW-8,ry+rh/2);g.lineTo(rx+RW,ry+rh);g.lineTo(rx,ry+rh);g.closePath()};
 g.save();g.shadowColor='rgba(0,0,0,.45)';g.shadowBlur=5;g.shadowOffsetY=2;rb();g.lineWidth=5;g.strokeStyle='rgba(8,12,36,.85)';g.stroke();g.restore();
-rb();g.fillStyle=f;g.fill();const sh=g.createLinearGradient(0,ry,0,ry+rh);sh.addColorStop(0,'rgba(255,255,255,.32)');sh.addColorStop(.5,'rgba(255,255,255,0)');sh.addColorStop(1,'rgba(0,0,0,.35)');g.fillStyle=sh;g.fill();g.lineWidth=2;g.strokeStyle='rgba(255,255,255,.85)';g.stroke();
+rb();g.fillStyle=f;g.fill();const sh=g.createLinearGradient(0,ry,0,ry+rh);sh.addColorStop(0,'rgba(255,255,255,.32)');sh.addColorStop(.5,'rgba(255,255,255,0)');sh.addColorStop(1,'rgba(0,0,0,.35)');g.fillStyle=sh;g.fill();g.lineWidth=2.2;g.strokeStyle='#ffe08a';g.stroke();g.save();g.beginPath();g.moveTo(rx+4,ry+3.5);g.lineTo(rx+RW-10,ry+3.5);g.lineWidth=1.5;g.strokeStyle='rgba(255,255,255,.45)';g.stroke();g.restore();
 g.textAlign='left';g.lineWidth=4.5;g.strokeStyle='rgba(8,12,36,.92)';g.fillStyle='#fff';g.strokeText(s,rx+13,cy);g.fillText(s,rx+13,cy);crowd(rx+RW-21,cy);g.restore()}
 function shN(l,x,y){g.save();g.textAlign='center';g.textBaseline='middle';g.fillStyle='#10193a';g.font='bold '+(l>99?12:l>9?16:19)+'px Arial,Helvetica,sans-serif';g.fillText(l,x,y);g.restore()}
 function troopTxt(x,y,s){s=String(s);const n=s.length,f=n<=2?21:n===3?19:16;g.save();g.textAlign='center';g.textBaseline='middle';g.font='bold '+f+'px Arial,Helvetica,sans-serif';g.lineJoin='round';g.miterLimit=2;g.lineWidth=5.5;g.strokeStyle='rgba(8,12,36,.95)';g.strokeText(s,x,y);g.fillStyle='#fff';g.fillText(s,x,y);g.restore()}
