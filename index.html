@@ -289,13 +289,13 @@ const WP=c=>[c.x,c.y];
 const P=c=>{const[x,y]=WP(c);return[(x-cam.x)*Z,(y-cam.y)*Z]};
 const CELLS=[[1,1],[1,0],[2,1],[1,2],[0,1],[2,0],[2,2],[0,2],[0,0]];
 const START_ISL=4,NEW_ISL_AT=.8; /* islands at game start; share of castles that must be taken before a new island rises */
-const ISC=1.5; /* island scale: bigger islands, more room between castles */
-function spawnIsl(k){RG=mulberry(SEEDK*1009+k*7919+1);const CW=3700,CH=3200,rnd=(a,b)=>a+RG()*(b-a),[cx,cy]=cellOf(k),x=cx*CW+(k?rnd(-90,90):0),y=cy*CH+(k?rnd(-90,90):0),rx=(1100+rnd(0,100))*ISC,ry=(920+rnd(0,90))*ISC,pts=[];
+const ISC=3; /* island scale: bigger islands, more room between castles */
+function spawnIsl(k){RG=mulberry(SEEDK*1009+k*7919+1);const CW=7400,CH=6400,rnd=(a,b)=>a+RG()*(b-a),[cx,cy]=cellOf(k),x=cx*CW+(k?rnd(-90,90):0),y=cy*CH+(k?rnd(-90,90):0),rx=(1100+rnd(0,100))*ISC,ry=(920+rnd(0,90))*ISC,pts=[];
 const NP=Math.round(30*ISC);for(let j=0;j<NP;j++){const a=j/NP*6.283+rnd(-.07,.07);pts.push({x:x+Math.cos(a)*rx*.74,y:y+Math.sin(a)*ry*.72,r:rnd(190,250)*ISC})}
 for(let j=0,NI=Math.round(26*ISC*ISC);j<NI;j++){const a=rnd(0,6.283),d=Math.sqrt(RG())*.55;pts.push({x:x+Math.cos(a)*rx*d,y:y+Math.sin(a)*ry*d,r:rnd(230,320)*ISC})}
-const s={x,y,rx,ry,pts,k,seed:k*7919+13+SEEDK%9973,open:true,grow:k?0:1};s.ox=x-rx-170;s.oy=y-ry-170;s.w=2*rx+340;s.h=2*ry+450;islands.push(s);const mine=[];let n=k?32:34,tr=0;
+const s={x,y,rx,ry,pts,k,seed:k*7919+13+SEEDK%9973,open:true,grow:k?0:1};s.ox=x-rx-170;s.oy=y-ry-170;s.w=2*rx+340;s.h=2*ry+450;islands.push(s);const mine=[];let n=k?52:54,tr=0;
 while(n>0&&tr++<3000){const a=rnd(0,6.283),d=Math.sqrt(RG())*.8,px=x+Math.cos(a)*rx*d,py=y+Math.sin(a)*ry*d;
-if(cities.every(c=>Math.hypot(c.x-px,c.y-py)>215)){const c={x:px,y:py,o:0,l:1+(RG()<.3?1:0)+(k>3?1:0),t:4+RG()*8+k*2,isl:k};cities.push(c);mine.push(c);n--}}
+if(cities.every(c=>Math.hypot(c.x-px,c.y-py)>340)){const c={x:px,y:py,o:0,l:1+(RG()<.3?1:0)+(k>3?1:0),t:4+RG()*8+k*2,isl:k};cities.push(c);mine.push(c);n--}}
 const give=(c0,m)=>mine.filter(c=>!c.o).sort((a,b)=>Math.hypot(a.x-c0.x,a.y-c0.y)-Math.hypot(b.x-c0.x,b.y-c0.y)).slice(0,m).forEach(c=>{c.o=c0.o;c.t=10+k});
 if(k===0){const sc=c=>Math.hypot(c.x-x+rx*.4,c.y-y-ry*.4),pc=mine.reduce((a,b)=>sc(a)<sc(b)?a:b),pi=cities.indexOf(pc);[cities[0],cities[pi]]=[cities[pi],cities[0]];pc.o=1;pc.t=20;pc.main=1;
 const dp=c=>Math.hypot(c.x-pc.x,c.y-pc.y),rd=mine.filter(c=>c!==pc).reduce((a,b)=>dp(a)>dp(b)?a:b);rd.o=2;rd.t=20;rd.main=1;give(rd,2)}
@@ -304,7 +304,7 @@ for(let q=0;q<(k===0?2:1);q++){const L=mine.filter(c=>!c.o&&!c.tp);if(L.length){
 {const ob=[],ell=(px,py,f)=>((px-x)/(rx*f))**2+((py-y)/(ry*f))**2<1,
 pd=(px,py,o)=>{let m=1e9;for(let i=0,n=Math.max(1,o.pts.length-1);i<n;i++){const a=o.pts[i],b=o.pts[i+1]||a,dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy;let tt=L2?((px-a[0])*dx+(py-a[1])*dy)/L2:0;tt=Math.max(0,Math.min(1,tt));m=Math.min(m,Math.hypot(px-(a[0]+dx*tt),py-(a[1]+dy*tt)))}return m},
 oo=(A,B)=>{let m=1e9;for(let i=0,n=Math.max(1,A.pts.length-1);i<n;i++)for(let j=0,k=Math.max(1,B.pts.length-1);j<k;j++)m=Math.min(m,segSeg(A.pts[i],A.pts[i+1]||A.pts[i],B.pts[j],B.pts[j+1]||B.pts[j])[0]);return m};
-const plan=['range','range','range','range','range','massif','massif','mesa','mesa','mesa','tor','tor','tor','tor'];
+const plan0=['range','range','range','range','range','massif','massif','mesa','mesa','mesa','tor','tor','tor','tor'],plan=plan0.concat(plan0.slice(0,8));
 plan.forEach(kind=>{for(let tt=0;tt<600;tt++){let r,pts;const a0=rnd(0,6.283),d0=Math.sqrt(RG())*.6,sx=x+Math.cos(a0)*rx*d0,sy=y+Math.sin(a0)*ry*d0;
 if(kind==='range'){r=rnd(68,92);const stp=rnd(130,185),n=Math.max(3,Math.ceil(rnd(650,1250)*(1-tt/900)/stp)),bias=rnd(-.28,.28);let th=rnd(0,6.283),px=sx,py=sy;pts=[[px,py]];for(let i=0;i<n;i++){th+=bias+rnd(-.4,.4);px+=Math.cos(th)*stp;py+=Math.sin(th)*stp;pts.push([px,py])}}
 else if(kind==='massif'){r=rnd(105,145);const th=rnd(0,6.283),l=rnd(90,240);pts=[[sx,sy],[sx+Math.cos(th)*l,sy+Math.sin(th)*l]]}
@@ -424,7 +424,7 @@ g.fillStyle='#fff';g.beginPath();g.moveTo(x,by+6);g.lineTo(x+8,by+15);g.lineTo(x
 g.fillStyle=f;g.beginPath();g.moveTo(bx,by+30);g.lineTo(bx+30,by+30);g.lineTo(bx+30,by+42);g.lineTo(x,by+50);g.lineTo(bx,by+42);g.closePath();g.fill();g.strokeStyle='#fff';g.stroke();
 g.fillStyle='#fff';g.font='bold 15px Georgia,serif';g.fillText(Math.floor(t),x,by+38)}
 let ALR=new Set(),alT=-99,TER=null,TS=1,T=0,tgt=-1,curLv=1,curRL=0,curMain=0,curTp=0,curT=0,lastCP='';
-const spd=n=>1.3*Math.max(25,90/Math.sqrt(1+n/60)),prot=c=>!!c.main,OW=['Neutral','You','Red lord','Purple lord','Orange lord'];
+const spd=n=>2*Math.max(25,90/Math.sqrt(1+n/60)),prot=c=>!!c.main,OW=['Neutral','You','Red lord','Purple lord','Orange lord'];
 function upg(){const c=cities[sel];if(!c||c.o!==1||c.l>=MAXL)return;const k=upCost(c.l);if(gold<k)return;gold-=k;stats.spent=(stats.spent||0)+k;c.l++;SFX.play('upgrade');cmd({t:'u',c:sel})}
 let pickN=0,uiT=0,ui=1,regT=-99;const REG_CD=40;
 function setMain(){const c=cities[sel];if(!c||c.o!==1||c.main)return;if(T<mainReady||gold<mainCost)return;gold-=mainCost;stats.spent=(stats.spent||0)+mainCost;cities.forEach(d=>{if(d.o===1)d.main=0});c.main=1;cmd({t:'m',c:sel});mainReady=T+DAY*2;toast('👑 Main castle moved\nNext move in 2 days')}
@@ -623,7 +623,7 @@ t.fillStyle='#f6f8fb';sn();t.fill();t.save();poly([[sx,sy],...RP,br,bm,...sp.sli
 /* foot dust and loose rocks */t.fillStyle='rgba(110,60,25,.18)';t.beginPath();t.ellipse(x+w*.05,y+z*.36,w*1.05,z*.16,0,0,7);t.fill();
 for(let i=0;i<2;i++){const rx2=x+q(-1.1,1.1)*w,ry2=y+z*q(.3,.55),rs=q(4,10);t.fillStyle='rgba(50,22,8,.3)';t.beginPath();t.ellipse(rx2+2,ry2+2,rs*1.1,rs*.55,0,0,7);t.fill();t.fillStyle=Q()<.5?pal.lit[1]:pal.dk[0];t.beginPath();t.ellipse(rx2,ry2,rs,rs*.6,0,0,7);t.fill()}});}
 function mkIsland(s){let sd=s.seed;const R=()=>{sd|=0;sd=sd+0x6D2B79F5|0;let u=Math.imul(sd^sd>>>15,1|sd);u=u+Math.imul(u^u>>>7,61|u)^u;return((u^u>>>14)>>>0)/4294967296};
-const SS=Math.min(1,devicePixelRatio||1,1900/Math.max(s.w,s.h)),ox=s.ox,oy=s.oy,w=s.w,h=s.h,cv=document.createElement('canvas');cv.width=w*SS;cv.height=h*SS;const t=cv.getContext('2d');t.scale(SS,SS);t.translate(-ox,-oy);
+const SS=Math.min(1,devicePixelRatio||1,2200/Math.max(s.w,s.h)),ox=s.ox,oy=s.oy,w=s.w,h=s.h,cv=document.createElement('canvas');cv.width=w*SS;cv.height=h*SS;const t=cv.getContext('2d');t.scale(SS,SS);t.translate(-ox,-oy);
 const rnd=(a,b)=>a+R()*(b-a),PD=[],wc=cities.filter(c=>c.isl===s.k).map(WP),ok=(x,y,d)=>PD.every(q=>Math.hypot(q[0]-x,q[1]-y)>q[2]+28)&&wc.every(q=>Math.hypot(q[0]-x,q[1]-y)>d)&&obsFree(s,x,y),ins=(x,y,f)=>((x-s.x)/(s.rx*f))**2+((y-s.y)/(s.ry*f))**2<1,C=s.pts;
 const blob=(x,y,r,c0,c1)=>{const gr=t.createRadialGradient(x,y,r*.1,x,y,r);gr.addColorStop(0,c0);gr.addColorStop(1,c1);t.fillStyle=gr;t.beginPath();t.arc(x,y,r,0,7);t.fill()};
 const lerp=(a,c,u)=>a+(c-a)*u,hx=c=>[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)],mixH=(c0,c1,u,k=1)=>{const A=hx(c0),B=hx(c1);return'rgb('+(lerp(A[0],B[0],u)*k|0)+','+(lerp(A[1],B[1],u)*k|0)+','+(lerp(A[2],B[2],u)*k|0)+')'};
@@ -794,7 +794,7 @@ let TL=null,TLg=null,TL2=null,TL2g=null,TLp=null;
 function drawTerr(){const a=Math.min(1,(.3-Z)/.1);if(a<=0)return;const hw=Math.ceil(W*.5),hh=Math.ceil(H*.5);
 if(!TL){TL=document.createElement('canvas');TLg=TL.getContext('2d');TL2=document.createElement('canvas');TL2g=TL2.getContext('2d');const h=document.createElement('canvas');h.width=h.height=8;const u=h.getContext('2d');u.fillStyle='rgba(77,163,255,.16)';u.fillRect(0,0,8,8);u.strokeStyle='rgba(120,190,255,.8)';u.lineWidth=1.6;u.beginPath();u.moveTo(-1,9);u.lineTo(9,-1);u.moveTo(-1,1);u.lineTo(1,-1);u.moveTo(7,9);u.lineTo(9,7);u.stroke();TLp=TLg.createPattern(h,'repeat')}
 if(TL.width!==hw||TL.height!==hh){TL.width=TL2.width=hw;TL.height=TL2.height=hh}
-const R=175*Z,LK=420,pts=[];for(const c of cities){if(c.o!==1||!islands[c.isl].open)continue;const[x,y]=P(c);if(x<-R-60||x>W+R+60||y<-R-60||y>H+R+60)continue;pts.push(x,y,c.x,c.y)}
+const R=270*Z,LK=700,pts=[];for(const c of cities){if(c.o!==1||!islands[c.isl].open)continue;const[x,y]=P(c);if(x<-R-60||x>W+R+60||y<-R-60||y>H+R+60)continue;pts.push(x,y,c.x,c.y)}
 if(!pts.length)return;const n=pts.length;
 const shape=(t,ins)=>{t.beginPath();for(let i=0;i<n;i+=4){t.moveTo(pts[i]+R-ins,pts[i+1]);t.arc(pts[i],pts[i+1],R-ins,0,7)}t.fill();t.beginPath();for(let i=0;i<n;i+=4)for(let j=i+4;j<n;j+=4){if(Math.hypot(pts[i+2]-pts[j+2],pts[i+3]-pts[j+3])<LK){t.moveTo(pts[i],pts[i+1]);t.lineTo(pts[j],pts[j+1])}}t.lineWidth=2*(R*.66-ins);t.lineCap='round';t.stroke()};
 let t=TLg;t.setTransform(1,0,0,1,0,0);t.globalCompositeOperation='source-over';t.clearRect(0,0,hw,hh);t.setTransform(.5,0,0,.5,0,0);
@@ -852,7 +852,7 @@ cities.forEach(c=>{const X=mx+(c.x-x0)*k,Y=my+(c.y-y0)*k,r=c.o===1?4:3;g.fillSty
 g.strokeStyle='#fff';g.lineWidth=2;g.strokeRect(mx+(cam.x-x0)*k,my+(cam.y-y0)*k,W/Z*k,H/Z*k);g.restore()}
 function loop(ts){if(!run)return;const dt=Math.min(.05,(ts-last)/1000);last=ts;upd(dt);draw();requestAnimationFrame(loop)}
 function clampCam(){}
-function zoomTo(z,cx,cy){const r=C.getBoundingClientRect(),sx=cx-r.left,sy=cy-r.top,wx=cam.x+sx/Z,wy=cam.y+sy/Z;Z=Math.max(.17,Math.min(1.6,z));cam.x=wx-sx/Z;cam.y=wy-sy/Z;clampCam()}
+function zoomTo(z,cx,cy){const r=C.getBoundingClientRect(),sx=cx-r.left,sy=cy-r.top,wx=cam.x+sx/Z,wy=cam.y+sy/Z;Z=Math.max(.1,Math.min(1.6,z));cam.x=wx-sx/Z;cam.y=wy-sy/Z;clampCam()}
 const ptr=new Map();let pinch=null;
 C.addEventListener('wheel',e=>{e.preventDefault();zoomTo(Z*(e.deltaY<0?1.12:.89),e.clientX,e.clientY)},{passive:false});
 const mid=()=>{const r=C.getBoundingClientRect();return[r.left+W/2,r.top+H/2]};
