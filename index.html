@@ -62,6 +62,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 .pc.p1 .cr{font-size:38px}
 .pc .av{position:relative;width:62px;height:62px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#fff;text-shadow:0 2px 4px #000;border:3px solid var(--c);background:linear-gradient(160deg,var(--c2),#101a3a);box-shadow:0 0 18px var(--c),inset 0 0 12px rgba(0,0,0,.5);margin:4px 0 6px}
 .pc.p1 .av{width:82px;height:82px;font-size:38px;border-radius:16px;box-shadow:0 0 30px var(--c),0 0 60px rgba(255,211,74,.35),inset 0 0 14px rgba(0,0,0,.5)}
+.pc .av canvas{height:86%;width:auto;display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
 .pc .av::after{content:"";position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle,var(--c) 0,transparent 65%);opacity:.35;z-index:-1;animation:lbpl 2.4s ease-in-out infinite}
 .pc .nm{max-width:100%;padding:4px 10px;border-radius:10px;background:rgba(0,0,0,.6);font-weight:bold;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pc.p1 .nm{font-size:15px}
@@ -854,12 +855,12 @@ if(me){if(PROF&&PROF.name)me.name=PROF.name;if(wk&&run&&!NET&&window.MYP>me.scor
 const key=wk?'score':'wins';rows.sort((a,b)=>b[key]-a[key]);return{rows,me,wk}}
 function lbDraw(){const P=$('lbp');if(!P||!P.classList.contains('on'))return;const L=$('lbl'),M=$('lbm'),t=lbTab,S=LBS[t],{rows,me,wk}=lbRows(t);
 if(!S.ok&&!S.err){L.textContent='Loading…';return}
-let mr=0,h='';const top=rows.slice(0,3);if(top.length){h+='<div class="pod">'+top.map((v,i)=>{const mine=v.id===UID;if(mine)mr=i+1;const val=wk?v.score+' pts':v.wins+' 🏆',nm=String(v.name||'?');return '<div class="pc p'+(i+1)+(mine?' me':'')+'"><div class="cr">👑</div><div class="av">'+esc(nm.charAt(0).toUpperCase())+'</div><div class="nm">'+esc(nm)+(v.bot?' 🤖':'')+'</div><div class="pt">'+val+'</div><div class="bs">'+(i+1)+'</div></div>'}).join('')+'</div>'}
+let mr=0,h='';const top=rows.slice(0,3);if(top.length){h+='<div class="pod">'+top.map((v,i)=>{const mine=v.id===UID;if(mine)mr=i+1;const val=wk?v.score+' pts':v.wins+' 🏆',nm=String(v.name||'?');return '<div class="pc p'+(i+1)+(mine?' me':'')+'"><div class="cr">👑</div><div class="av"><canvas width="96" height="126" data-u="'+esc(mine?'me':String(v.id||nm))+'"></canvas></div><div class="nm">'+esc(nm)+(v.bot?' 🤖':'')+'</div><div class="pt">'+val+'</div><div class="bs">'+(i+1)+'</div></div>'}).join('')+'</div>'}
 rows.slice(3,50).forEach((v,j)=>{const i=j+3;const val=wk?v.score+' pts':v.wins+' 🏆',mine=v.id===UID;if(mine)mr=i+1;h+='<div class="lr'+(mine?' me':'')+'"><span>'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</span><b>'+esc(String(v.name||'?'))+(v.bot?' 🤖':'')+'</b><em>'+val+'</em></div>'});
 if(!mr&&me){const p=rows.indexOf(me)+1;h+='<div class="lr me"><span>'+p+'</span><b>'+esc(String(me.name))+'</b><em>'+(wk?me.score+' pts':me.wins+' 🏆')+'</em></div>'}
 const left=(curWeek()+1)*604800000-Date.now(),dd=Math.floor(left/864e5),hh=Math.floor(left%864e5/36e5);
 $('lbi').textContent=(wk?'Same world for every lord · resets in '+dd+'d '+hh+'h':'Season victories, all time')+' · 🤖 = AI lord';
-if(L.innerHTML!==h)L.innerHTML=h;M.textContent=(me?'Your rank: #'+(rows.indexOf(me)+1):'')+(S.err?'  ·  reconnecting to live scores…':(rdb()&&wk?'  ·  🟢 live':'  ·  updates every 30s'))}
+if(L.innerHTML!==h){L.innerHTML=h;L.querySelectorAll('canvas[data-u]').forEach(cv=>{try{const u=cv.dataset.u;let B;if(u==='me')B=BN[1];else{let n=0;for(let i=0;i<u.length;i++)n=Math.imul(n,31)+u.charCodeAt(i)|0;B=bnRandom(bnRng(n),[])}bnDraw(cv,B)}catch(_){}})}M.textContent=(me?'Your rank: #'+(rows.indexOf(me)+1):'')+(S.err?'  ·  reconnecting to live scores…':(rdb()&&wk?'  ·  🟢 live':'  ·  updates every 30s'))}
 function lbShow(k){lbTab=k||lbTab;const P=$('lbp');P.classList.add('on');P.querySelectorAll('[data-k]').forEach(b=>b.classList.toggle('on',b.dataset.k===lbTab));$('lbm').textContent='';lbSub(lbTab);lbDraw()}
 /* push my score quickly (only when it improves) and keep listeners alive */
 let lastSent=0,lastSentWk=-1,lastSentAt=0;
@@ -1061,9 +1062,9 @@ document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closes
 <script>
 let pfKey='';
 function fmtN(n){return n>=100000?Math.round(n/1000)+'k':n>=10000?(n/1000).toFixed(1).replace('.0','')+'k':String(n)}
-function lbMyRank(){try{if(!UID||!LBS.w.ok)return 0;const r=lbRows('w');return r.rows.indexOf(r.me)+1}catch(_){return 0}}
+function lbMyRank(){try{if(!UID)return 0;const r=lbRows('w');return r.rows.indexOf(r.me)+1}catch(_){return 0}}
 function updPf(){const n=document.getElementById('pfn'),r=document.querySelector('#pf .prk');let v='';try{v=(PROF&&PROF.name)||''}catch(_){}if(!v)v=(document.getElementById('nm').value||'').trim()||'Your Lord';if(n.textContent!==v){n.textContent=v;n.title=v}
-const rk=lbMyRank();let uid=0;try{uid=!!UID}catch(_){}const t=rk?'Lord · #'+rk:(uid?'Lord · #…':'Lord');if(r&&r.textContent!==t)r.textContent=t;
+const rk=lbMyRank();let uid=0;try{uid=!!UID}catch(_){}const t=rk?'Rank #'+rk:'';if(r&&r.textContent!==t)r.textContent=t;
 const k=JSON.stringify(BN[1]);if(k!==pfKey){pfKey=k;bnDraw(document.getElementById('pfb'),BN[1])}}
 setInterval(updPf,1000);
 document.getElementById('pf').onclick=()=>{const b=document.getElementById('bne');if(b&&b.onclick)b.onclick()};
