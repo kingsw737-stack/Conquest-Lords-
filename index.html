@@ -208,7 +208,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #top{display:grid;grid-template-columns:1fr 1fr;gap:6px;left:194px;right:8px;top:calc(env(safe-area-inset-top,0px) + 10px);align-content:start}
 #top span{display:flex;align-items:center;gap:6px;height:34px;min-width:0;padding:0 10px 0 3px;border-radius:17px;border:2px solid #e0b24a;background:linear-gradient(#35569f,#0f1c3d 85%);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 3px 6px rgba(0,0,0,.5);font-size:16px;font-weight:bold;letter-spacing:.3px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px #000}
 #top span::before{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;text-shadow:none;background:radial-gradient(circle at 35% 30%,#fff3c0,#e0a82e 70%,#a8741a);box-shadow:inset 0 -2px 0 rgba(0,0,0,.25),0 1px 3px rgba(0,0,0,.5)}
-#g{grid-column:1/-1;font-size:18px!important;color:#ffe27a}
+#g{grid-column:1/-1;justify-self:start;width:fit-content;max-width:100%;padding-right:14px!important;font-size:16px!important;color:#ffe27a}
 #tr::before{background:radial-gradient(circle at 35% 30%,#ffd0c8,#e0553f 70%,#962a1c)!important}
 #n::before{background:radial-gradient(circle at 35% 30%,#d8e8ff,#5a8fe0 70%,#2a5199)!important}
 #zm{top:calc(env(safe-area-inset-top,0px) + 94px)}
@@ -818,7 +818,6 @@ const tc=['#b5361f','#d4541f','#e8812a','#9c2a1b'];for(let j=0;j<4;j++)TB[j].len
 for(let j=0;j<4;j++){const a=TB[j];if(!a.length)continue;g.fillStyle=tc[j];g.beginPath();for(let n=0;n<a.length;n+=3){g.moveTo(a[n]+a[n+2],a[n+1]);g.arc(a[n],a[n+1],a[n+2],0,7)}g.fill()}
 g.fillStyle='rgba(255,255,255,.12)';g.beginPath();for(let j=0;j<4;j++){const a=TB[j];for(let n=0;n<a.length;n+=3){const r=a[n+2]*.5,cx=a[n]-a[n+2]*.3,cy=a[n+1]-a[n+2]*.3;g.moveTo(cx+r,cy);g.arc(cx,cy,r,0,7)}}g.fill();
 g.textAlign='center';g.textBaseline='middle';
-cities.forEach(c=>{if(!c.o||Z<.5)return;const[x,y]=P(c);if(x<-130||x>W+130||y<-130||y>H+130)return;g.save();g.setLineDash([2,10]);g.lineCap='round';g.lineWidth=4;g.strokeStyle=col(c.o);g.beginPath();g.arc(x,y,75*Z,0,7);g.globalAlpha=.14;g.fillStyle=col(c.o);g.fill();g.globalAlpha=1;g.stroke();g.restore()});
 if(Z<.3)drawTerr();
 armies.filter(visA).forEach(a=>trailLine(cities[a.f],cities[a.to],col(a.o),a.p,a.o!==1,routeOf(a.f,a.to)));if(sel>=0&&tgt>=0&&cities[sel]&&cities[sel].o===1&&cities[tgt])trailLine(cities[sel],cities[tgt],'#ffd34a',0,0,routeOf(sel,tgt));
 cityOrder().forEach(([c,i])=>{const[x,y]=P(c);if(x<-110||x>W+110||y<-70||y>H+300)return;g.save();g.translate(x,y);const q=(.35+.65*Z)*szL(c.l,c.o);g.scale(q,q);g.globalAlpha=islands[c.isl].grow;const tv=c.o===1||c.sc>T?c.t:-1,on=i===sel||i===tgt;if(c.main){curLv=visL(c.l,c.o);curRL=c.l;curMain=c.main;curTp=c.tp;curT=T;keep2(0,0,c.o,tv,on);curRL=0}else{if(on){g.strokeStyle='#fff';g.lineWidth=3;g.setLineDash([6,5]);g.beginPath();g.ellipse(0,10,43,18,0,0,7);g.stroke();g.setLineDash([])}g.drawImage(spr(c),-SOX,-SOY,SW,SH);lbl(c.l,tv,c.o)}g.restore()});
