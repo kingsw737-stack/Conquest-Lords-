@@ -473,7 +473,7 @@ box-shadow:0 -8px 24px rgba(0,0,0,.5),0 0 0 2px rgba(8,14,36,.8),0 0 0 3px rgba(
 #mmb{top:calc(env(safe-area-inset-top,0px) + 62px)!important;right:8px!important;bottom:auto!important;left:auto!important}
 #hmb{bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;left:8px!important;top:auto!important;right:auto!important}
 #rgb{bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;right:8px!important;top:auto!important;left:auto!important}
-#skb{bottom:calc(env(safe-area-inset-bottom,0px) + 62px)!important;right:8px!important;top:auto!important;left:auto!important}
+#skb{bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;right:60px!important;top:auto!important;left:auto!important}
 
 /* ===== compact counters ===== */
 #top{grid-template-columns:repeat(2,max-content)!important}
@@ -1222,8 +1222,11 @@ g.fillStyle='rgba(5,8,24,.5)';g.fillRect(0,0,W,H);g.drawImage(mmC,px,py,pw,ph);
 g.save();g.beginPath();g.roundRect(mx,my,mw,mh,10);g.clip();
 cities.forEach(c=>{const X=mx+(c.x-x0)*k,Y=my+(c.y-y0)*k,r=c.o===1?4:3;g.fillStyle=col(c.o);g.fillRect(X-r,Y-r,r*2,r*2);if(c.o){g.strokeStyle=c.o===1?'#ffd34a':'rgba(255,255,255,.8)';g.lineWidth=c.o===1?1.5:1;g.strokeRect(X-r,Y-r,r*2,r*2)}});
 g.strokeStyle='#fff';g.lineWidth=2;g.strokeRect(mx+(cam.x-x0)*k,my+(cam.y-y0)*k,W/Z*k,H/Z*k);g.restore()}
-function loop(ts){if(!run)return;const dt=Math.min(.05,(ts-last)/1000);last=ts;upd(dt);draw();requestAnimationFrame(loop)}
-function clampCam(){}
+function loop(ts){if(!run)return;const dt=Math.min(.05,(ts-last)/1000);last=ts;upd(dt);clampCam();draw();requestAnimationFrame(loop)}
+function clampCam(){try{if(!islands.length||!(Z>0))return;let x0=1e18,y0=1e18,x1=-1e18,y1=-1e18;for(const q of islands){if(q.ox<x0)x0=q.ox;if(q.oy<y0)y0=q.oy;if(q.ox+q.w>x1)x1=q.ox+q.w;if(q.oy+q.h>y1)y1=q.oy+q.h}for(const b of bridges){if(b.ox<x0)x0=b.ox;if(b.oy<y0)y0=b.oy;if(b.ox+b.w>x1)x1=b.ox+b.w;if(b.oy+b.h>y1)y1=b.oy+b.h}if(!(x1>x0))return;const vw=W/Z,vh=H/Z,mx=vw*.3,my=vh*.3;
+const lx=x0-mx,hx=x1+mx-vw,ly=y0-my,hy=y1+my-vh;
+cam.x=hx<lx?(x0+x1)/2-vw/2:Math.max(lx,Math.min(hx,cam.x));cam.y=hy<ly?(y0+y1)/2-vh/2:Math.max(ly,Math.min(hy,cam.y));
+if(glide){glide.x=hx<lx?cam.x:Math.max(lx,Math.min(hx,glide.x));glide.y=hy<ly?cam.y:Math.max(ly,Math.min(hy,glide.y))}}catch(_){}}
 function zoomTo(z,cx,cy){const r=C.getBoundingClientRect(),sx=cx-r.left,sy=cy-r.top,wx=cam.x+sx/Z,wy=cam.y+sy/Z;Z=Math.max(.1,Math.min(1.6,z));cam.x=wx-sx/Z;cam.y=wy-sy/Z;clampCam()}
 const ptr=new Map();let pinch=null;
 C.addEventListener('wheel',e=>{e.preventDefault();zoomTo(Z*(e.deltaY<0?1.12:.89),e.clientX,e.clientY)},{passive:false});
