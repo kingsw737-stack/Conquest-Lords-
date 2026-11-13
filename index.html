@@ -576,7 +576,7 @@ grwL=l=>1+.4*(l-1),                                   /* troop growth multiplier
 dfL=l=>l<=1?0:.6*Math.log(l),                         /* defense bonus (soft-capped, ~+97% at lv5, +276% at lv100) */
 ptsL=l=>10+5*Math.min(l,5)+(l>5?Math.floor((l-5)/3):0), /* kingdom points per castle */
 visL=(l,o)=>o===0?0:l>=100?5:l>=60?4:l>=30?3:l>=10?2:1,                                /* art only has 5 looks */
-szL=(l,o)=>1.18*(o===0?.78:1)*(.85+.15*Math.sqrt((Math.min(l,MAXL)-1)/(MAXL-1))),BYT=[-211, -184, -186, -223, -222],bannerY=(t,o)=>o===0||t<1?-156:BYT[t-1];
+szL=(l,o)=>.62*(o===0?.78:1)*(.85+.15*Math.sqrt((Math.min(l,MAXL)-1)/(MAXL-1))),BYT=[-211, -184, -186, -223, -222],bannerY=(t,o)=>o===0||t<1?-156:BYT[t-1];
 const CUM=[0,0];for(let l=1;l<MAXL;l++)CUM[l+1]=CUM[l]+upCost(l); /* total gold to reach level l */
 const troopsOf=o=>cities.reduce((a,c)=>a+(c.o===o?c.t:0),0)+armies.reduce((a,x)=>a+(x.o===o?x.n:0),0),
 myPower=()=>Math.floor((stats.spent||0)+troopsOf(1)),botPower=o=>Math.floor(cities.reduce((a,c)=>a+(c.o===o?CUM[Math.min(MAXL,c.l)]/3:0),0)+troopsOf(o)); /* bots pay 1/3 of the cost in troops */
@@ -589,14 +589,14 @@ const WP=c=>[c.x,c.y];
 const P=c=>{const[x,y]=WP(c);return[(x-cam.x)*Z,(y-cam.y)*Z]};
 const CELLS=[[1,1],[1,0],[2,1],[1,2],[0,1],[2,0],[2,2],[0,2],[0,0]];
 const START_ISL=4,NEW_ISL_AT=.8; /* islands at game start; share of castles that must be taken before a new island rises */
-const ISC=5; /* island scale: bigger islands, more room between castles */
+const ISC=7; /* island scale: bigger islands, more room between castles */
 function spawnIsl(k){RG=mulberry(SEEDK*1009+k*7919+1);const CW=8400*ISC/3.4,CH=7250*ISC/3.4,rnd=(a,b)=>a+RG()*(b-a),[cx,cy]=cellOf(k),x=cx*CW+(k?rnd(-90,90):0),y=cy*CH+(k?rnd(-90,90):0),rx=(1100+rnd(0,100))*ISC,ry=(920+rnd(0,90))*ISC,pts=[];
 const NP=Math.round(30*ISC);for(let j=0;j<NP;j++){const a=j/NP*6.283+rnd(-.07,.07);pts.push({x:x+Math.cos(a)*rx*.74,y:y+Math.sin(a)*ry*.72,r:rnd(190,250)*ISC})}
 for(let j=0,NI=Math.round(26*ISC*ISC);j<NI;j++){const a=rnd(0,6.283),d=Math.sqrt(RG())*.55;pts.push({x:x+Math.cos(a)*rx*d,y:y+Math.sin(a)*ry*d,r:rnd(230,320)*ISC})}
 const s={x,y,rx,ry,pts,k,seed:k*7919+13+SEEDK%9973,open:true,grow:k?0:1};s.ox=x-rx-170;s.oy=y-ry-170;s.w=2*rx+340;s.h=2*ry+450;islands.push(s);const mine=[];let n=k?40:42,tr=0;
 /* spread-out placement: each city goes to the candidate spot farthest from the others, with a hard minimum gap (vertical gap counts extra because castles are tall) */
 const cdist=(ax,ay,bx,by)=>Math.hypot(ax-bx,(ay-by)*1.25),spread=(cnt,dmin)=>{const out=[];for(let i=0;i<cnt;i++){let bp=null,bd=-1;for(let t=0;t<160;t++){const a=rnd(0,6.283),d=Math.sqrt(RG())*.8,px=x+Math.cos(a)*rx*d,py=y+Math.sin(a)*ry*d;let m=1e9;for(const q of out){const e=cdist(q[0],q[1],px,py);if(e<m)m=e}if(m>bd){bd=m;bp=[px,py]}}if(bd<dmin)return null;out.push(bp)}return out};
-let spots=null;for(const dm of [1000,930,860,790,720,650,580,500,420,340]){for(let at=0;at<8&&!spots;at++)spots=spread(n,dm);if(spots)break}
+let spots=null;for(const dm of [1400,1300,1200,1100,1000,900,800,700,600,500,400,340]){for(let at=0;at<8&&!spots;at++)spots=spread(n,dm);if(spots)break}
 if(!spots)spots=spread(n,0);
 spots.forEach(q=>{const c={x:q[0],y:q[1],o:0,l:1+(RG()<.3?1:0)+(k>3?1:0),t:4+RG()*8+k*2,isl:k};cities.push(c);mine.push(c);n--});
 const give=(c0,m)=>mine.filter(c=>!c.o).sort((a,b)=>Math.hypot(a.x-c0.x,a.y-c0.y)-Math.hypot(b.x-c0.x,b.y-c0.y)).slice(0,m).forEach(c=>{c.o=c0.o;c.t=10+k});
@@ -609,9 +609,9 @@ pd=(px,py,o)=>{let m=1e9;for(let i=0,n=Math.max(1,o.pts.length-1);i<n;i++){const
 oo=(A,B)=>{let m=1e9;for(let i=0,n=Math.max(1,A.pts.length-1);i<n;i++)for(let j=0,k=Math.max(1,B.pts.length-1);j<k;j++)m=Math.min(m,segSeg(A.pts[i],A.pts[i+1]||A.pts[i],B.pts[j],B.pts[j+1]||B.pts[j])[0]);return m};
 const plan0=['range','range','range','range','range','massif','massif','mesa','mesa','mesa','tor','tor','tor','tor'],plan=plan0.concat(plan0.slice(0,8));
 plan.forEach(kind=>{for(let tt=0;tt<600;tt++){let r,pts;const a0=rnd(0,6.283),d0=Math.sqrt(RG())*.6,sx=x+Math.cos(a0)*rx*d0,sy=y+Math.sin(a0)*ry*d0;
-if(kind==='range'){r=rnd(68,92);const stp=rnd(130,185),n=Math.max(3,Math.ceil(rnd(650,1250)*(1-tt/900)/stp)),bias=rnd(-.28,.28);let th=rnd(0,6.283),px=sx,py=sy;pts=[[px,py]];for(let i=0;i<n;i++){th+=bias+rnd(-.4,.4);px+=Math.cos(th)*stp;py+=Math.sin(th)*stp;pts.push([px,py])}}
-else if(kind==='massif'){r=rnd(105,145);const th=rnd(0,6.283),l=rnd(90,240);pts=[[sx,sy],[sx+Math.cos(th)*l,sy+Math.sin(th)*l]]}
-else if(kind==='mesa'){r=rnd(70,100);pts=[[sx,sy]]}else{r=rnd(42,62);pts=[[sx,sy]]}
+if(kind==='range'){r=rnd(68,92)*1.5;const stp=rnd(130,185)*1.5,n=Math.max(3,Math.ceil(rnd(650,1250)*1.5*(1-tt/900)/stp)),bias=rnd(-.28,.28);let th=rnd(0,6.283),px=sx,py=sy;pts=[[px,py]];for(let i=0;i<n;i++){th+=bias+rnd(-.4,.4);px+=Math.cos(th)*stp;py+=Math.sin(th)*stp;pts.push([px,py])}}
+else if(kind==='massif'){r=rnd(105,145)*1.5;const th=rnd(0,6.283),l=rnd(90,240)*1.5;pts=[[sx,sy],[sx+Math.cos(th)*l,sy+Math.sin(th)*l]]}
+else if(kind==='mesa'){r=rnd(70,100)*1.5;pts=[[sx,sy]]}else{r=rnd(42,62)*1.5;pts=[[sx,sy]]}
 const o={k:kind,pts,r:Math.round(r),v:(RG()*4)|0,sd:(RG()*1e9)|0};
 if(!pts.every(q=>ell(q[0],q[1],.78)))continue;if(!cities.every(c=>pd(c.x,c.y,o)>o.r+105))continue;if(!ob.every(q=>oo(o,q)>q.r+o.r+170))continue;ob.push(o);break}});s.obs=ob}
 islands.slice(0,-1).forEach(o=>{if(Math.hypot(o.x-s.x,o.y-s.y)<CW*1.3)bridges.push(mkBr(o,s,k))});
@@ -738,7 +738,7 @@ g.fillStyle='#fff';g.beginPath();g.moveTo(x,by+6);g.lineTo(x+8,by+15);g.lineTo(x
 g.fillStyle=f;g.beginPath();g.moveTo(bx,by+30);g.lineTo(bx+30,by+30);g.lineTo(bx+30,by+42);g.lineTo(x,by+50);g.lineTo(bx,by+42);g.closePath();g.fill();g.strokeStyle='#fff';g.stroke();
 g.fillStyle='#fff';g.font='bold 15px Georgia,serif';g.fillText(Math.floor(t),x,by+38)}
 let ALR=new Set(),alT=-99,TER=null,TS=1,T=0,tgt=-1,curLv=1,curRL=0,curMain=0,curTp=0,curT=0,lastCP='';
-const spd=n=>2*Math.max(25,90/Math.sqrt(1+n/60)),prot=c=>!!c.main,OW=['Neutral','You','Red lord','Purple lord','Orange lord'];
+const spd=n=>2*(ISC/3.4)*Math.max(25,90/Math.sqrt(1+n/60)),prot=c=>!!c.main,OW=['Neutral','You','Red lord','Purple lord','Orange lord'];
 function upg(){const c=cities[sel];if(!c||c.o!==1||c.l>=MAXL)return;const k=upCost(c.l);if(gold<k)return;gold-=k;stats.spent=(stats.spent||0)+k;c.l++;addXp(2+c.l);SFX.play('upgrade');cmd({t:'u',c:sel})}
 let pickN=0,uiT=0,ui=1,regT=-99;const REG_CD=40;
 function setMain(){const c=cities[sel];if(!c||c.o!==1||c.main)return;if(T<mainReady||gold<mainCost)return;gold-=mainCost;stats.spent=(stats.spent||0)+mainCost;cities.forEach(d=>{if(d.o===1)d.main=0});c.main=1;cmd({t:'m',c:sel});mainReady=T+DAY*2;toast('👑 Main castle moved\nNext move in 2 days')}
