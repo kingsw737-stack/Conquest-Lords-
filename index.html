@@ -422,8 +422,11 @@ box-shadow:0 -8px 24px rgba(0,0,0,.5),0 0 0 2px rgba(8,14,36,.8),0 0 0 3px rgba(
 #skp .sfb.sm button{min-height:36px;font-size:14px;border-radius:12px}
 #skb.pt::after{content:attr(data-n);right:-7px;top:-8px;width:auto;min-width:21px;height:21px;padding:0 5px;box-sizing:border-box;border-radius:11px;display:flex;align-items:center;justify-content:center;font:bold 13px/1 Arial,Helvetica,sans-serif;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.5);background:linear-gradient(#ff6a5e,#d6261a);border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.6)}
 #skb.pt{overflow:visible;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 3px 6px rgba(0,0,0,.45),0 0 12px rgba(255,211,74,.7)}
-</style></head>
+</style><style>#rot{display:none;position:fixed;inset:0;z-index:99999;background:#17274d;color:#fff;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-family:Georgia,serif;font-size:20px}#rot i{font-size:64px;font-style:normal;display:block;animation:rotp 1.6s ease-in-out infinite}@keyframes rotp{0%,30%{transform:rotate(0)}70%,100%{transform:rotate(-90deg)}}@media (orientation:portrait) and (pointer:coarse) and (max-width:900px){#rot{display:flex}}</style>
+</head>
 <body>
+<div id="rot"><i>📱</i><div>Rotate your phone<br>to landscape to play</div></div>
+
 <div id="app">
 <div id="pf"><canvas id="pfb" width="96" height="124"></canvas><span id="pfl">1</span><div class="pl"><div id="pfn">Lord</div><div class="prk">Lord</div></div></div><div id="top"><span id="g">Gold 0</span><span id="tr">0</span><span id="n">Castles 1</span></div>
 <canvas id="c"></canvas>
@@ -1243,7 +1246,8 @@ function pickGhosts(){if(NET){applyGhosts();return}const me=(PROF&&PROF.name||pn
 function applyGhosts(){if(!ghosts||ghosts.length<3)ghosts=GDEF.map(n=>({n,w:0,g:0}));if(NET&&NET.nl)ghosts=NET.nl.slice(1).map(n=>({n,w:0,g:0}));if(!NET)ghosts.forEach((h,i)=>{if(i<3&&OLDFN.includes(String(h.n).split(' ')[0]))h.n=GDEF[i]});ghosts.forEach((h,i)=>OW[i+2]=h.n+'’s')}
 const gboost=o=>.6;
 const $=i=>document.getElementById(i),ud=k=>DB.collection('users').doc(UID).collection('d').doc(k);
-const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
+const lockLand=()=>{try{const o=screen.orientation;if(o&&o.lock)o.lock('landscape').catch(()=>{})}catch(_){}};
+const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).then(lockLand,lockLand).catch(()=>{});else lockLand()}catch(_){}};
 
 let lastSub={k:'',v:-1,at:0};
 async function submitScore(score,force){score=Math.max(0,Math.floor(+score||0));const wk=curWeek();try{if(UID)localStorage.setItem('cl_best_'+wk+'_'+UID,score)}catch(_){}if(!DB||!UID)return;
