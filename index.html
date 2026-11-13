@@ -422,7 +422,7 @@ box-shadow:0 -8px 24px rgba(0,0,0,.5),0 0 0 2px rgba(8,14,36,.8),0 0 0 3px rgba(
 #skp .sfb.sm button{min-height:36px;font-size:14px;border-radius:12px}
 #skb.pt::after{content:attr(data-n);right:-7px;top:-8px;width:auto;min-width:21px;height:21px;padding:0 5px;box-sizing:border-box;border-radius:11px;display:flex;align-items:center;justify-content:center;font:bold 13px/1 Arial,Helvetica,sans-serif;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.5);background:linear-gradient(#ff6a5e,#d6261a);border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.6)}
 #skb.pt{overflow:visible;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 3px 6px rgba(0,0,0,.45),0 0 12px rgba(255,211,74,.7)}
-</style><style>#rot{display:none;position:fixed;inset:0;z-index:99999;background:#17274d;color:#fff;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-family:Georgia,serif;font-size:20px}#rot i{font-size:64px;font-style:normal;display:block;animation:rotp 1.6s ease-in-out infinite}@keyframes rotp{0%,30%{transform:rotate(0)}70%,100%{transform:rotate(-90deg)}}@media (orientation:portrait) and (pointer:coarse) and (max-width:900px){#rot{display:flex}}</style>
+</style><style>#rot{display:none;position:fixed;inset:0;z-index:99999;background:#17274d;color:#fff;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-family:Georgia,serif;font-size:20px}#rot i{font-size:64px;font-style:normal;display:block;animation:rotp 1.6s ease-in-out infinite}@keyframes rotp{0%,30%{transform:rotate(0)}70%,100%{transform:rotate(-90deg)}}@media (orientation:portrait) and (pointer:coarse) and (max-width:900px){body.ingame #rot{display:flex}}</style>
 </head>
 <body>
 <div id="rot"><i>📱</i><div>Rotate your phone<br>to landscape to play</div></div>
@@ -1247,7 +1247,7 @@ function applyGhosts(){if(!ghosts||ghosts.length<3)ghosts=GDEF.map(n=>({n,w:0,g:
 const gboost=o=>.6;
 const $=i=>document.getElementById(i),ud=k=>DB.collection('users').doc(UID).collection('d').doc(k);
 const lockLand=()=>{try{const o=screen.orientation;if(o&&o.lock)o.lock('landscape').catch(()=>{})}catch(_){}};
-const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).then(lockLand,lockLand).catch(()=>{});else lockLand()}catch(_){}};
+const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
 
 let lastSub={k:'',v:-1,at:0};
 async function submitScore(score,force){score=Math.max(0,Math.floor(+score||0));const wk=curWeek();try{if(UID)localStorage.setItem('cl_best_'+wk+'_'+UID,score)}catch(_){}if(!DB||!UID)return;
@@ -1602,5 +1602,10 @@ addEventListener('resize',()=>{clearTimeout(tmr);tmr=setTimeout(()=>refresh(1),2
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>refresh(1));setTimeout(()=>refresh(1),400);
 })();
 </script>
+<script>(function(){const ov=document.getElementById('ov');if(!ov)return;
+const sync=()=>{const inGame=ov.classList.contains('hide');document.body.classList.toggle('ingame',inGame);
+try{const o=screen.orientation;if(o){if(inGame){if(o.lock)o.lock('landscape').catch(()=>{})}else if(o.unlock)o.unlock()}}catch(_){}};
+new MutationObserver(sync).observe(ov,{attributes:true,attributeFilter:['class']});sync();
+document.addEventListener('pointerup',()=>{if(ov.classList.contains('hide'))sync()},{capture:true,passive:true});})();</script>
 </body>
 </html>
