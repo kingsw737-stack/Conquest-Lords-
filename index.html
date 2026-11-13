@@ -576,7 +576,7 @@ grwL=l=>1+.4*(l-1),                                   /* troop growth multiplier
 dfL=l=>l<=1?0:.6*Math.log(l),                         /* defense bonus (soft-capped, ~+97% at lv5, +276% at lv100) */
 ptsL=l=>10+5*Math.min(l,5)+(l>5?Math.floor((l-5)/3):0), /* kingdom points per castle */
 visL=(l,o)=>o===0?0:l>=100?5:l>=60?4:l>=30?3:l>=10?2:1,                                /* art only has 5 looks */
-szL=(l,o)=>.62*(o===0?.78:1)*(.85+.15*Math.sqrt((Math.min(l,MAXL)-1)/(MAXL-1))),BYT=[-211, -184, -186, -223, -222],bannerY=(t,o)=>o===0||t<1?-156:BYT[t-1];
+szL=(l,o)=>1.18*(o===0?.78:1)*(.85+.15*Math.sqrt((Math.min(l,MAXL)-1)/(MAXL-1))),BYT=[-211, -184, -186, -223, -222],bannerY=(t,o)=>o===0||t<1?-156:BYT[t-1];
 const CUM=[0,0];for(let l=1;l<MAXL;l++)CUM[l+1]=CUM[l]+upCost(l); /* total gold to reach level l */
 const troopsOf=o=>cities.reduce((a,c)=>a+(c.o===o?c.t:0),0)+armies.reduce((a,x)=>a+(x.o===o?x.n:0),0),
 myPower=()=>Math.floor((stats.spent||0)+troopsOf(1)),botPower=o=>Math.floor(cities.reduce((a,c)=>a+(c.o===o?CUM[Math.min(MAXL,c.l)]/3:0),0)+troopsOf(o)); /* bots pay 1/3 of the cost in troops */
@@ -593,7 +593,7 @@ const ISC=7; /* island scale: bigger islands, more room between castles */
 function spawnIsl(k){RG=mulberry(SEEDK*1009+k*7919+1);const CW=8400*ISC/3.4,CH=7250*ISC/3.4,rnd=(a,b)=>a+RG()*(b-a),[cx,cy]=cellOf(k),x=cx*CW+(k?rnd(-90,90):0),y=cy*CH+(k?rnd(-90,90):0),rx=(1100+rnd(0,100))*ISC,ry=(920+rnd(0,90))*ISC,pts=[];
 const NP=Math.round(30*ISC);for(let j=0;j<NP;j++){const a=j/NP*6.283+rnd(-.07,.07);pts.push({x:x+Math.cos(a)*rx*.74,y:y+Math.sin(a)*ry*.72,r:rnd(190,250)*ISC})}
 for(let j=0,NI=Math.round(26*ISC*ISC);j<NI;j++){const a=rnd(0,6.283),d=Math.sqrt(RG())*.55;pts.push({x:x+Math.cos(a)*rx*d,y:y+Math.sin(a)*ry*d,r:rnd(230,320)*ISC})}
-const s={x,y,rx,ry,pts,k,seed:k*7919+13+SEEDK%9973,open:true,grow:k?0:1};s.ox=x-rx-170;s.oy=y-ry-170;s.w=2*rx+340;s.h=2*ry+450;islands.push(s);const mine=[];let n=k?40:42,tr=0;
+const s={x,y,rx,ry,pts,k,seed:k*7919+13+SEEDK%9973,open:true,grow:k?0:1};s.ox=x-rx-170;s.oy=y-ry-170;s.w=2*rx+340;s.h=2*ry+450;islands.push(s);const mine=[];let n=k?47:50,tr=0;
 /* spread-out placement: each city goes to the candidate spot farthest from the others, with a hard minimum gap (vertical gap counts extra because castles are tall) */
 const cdist=(ax,ay,bx,by)=>Math.hypot(ax-bx,(ay-by)*1.25),spread=(cnt,dmin)=>{const out=[];for(let i=0;i<cnt;i++){let bp=null,bd=-1;for(let t=0;t<160;t++){const a=rnd(0,6.283),d=Math.sqrt(RG())*.8,px=x+Math.cos(a)*rx*d,py=y+Math.sin(a)*ry*d;let m=1e9;for(const q of out){const e=cdist(q[0],q[1],px,py);if(e<m)m=e}if(m>bd){bd=m;bp=[px,py]}}if(bd<dmin)return null;out.push(bp)}return out};
 let spots=null;for(const dm of [1400,1300,1200,1100,1000,900,800,700,600,500,400,340]){for(let at=0;at<8&&!spots;at++)spots=spread(n,dm);if(spots)break}
@@ -1230,7 +1230,7 @@ function clampCam(){try{if(!islands.length||!(Z>0))return;let x0=1e18,y0=1e18,x1
 const lx=x0-mx,hx=x1+mx-vw,ly=y0-my,hy=y1+my-vh;
 cam.x=hx<lx?(x0+x1)/2-vw/2:Math.max(lx,Math.min(hx,cam.x));cam.y=hy<ly?(y0+y1)/2-vh/2:Math.max(ly,Math.min(hy,cam.y));
 if(glide){glide.x=hx<lx?cam.x:Math.max(lx,Math.min(hx,glide.x));glide.y=hy<ly?cam.y:Math.max(ly,Math.min(hy,glide.y))}}catch(_){}}
-function zoomTo(z,cx,cy){const r=C.getBoundingClientRect(),sx=cx-r.left,sy=cy-r.top,wx=cam.x+sx/Z,wy=cam.y+sy/Z;Z=Math.max(.065,Math.min(1.6,z));cam.x=wx-sx/Z;cam.y=wy-sy/Z;clampCam()}
+function zoomTo(z,cx,cy){const r=C.getBoundingClientRect(),sx=cx-r.left,sy=cy-r.top,wx=cam.x+sx/Z,wy=cam.y+sy/Z;Z=Math.max(.025,Math.min(1.6,z));cam.x=wx-sx/Z;cam.y=wy-sy/Z;clampCam()}
 const ptr=new Map();let pinch=null;
 C.addEventListener('wheel',e=>{e.preventDefault();zoomTo(Z*(e.deltaY<0?1.12:.89),e.clientX,e.clientY)},{passive:false});
 const mid=()=>{const r=C.getBoundingClientRect();return[r.left+W/2,r.top+H/2]};
@@ -1354,7 +1354,7 @@ if(lost)return '🌙 Away for '+away+'\n⚔️ '+hit.join(' & ')+' captured '+(l
 if(held)return '🌙 Away for '+away+'\n🛡️ Your castles repelled '+held+' raid'+(held>1?'s':'')+'.';
 return ''}catch(_){return ''}}
 function startGame(d){let off='';if(d){try{loadGame(d)}catch(_){gen()}if(!NET)off=offlineRaids(d.savedAt)}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');sStart=((d&&d.savedAt&&seasonT>0)?d.savedAt:Date.now())-seasonT*1000;startZoom();run=true;last=performance.now();requestAnimationFrame(loop);if(off)toast(off,7000);}
-function startZoom(){Z=.065;fling=null;drag=null;const m=cities.find(c=>c.o===1&&c.main)||cities.find(c=>c.o===1);if(m)cam={x:m.x-W/Z/2,y:m.y-H/Z/2+40};glide=null}
+function startZoom(){Z=.025;fling=null;drag=null;const m=cities.find(c=>c.o===1&&c.main)||cities.find(c=>c.o===1);if(m)cam={x:m.x-W/Z/2,y:m.y-H/Z/2+40};glide=null}
 function menu(){const a=$('t'),b=$('d');nm.style.display=PROF?'none':'';nw.style.display='none';play.style.display='';mode=PROF?(SAVE?1:2):0;
 if(!PROF){a.textContent='Conquest Lords';b.textContent='Register your lord name to begin. Your kingdom is saved to your account, so you always continue where you left off.'}
 else if(SAVE){a.textContent='Welcome back, '+PROF.name;b.textContent='Your kingdom is waiting. Day '+Math.min(SEASON_DAYS,Math.floor(((SAVE.seasonT||0)+Math.max(0,Date.now()-(SAVE.savedAt||Date.now()))/1000)/SDAY)+1)+' of '+SEASON_DAYS+'.';nw.style.display=''}
