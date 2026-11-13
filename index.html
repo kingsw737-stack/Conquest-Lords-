@@ -281,10 +281,10 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #skp .sfb button.rs{flex:1.5;color:#fff;border-color:#3a78e0;background:linear-gradient(#3b82f0,#1f4fb3);box-shadow:0 3px 0 #0b2466;text-shadow:0 1px 2px #000;font-size:15px}
 #skp .sfb button:active{transform:translateY(2px);box-shadow:none}
 #skp .sfb button:disabled{opacity:.4}
-</style></head>
+#pf #pfl{position:absolute;z-index:3;left:30px;top:62px;transform:translateX(-50%);min-width:28px;height:28px;padding:0 5px;box-sizing:border-box;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:bold;color:#2b1c05;background:radial-gradient(circle at 35% 30%,#fff6cf,#f2c23a 60%,#b9851c);border:2px solid #fff3c4;box-shadow:0 2px 5px rgba(0,0,0,.6);pointer-events:none}#skb{position:relative}#skb.pt::after{content:"";position:absolute;right:-3px;top:-3px;width:14px;height:14px;border-radius:50%;background:#ff3b30;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.6)}</style></head>
 <body>
 <div id="app">
-<div id="pf"><canvas id="pfb" width="96" height="124"></canvas><div class="pl"><div id="pfn">Lord</div><div class="prk">Lord</div></div></div><div id="top"><span id="g">Gold 0</span><span id="tr">0</span><span id="n">Castles 1</span><span id="lvl" onclick="skOpen()" style="pointer-events:auto">⭐ Lv 1</span></div>
+<div id="pf"><canvas id="pfb" width="96" height="124"></canvas><span id="pfl">1</span><div class="pl"><div id="pfn">Lord</div><div class="prk">Lord</div></div></div><div id="top"><span id="g">Gold 0</span><span id="tr">0</span><span id="n">Castles 1</span></div>
 <canvas id="c"></canvas>
 <div id="cp"></div>
 <div id="sb">Send <input type="range" id="pct" min="10" max="100" step="10" value="50"><b id="pv">50%</b></div>
@@ -466,7 +466,7 @@ ui=(uiT+=dt)>.25;if(ui)uiT=0;const pw=ui?myPower():(window.MYP||0);window.MYP=pw
 respT+=dt;if(!G&&respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o===o)&&!armies.some(a=>a.o===o)){let L=cities.filter(c=>c.o===0);if(!L.length){chkIsl();L=cities.filter(c=>c.o===0)}if(L.length){const c=L[Math.random()*L.length|0];c.o=o;c.t=15;c.l=1;c.main=1;if(o===1)toast('Your last castle fell!\nA new castle is yours.')}}})}
 [1,2,3,4].forEach(o=>{if(respT!==0)return;const L=cities.filter(c=>c.o===o);if(L.length&&!L.some(c=>c.main))L.reduce((a,c)=>c.l>a.l?c:a).main=1});
 if(seasonT>=SEASON_DAYS*SDAY)end();
-if(ui){document.getElementById('g').textContent=fmtN(Math.floor(gold));if(typeof updPf==='function')updPf();document.getElementById('lvl').textContent='⭐ Lv '+lLv+(lPt?' · +'+lPt:'');document.getElementById('tr').textContent=fmtN(Math.floor(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0)));
+if(ui){document.getElementById('g').textContent=fmtN(Math.floor(gold));if(typeof updPf==='function')updPf();{const b=document.getElementById('pfl');if(b)b.textContent=lLv;const k=document.getElementById('skb');if(k)k.classList.toggle('pt',lPt>0)}document.getElementById('tr').textContent=fmtN(Math.floor(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0)));
 document.getElementById('n').textContent=cities.filter(c=>c.o===1).length;
 {const l=Math.ceil(REG_CD-(T-regT)),b=rgb;if(l>0){b.textContent=l;b.style.opacity=.55;b.style.fontSize='16px'}else{b.textContent='📯';b.style.opacity=1;b.style.fontSize=''}}panel()}}
 function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;try{SFX.play(w?'win':'lose')}catch(_){}
