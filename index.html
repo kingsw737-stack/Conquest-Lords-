@@ -278,19 +278,23 @@ SKN=Object.fromEntries(SKD.map(s=>[s[0],s[1]])),
 lvNeed=l=>Math.round(50*Math.pow(l,1.5)),
 sP=(k,o=1)=>{const p=PS(o);return(p.sk&&p.sk[k])||0},
 feM=(o,l)=>1+.02*sP('fe',o)*Math.min(3,.5+l/20);
-function addXp(n){if(!(n>0)||lLv>=LMAX)return;lXp+=n;let up=0,pt=0;while(lLv<LMAX&&lXp>=lvNeed(lLv)){lXp-=lvNeed(lLv);lLv++;pt+=lLv<10?2:lLv<20?3:4;up=1}if(lLv>=LMAX)lXp=0;if(up){lPt+=pt;toast('⭐ Lord level '+lLv+'\n+'+pt+' skill points',3200);if(tab===0)render()}}
-function lordHit(a,c,po,dmg,t0){const killed=Math.min(dmg,t0),cap=dmg>t0;
+function addXp(n){try{addXp0(n)}catch(e){console.error(e)}}
+function addXp0(n){if(!(n>0)||lLv>=LMAX)return;lXp+=n;let up=0,pt=0;while(lLv<LMAX&&lXp>=lvNeed(lLv)){lXp-=lvNeed(lLv);lLv++;pt+=lLv<10?2:lLv<20?3:4;up=1}if(lLv>=LMAX)lXp=0;if(up){lPt+=pt;toast('⭐ Lord level '+lLv+'\n+'+pt+' skill points',3200);if(tab===0)render()}}
+function lordHit(a,c,po,dmg,t0){try{lordHit0(a,c,po,dmg,t0);if(!isFinite(gold))gold=0}catch(e){console.error(e)}}
+function lordHit0(a,c,po,dmg,t0){const killed=Math.min(dmg,t0),cap=dmg>t0;
 if(a.o===1){const g=killed*.05*sP('sc');if(g>0){gold+=g;stats.earned+=g}addXp(Math.round(killed*.3)+(cap?25+6*c.l:0))}
 if(po===1){const lost=cap?a.n*t0/dmg:a.n,g=lost*.05*sP('sv');if(g>0){gold+=g;stats.earned+=g}if(cap)gold+=CUM[Math.min(MAXL,c.l)]*Math.min(.5,.02*sP('ca'))}}
 function skFx(k,p){const v=2*p;return({st:'Attack +'+v+'%',rc:'Troop growth +'+v+'%',pr:'Gold income +'+v+'%',gu:'Defense +'+v+'%',ru:'Army speed +'+v+'%',
 fe:'Attack +'+v+'% (up to x3 vs high-level castles)',br:'Defense +'+v+'% (up to x3 on high-level castles)',
 sc:'+'+(.05*p).toFixed(2)+' gold per enemy troop you destroy',sv:'+'+(.05*p).toFixed(2)+' gold per attacker you destroy',
 ca:'Refund '+Math.min(50,v)+'% of a lost castle’s gold'})[k]}
-function skHtml(){const nd=lvNeed(lLv),pc=lLv>=LMAX?100:lXp/nd*100;
+function skHtml(){try{return skHtml0()}catch(e){console.error(e);return'<div class="row"><div>Skills unavailable</div></div>'}}
+function skHtml0(){const nd=lvNeed(lLv),pc=lLv>=LMAX?100:lXp/nd*100;
 let h=`<div class="row"><div><b>⭐ Lord level ${lLv}</b> · <b>${lPt}</b> skill point${lPt==1?'':'s'}<div class="bar"><i style="width:${pc}%"></i></div><small>${lLv>=LMAX?'Max level':lXp+' / '+nd+' XP · capture castles to level up'}</small></div></div>`;
 SKD.forEach((s,i)=>{const p=lSk[s[0]]||0,miss=(s[3]||[]).filter(r=>(lSk[r[0]]||0)<r[1]),lock=miss.length>0;
 h+=(i==4?'<div class="row"><div><b>Auxiliary skills</b></div></div>':'')+`<div class="row" style="${lock?'opacity:.55':''}"><div><b>${s[2]} ${s[1]}</b> ${p}/${SKM}<br><small>${skFx(s[0],p)}${lock?'<br>🔒 Needs '+miss.map(r=>SKN[r[0]]+' '+r[1]).join(' + '):''}</small></div>${p>=SKM?'<span>Max</span>':btn(lPt>0&&!lock,`skUp('${s[0]}')`,'+1')}</div>`});return h}
-function skUp(k){const s=SKD.find(x=>x[0]===k),p=lSk[k]||0;if(!s||lPt<1||p>=SKM||(s[3]||[]).some(r=>(lSk[r[0]]||0)<r[1]))return;lSk[k]=p+1;lPt--;pushPl();render()}
+function skUp(k){try{skUp0(k)}catch(e){console.error(e)}}
+function skUp0(k){const s=SKD.find(x=>x[0]===k),p=lSk[k]||0;if(!s||lPt<1||p>=SKM||(s[3]||[]).some(r=>(lSk[r[0]]||0)<r[1]))return;if(typeof lSk!=='object'||!lSk)lSk={};lSk[k]=p+1;lPt--;pushPl();render()}
 function skOpen(){tab=tab===0?-1:0;sheet.classList.toggle('open',tab>=0);if(tab>=0)render();setTimeout(size,0)}
 /* ---- castle levels 1..100: all balance maths lives here ---- */
 const MAXL=100,
@@ -901,7 +905,7 @@ if(tab===1)IT.forEach(s=>{h+=`<div class="row"><div><b>${s[1]}</b><br>${s[2]}</d
 if(tab===2)QS.forEach((q,i)=>{const v=Math.min(q[2],q[1]()),done=v>=q[2];h+=`<div class="row"><div><b>${q[0]}</b> (${v}/${q[2]})<div class="bar"><i style="width:${v/q[2]*100}%"></i></div></div>${claimed[i]?'<span>Claimed</span>':btn(done,`claim(${i})`,'Claim '+q[3])}</div>`});
 if(tab===3){const i=league(),nx=LG[i+1];h+=`<div class="row"><div><b>${LG[i][0]} league</b><br>Victories: ${wins}${nx?'<br>Next: '+nx[0]+' at '+nx[1]+' victories':'<br>Top league reached'}</div></div>`;
 LG.forEach((l,k)=>{h+=`<div class="row"><div>${k<=i?'● ':'○ '}${l[0]} · ${l[1]}+ victories</div></div>`})}
-sheet.innerHTML=h}
+if(sheet._h!==h){sheet._h=h;sheet.innerHTML=h}}
 function buy(k){const c=15+15*lv[k];if(gold>=c&&lv[k]<5){gold-=c;lv[k]++;pushPl();render()}}
 function craft(k){const s=IT.find(i=>i[0]===k);if(gold>=s[3]&&!own[k]){gold-=s[3];own[k]=1;pushPl();render()}}
 function claim(i){if(!claimed[i]&&QS[i][1]()>=QS[i][2]){claimed[i]=1;gold+=QS[i][3];render()}}
@@ -973,7 +977,7 @@ function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own
 const LK=()=>'cl_save_'+UID;
 let slWait=0;function saveLocal(){if(!UID||!run||NET)return;if(drag||pinch||glide||fling){if(!slWait){slWait=1;setTimeout(()=>{slWait=0;saveLocal()},1200)}return}(window.requestIdleCallback||setTimeout)(()=>{try{localStorage.setItem(LK(),JSON.stringify({s:snap(),at:Date.now()}))}catch(_){}})}
 function saveNow(){if(!UID||!run||NET)return;const s=snap(),at=Date.now();try{localStorage.setItem(LK(),JSON.stringify({s,at}))}catch(_){}if(!DB)return;try{ud('save').set({s,at}).catch(()=>{})}catch(_){}}
-function loadGame(d){size();if(d.bn&&d.bn.length===3){BN[2]=d.bn[0];BN[3]=d.bn[1];BN[4]=d.bn[2];bnClearSpr()}closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;lSk=d.sk||{};lXp=d.xp||0;lLv=d.ll||1;lPt=d.sp==null?3:d.sp;stats=d.stats;if(stats.spent==null)stats.spent=cities.reduce((a,c)=>a+(c.o===1?CUM[Math.min(MAXL,c.l)]:0),0);claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;ghosts=d.ghosts||[];applyGhosts();SEEDK=d.SEEDK||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
+function loadGame(d){size();if(d.bn&&d.bn.length===3){BN[2]=d.bn[0];BN[3]=d.bn[1];BN[4]=d.bn[2];bnClearSpr()}closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;lSk=(d.sk&&typeof d.sk==='object')?d.sk:{};lXp=Math.max(0,+d.xp||0);lLv=Math.min(LMAX,Math.max(1,+d.ll||1));lPt=d.sp==null?3:Math.max(0,+d.sp||0);stats=d.stats;if(stats.spent==null)stats.spent=cities.reduce((a,c)=>a+(c.o===1?CUM[Math.min(MAXL,c.l)]:0),0);claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;ghosts=d.ghosts||[];applyGhosts();SEEDK=d.SEEDK||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
 /* Single player only: while you were away the AI lords may raid you. Gentle by design:
    one raid chance per 20 min away, max 3 raids, max 2 castles lost, never the main castle,
    never more than a quarter of your castles, and only if the raiders really outnumber the defenders. */
