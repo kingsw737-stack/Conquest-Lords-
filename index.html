@@ -242,6 +242,38 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #g{grid-column:1!important;justify-self:stretch!important;width:auto!important}
 #ov #d,#ov #bnrow{display:none!important}
 #ov #sndm{color:#fff!important;border:2px solid #e0b24a!important;box-shadow:0 3px 8px rgba(0,0,0,.4)!important;text-shadow:0 1px 2px #000}
+
+/* ===== v13: HUD buttons clear of level badge + prettier send-troops panel ===== */
+#zm{top:calc(env(safe-area-inset-top,0px) + 116px)!important;left:8px!important}
+#sm{top:calc(env(safe-area-inset-top,0px) + 116px)!important}
+#toast{top:calc(env(safe-area-inset-top,0px) + 104px)}
+@keyframes pkUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+#pk{left:10px!important;right:10px!important;bottom:calc(env(safe-area-inset-bottom,0px) + 24px)!important;padding:8px 14px 14px!important;border-radius:26px!important;border:2px solid #f0c45a!important;
+background:radial-gradient(130% 80% at 50% -10%,#3a66c4 0%,#1b3f8f 38%,#0b1534 100%)!important;
+box-shadow:0 -12px 36px rgba(0,0,0,.6),0 0 0 3px rgba(10,18,44,.85),0 0 0 4px rgba(240,196,90,.45),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -14px 24px rgba(0,0,0,.28)!important;animation:pkUp .22s ease-out}
+#pk .pg{width:48px!important;height:5px!important;margin:0 auto 10px!important;background:rgba(255,255,255,.35)!important}
+#pk .ph{gap:12px!important;align-items:center}
+#pk #pki{width:50px!important;height:50px!important;border-radius:16px!important;font-size:26px!important;position:relative;overflow:hidden;border:2px solid #fff3c4!important;background:linear-gradient(#ffe487,#d9a131 62%,#b27816)!important;box-shadow:0 4px 10px rgba(0,0,0,.5),inset 0 -4px 0 rgba(0,0,0,.18)!important}
+#pk #pki::after{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,0))}
+#pk #pkt{font-size:18px!important;letter-spacing:.4px;text-shadow:0 2px 3px rgba(0,0,0,.7)}
+#pk #pks{font-size:13px!important;color:#b9cdfa!important;margin-top:2px!important}
+#pk .pn{padding:2px 12px 4px!important;border-radius:14px;background:rgba(4,9,28,.55);border:1px solid rgba(240,196,90,.5);box-shadow:inset 0 2px 5px rgba(0,0,0,.55);align-items:flex-end!important}
+#pk #pkv{font-size:34px!important;text-shadow:0 2px 0 #8a5d10,0 4px 8px rgba(0,0,0,.5)!important}
+#pk #pkv span{font-size:14px!important;color:#9fb6ec!important}
+#pk .pr{margin:12px 0 4px!important}
+#pk .pr input{height:34px!important}
+#pk .pr input::-webkit-slider-runnable-track{height:16px!important;border-radius:9px!important;background:linear-gradient(rgba(255,255,255,.45),rgba(255,255,255,0) 55%) 0/var(--f,50%) 100% no-repeat,linear-gradient(90deg,#ffd34a,#e8852a) 0/var(--f,50%) 100% no-repeat,#07102a!important;border:2px solid #4a6cbc!important;box-shadow:inset 0 3px 5px rgba(0,0,0,.65)!important}
+#pk .pr input::-webkit-slider-thumb{width:34px!important;height:34px!important;margin-top:-10px!important;border:3px solid #fff3c4!important;background:radial-gradient(circle at 35% 28%,#fffbe3,#f5c93f 50%,#b9851c)!important;box-shadow:0 4px 9px rgba(0,0,0,.65),0 0 0 3px rgba(240,196,90,.28)!important}
+#pk .pq{gap:8px!important;margin-top:8px!important}
+#pk .pq button{min-height:42px!important;font-size:15px!important;letter-spacing:.3px;border-radius:21px!important;border:2px solid #4a6cbc!important;background:linear-gradient(#2e57b0,#13285c)!important;color:#dfe8ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 3px 0 #08112b!important;transition:transform .08s}
+#pk .pq button.on{border-color:#fff3c4!important;color:#2b1c05!important;background:linear-gradient(#ffe487,#dca62f)!important;text-shadow:0 1px 0 rgba(255,255,255,.45)}
+#pk .pq button:active{transform:translateY(2px);box-shadow:none!important}
+#pk .pb{gap:10px!important;margin-top:14px!important}
+#pk .pb button{min-height:54px!important;font-size:18px!important;border-radius:16px!important;letter-spacing:.4px}
+#pk .pb .no{flex:.8!important;color:#cfdcff!important;border:2px solid #4a6cbc!important;background:linear-gradient(#1c3170,#0b1636)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 3px 0 #060d22!important}
+#pk .pb .ok{flex:1.5!important;position:relative;overflow:hidden;border:2px solid #fff6d0!important;background:linear-gradient(#ffeaa0,#f0b93a 52%,#cf8d1c 54%,#e7a82c)!important;color:#2b1c05!important;font-weight:bold;text-shadow:0 1px 0 rgba(255,255,255,.55);box-shadow:0 5px 0 #7a5410,0 10px 18px rgba(0,0,0,.5),0 0 18px rgba(255,200,80,.35)!important}
+#pk .pb .ok::after{content:"";position:absolute;top:0;left:-60%;width:30%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:ovshine 3.2s ease-in-out infinite;pointer-events:none}
+#pk .pb .ok:active{transform:translateY(3px);box-shadow:0 2px 0 #7a5410!important}
 </style>
 <style>
 #skp{display:none;position:fixed;inset:0;z-index:20;flex-direction:column;align-items:center;gap:6px;background:radial-gradient(120% 70% at 50% 0,#2b4ea8 0,#12214d 55%,#0a1230 100%);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px calc(env(safe-area-inset-bottom,0px) + 10px);overflow:hidden;font-family:Georgia,"Times New Roman",serif}
@@ -291,7 +323,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 <div id="sheet"></div>
 <div class="tabs"><button data-t="0" title="Skills">⚔️</button><button data-t="1" title="Forge">🔨</button><button data-t="2" title="Quests">📜</button><button data-t="3" title="League">🏆</button></div>
 </div>
-<div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><div id="lbi"></div><button id="lbx">✕</button></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="ver" style="position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);text-align:center;font:11px Georgia,serif;color:rgba(255,255,255,.55);z-index:11;pointer-events:none">version 12 · Nov 12</div><div id="skp"></div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Go to my main castle">🏠</button><button id="mmb" title="Map">🗺</button><button id="rgb" title="Regroup all troops to main castle">📯</button></div><div id="sm"><button id="skb" title="Lord skills" aria-label="Lord skills" onclick="skOpen()">🌟</button><button id="lbz" title="Leaderboard" onclick="lbShow('w')">🏆</button><button id="bkm" title="Back to main menu" aria-label="Back to main menu">☰</button></div>
+<div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><div id="lbi"></div><button id="lbx">✕</button></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="ver" style="position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);text-align:center;font:11px Georgia,serif;color:rgba(255,255,255,.55);z-index:11;pointer-events:none">version 13 · Nov 13</div><div id="skp"></div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Go to my main castle">🏠</button><button id="mmb" title="Map">🗺</button><button id="rgb" title="Regroup all troops to main castle">📯</button></div><div id="sm"><button id="skb" title="Lord skills" aria-label="Lord skills" onclick="skOpen()">🌟</button><button id="lbz" title="Leaderboard" onclick="lbShow('w')">🏆</button><button id="bkm" title="Back to main menu" aria-label="Back to main menu">☰</button></div>
 <div id="ov"><canvas id="ovbg"></canvas><canvas id="ovfx"></canvas><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When 80% of the castles are taken, a new island rises from the clouds. A season lasts 5 days: the lord with the most kingdom points wins.</p><div id="ovsp"></div><div id="bnrow"><canvas id="bnp" width="64" height="84"></canvas><div class="bnrb"><button id="bne">Design banner</button><button id="bnrn" title="Random banner">🎲</button></div></div><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><div id="sec"><button id="sndm"></button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button></div><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>/* PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app) */
@@ -532,7 +564,7 @@ let pickN=0,uiT=0,ui=1,regT=-99;const REG_CD=40;
 function setMain(){const c=cities[sel];if(!c||c.o!==1||c.main)return;if(T<mainReady||gold<mainCost)return;gold-=mainCost;stats.spent=(stats.spent||0)+mainCost;cities.forEach(d=>{if(d.o===1)d.main=0});c.main=1;cmd({t:'m',c:sel});mainReady=T+DAY*2;toast('👑 Main castle moved\nNext move in 2 days')}
 function doSend(){openPick()}
 function openPick(){if(sel<0||tgt<0)return;const S=cities[sel],D=cities[tgt],m=Math.floor(S.t);if(S.o!==1||m<1||(D.o!==1&&prot(D)))return;pkr.min=1;pkr.max=m;pkr.value=Math.max(1,Math.round(m*pct.value/100));pk.style.display='block';updPick()}
-function updPick(){const S=cities[sel],D=cities[tgt];pickN=+pkr.value;const mx=+pkr.max,own=D.o===1;pkv.innerHTML=pickN+'<span>/ '+mx+'</span>';pkt.textContent=own?'Reinforce your castle':'Attack '+OW[D.o]+' castle';pki.textContent=own?'🛡️':'⚔️';pkok.textContent=own?'Send reinforcements':'Send troops';{const e=routeOf(sel,tgt).len/spd(pickN);pks.innerHTML='Arrives in <b>'+(e>=60?Math.floor(e/60)+'m '+Math.round(e%60)+'s':e.toFixed(1)+'s')+'</b>'}pkr.style.setProperty('--f',(mx>1?(pickN-1)/(mx-1)*100:100)+'%')}
+function updPick(){const S=cities[sel],D=cities[tgt];pickN=+pkr.value;const mx=+pkr.max,own=D.o===1;pkv.innerHTML=pickN+'<span>/ '+mx+'</span>';pkt.textContent=own?'Reinforce your castle':'Attack '+OW[D.o]+' castle';pki.textContent=own?'🛡️':'⚔️';pkok.textContent=own?'Send reinforcements':'Send troops';{const e=routeOf(sel,tgt).len/spd(pickN);pks.innerHTML='Arrives in <b>'+(e>=60?Math.floor(e/60)+'m '+Math.round(e%60)+'s':e.toFixed(1)+'s')+'</b>'}pkr.style.setProperty('--f',(mx>1?(pickN-1)/(mx-1)*100:100)+'%');document.querySelectorAll('#pk .pq button').forEach((b,i)=>b.classList.toggle('on',pickN===Math.max(1,Math.round(mx*[.25,.5,.75,1][i]))))}
 function quick(f){pkr.value=Math.max(1,Math.round(+pkr.max*f));updPick()}
 function closePick(){pickN=0;pk.style.display='none'}
 function confirmPick(){if(sel>=0&&tgt>=0){const S=cities[sel];if(S.o===1){const v=Math.min(pickN,Math.floor(S.t));if(v>=1)send(sel,tgt,(v+.01)/S.t)}}closePick()}
@@ -576,12 +608,42 @@ const df=Math.round((dfL(c.l)+(own?dm()-1:0))*100);
 const l1=(own?pname+'’s':OW[c.o])+' castle'+(c.main?' \ud83d\udc51':'')+(c.tp?' \u2728':'');
 const l2=own?'Troops '+Math.floor(c.t)+'/'+capL(c.l)+' \u00b7 +'+(.5*grwL(c.l)*gm()).toFixed(1)+'/s':'Troops '+(vis?Math.floor(c.t):'?');
 let l3='';if(aim&&!isT&&own)l3='Tap a castle to attack it';else if(isT){const[ax,ay]=WP(S),[bx2,by2]=WP(c),sp=spd(n);l3=pt?'Main castle: can’t be conquered':'Send '+n+' \u00b7 speed '+Math.round(sp)+' \u00b7 arrives '+(Math.hypot(ax-bx2,ay-by2)/sp).toFixed(1)+'s'}else if(!vis)l3='Scout to reveal troops';else l3='Defense +'+df+'%'+(own&&c.l<MAXL?' \u00b7 next level +'+Math.round((dfL(c.l+1)-dfL(c.l))*100)+'% def':'');
-const cx=Math.max(147,Math.min(W-147,x0)),L=cx-147,T0=Math.max(70,y0-130*q-84);
-g.save();g.lineWidth=3;g.strokeStyle='#fff';g.fillStyle='#17469a';g.beginPath();g.roundRect(L+54,T0+4,240,52,6);g.fill();
-g.fillStyle=col(c.o);g.fillRect(L+60,T0+9,42,42);if(c.o>=1&&BN[c.o]){g.save();g.beginPath();g.rect(L+60,T0+9,42,42);g.clip();bnArt(g,BN[c.o],L+60,T0+9,42,42,.5);g.restore()}else{g.fillStyle='#fff';g.beginPath();g.moveTo(L+81,T0+17);g.lineTo(L+93,T0+30);g.lineTo(L+81,T0+43);g.lineTo(L+69,T0+30);g.closePath();g.fill()}
-g.fillStyle='#2a58b8';g.beginPath();g.moveTo(L,T0);g.lineTo(L+54,T0);g.lineTo(L+54,T0+40);g.lineTo(L+27,T0+60);g.lineTo(L,T0+40);g.closePath();g.fill();g.stroke();
-g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.font='bold 28px Georgia,serif';g.fillText(c.l,L+27,T0+26);
-g.textAlign='left';g.font='bold 14px Georgia,serif';g.fillText(l1,L+110,T0+16);g.font='11px Georgia,serif';g.fillText(l2,L+110,T0+32);g.fillStyle='#ffd34a';g.fillText(l3,L+110,T0+47);g.restore()}
+const cw=304,cx=Math.max(cw/2+4,Math.min(W-cw/2-4,x0)),L=cx-cw/2,T0=Math.max(100,y0-130*q-100),R=L+cw;
+g.save();
+const fitT=(t,mw,fs,w)=>{g.font=w+' '+fs+'px Georgia,serif';while(g.measureText(t).width>mw&&fs>8){fs--;g.font=w+' '+fs+'px Georgia,serif'}return t};
+/* body plate */
+g.shadowColor='rgba(0,0,0,.55)';g.shadowBlur=16;g.shadowOffsetY=5;
+let gr=g.createLinearGradient(0,T0+6,0,T0+70);gr.addColorStop(0,'#35599f');gr.addColorStop(.5,'#1a3a85');gr.addColorStop(1,'#0c1738');
+g.fillStyle=gr;g.beginPath();g.roundRect(L+30,T0+6,cw-30,64,[12,18,18,12]);g.fill();
+g.shadowColor='transparent';g.shadowBlur=0;g.shadowOffsetY=0;
+g.lineWidth=2.5;g.strokeStyle='#e8bd55';g.stroke();
+g.lineWidth=1;g.strokeStyle='rgba(255,255,255,.2)';g.beginPath();g.roundRect(L+33,T0+9,cw-36,58,[10,15,15,10]);g.stroke();
+g.save();g.beginPath();g.roundRect(L+30,T0+6,cw-30,64,[12,18,18,12]);g.clip();
+let hl=g.createLinearGradient(0,T0+6,0,T0+30);hl.addColorStop(0,'rgba(255,255,255,.2)');hl.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=hl;g.fillRect(L+30,T0+6,cw-30,24);g.restore();
+/* owner banner tile */
+const tx=L+56,ty=T0+14,ts=48;
+g.save();g.shadowColor='rgba(0,0,0,.5)';g.shadowBlur=6;g.fillStyle=col(c.o);g.beginPath();g.roundRect(tx,ty,ts,ts,10);g.fill();g.restore();
+g.save();g.beginPath();g.roundRect(tx,ty,ts,ts,10);g.clip();
+if(c.o>=1&&BN[c.o]){bnArt(g,BN[c.o],tx,ty,ts,ts,.5)}else{g.fillStyle='#a79f8a';g.fillRect(tx,ty,ts,ts);g.fillStyle='#fff';g.beginPath();g.moveTo(tx+24,ty+9);g.lineTo(tx+38,ty+24);g.lineTo(tx+24,ty+39);g.lineTo(tx+10,ty+24);g.closePath();g.fill()}
+let tg=g.createLinearGradient(0,ty,0,ty+ts);tg.addColorStop(0,'rgba(255,255,255,.28)');tg.addColorStop(.5,'rgba(255,255,255,0)');g.fillStyle=tg;g.fillRect(tx,ty,ts,ts);g.restore();
+g.lineWidth=2.5;g.strokeStyle='#fff3c4';g.beginPath();g.roundRect(tx,ty,ts,ts,10);g.stroke();
+/* level shield */
+const sx=L,sy=T0;
+g.save();g.shadowColor='rgba(0,0,0,.55)';g.shadowBlur=8;g.shadowOffsetY=3;
+const shp=()=>{g.beginPath();g.moveTo(sx+4,sy+8);g.quadraticCurveTo(sx+4,sy+2,sx+10,sy+2);g.lineTo(sx+46,sy+2);g.quadraticCurveTo(sx+52,sy+2,sx+52,sy+8);g.lineTo(sx+52,sy+44);g.lineTo(sx+28,sy+68);g.lineTo(sx+4,sy+44);g.closePath()};
+shp();let sg=g.createLinearGradient(0,sy,0,sy+68);sg.addColorStop(0,'#4f86e8');sg.addColorStop(1,'#16408f');g.fillStyle=sg;g.fill();g.restore();
+shp();g.lineWidth=3.5;g.strokeStyle='#f2c64f';g.lineJoin='round';g.stroke();
+g.save();g.translate(sx+28,sy+35);g.scale(.84,.84);g.translate(-(sx+28),-(sy+35));shp();g.restore();
+g.lineWidth=1.2;g.strokeStyle='rgba(255,255,255,.35)';g.save();g.translate(sx+28,sy+33);g.scale(.8,.8);g.translate(-(sx+28),-(sy+34));shp();g.stroke();g.restore();
+g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.font='bold 30px Georgia,serif';g.shadowColor='rgba(0,0,0,.6)';g.shadowBlur=3;g.shadowOffsetY=2;g.fillText(c.l,sx+28,sy+26);g.shadowColor='transparent';g.shadowBlur=0;g.shadowOffsetY=0;
+/* text */
+const tx2=L+114,mw=R-tx2-14;g.textAlign='left';
+g.fillStyle='#fff';g.shadowColor='rgba(0,0,0,.7)';g.shadowBlur=3;g.shadowOffsetY=1;g.fillText(fitT(l1,mw,16,'bold'),tx2,T0+22);g.shadowColor='transparent';g.shadowBlur=0;g.shadowOffsetY=0;
+g.fillStyle='#b9cdfa';g.fillText(fitT(l2,mw,12,''),tx2,T0+39);
+g.font='bold 11.5px Georgia,serif';fitT(l3,mw-16,11.5,'bold');const pw=Math.min(mw,g.measureText(l3).width+16);
+g.fillStyle='rgba(6,12,34,.72)';g.beginPath();g.roundRect(tx2-2,T0+47,pw,18,9);g.fill();g.lineWidth=1;g.strokeStyle='rgba(255,211,74,.45)';g.stroke();
+g.fillStyle='#ffd34a';g.textBaseline='middle';g.fillText(l3,tx2+6,T0+56.5);
+g.restore()}
 function panel(){const el=document.getElementById('cp'),S=sel>=0?cities[sel]:null;let h='';
 if(S&&S.o===1&&tgt<0){const l=S.l,k=upCost(l),df=Math.round((dfL(l)+dm()-1)*100);
 h=`<b>${S.main?'👑 Main castle':'Castle'} · level ${l}${S.tp?' · ✨ Temple':''}</b><br>Troops ${Math.floor(S.t)}/${capL(l)} · +${(.5*grwL(l)*gm()).toFixed(1)}/s · Gold +${(.5+.5*l).toFixed(1)}/s · Defense +${df}%`+(l>=MAXL?`<div class='bt'><button disabled>Max level</button></div>`:`<br>Next level: +${Math.round((grwL(l+1)/grwL(l)-1)*100)}% troop growth, +${Math.round((dfL(l+1)-dfL(l))*100)}% defense, +0.5 gold/s<div class='bt'><button ${gold>=k?'':'disabled'} onpointerdown='upg()'>Upgrade · ${k} gold</button></div>`)}
