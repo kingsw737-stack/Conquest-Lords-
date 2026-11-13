@@ -243,7 +243,45 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 #ov #d,#ov #bnrow{display:none!important}
 #ov #sndm{color:#fff!important;border:2px solid #e0b24a!important;box-shadow:0 3px 8px rgba(0,0,0,.4)!important;text-shadow:0 1px 2px #000}
 </style>
-</head>
+<style>
+#skp{display:none;position:fixed;inset:0;z-index:20;flex-direction:column;align-items:center;gap:6px;background:radial-gradient(120% 70% at 50% 0,#2b4ea8 0,#12214d 55%,#0a1230 100%);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px calc(env(safe-area-inset-bottom,0px) + 10px);overflow:hidden;font-family:Georgia,"Times New Roman",serif}
+#skp.on{display:flex}
+#skp .skh{display:flex;align-items:center;gap:10px;width:min(100%,420px);padding:6px 4px;border-bottom:2px solid #e0b24a}
+#skp .skh h2{margin:0;flex:1;font-size:26px;text-shadow:0 2px 3px #000}
+#skp .skl{font-size:28px;filter:drop-shadow(0 2px 2px #000)}
+#skp .skx{width:42px;height:42px;font-size:20px;font-weight:bold;color:#fff;border:2px solid #e0b24a;border-radius:12px;background:linear-gradient(#35569f,#0f1c3d);box-shadow:0 3px 6px rgba(0,0,0,.5)}
+#skp .skpt{align-self:center;padding:6px 18px;border-radius:14px;background:#050b1e;border:2px solid #3a5aa8;font-size:17px;font-weight:bold;box-shadow:inset 0 2px 6px rgba(0,0,0,.6)}
+#skp .skpt b{color:#ffd34a}
+#skp .skt{position:relative;container-type:inline-size;width:min(100%,420px,calc(50vh / 1.18));aspect-ratio:100/118;flex:none;margin:2px 0 0}
+#skp .skt svg.ln{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#skp .skn{position:absolute;transform:translate(-50%,-50%);width:min(19vw,80px);width:19cqw;display:flex;flex-direction:column;align-items:center;cursor:pointer;z-index:2;-webkit-user-select:none;user-select:none}
+#skp .skn .tl{position:relative;width:100%;aspect-ratio:1;border-radius:18%;border:3px solid #3a78e0;background:linear-gradient(160deg,var(--a),var(--b));box-shadow:inset 0 2px 0 rgba(255,255,255,.4),inset 0 -8px 12px rgba(0,0,0,.35),0 5px 9px rgba(0,0,0,.55);transition:transform .1s}
+#skp .skn .tl::after{content:"";position:absolute;left:6%;right:6%;top:4%;height:38%;border-radius:14% 14% 50% 50%;background:linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,0))}
+#skp .skn .tl svg{position:absolute;inset:6%;width:88%;height:88%;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+#skp .skn:active .tl{transform:scale(.93)}
+#skp .skn.sel .tl{border-color:#ffd34a;box-shadow:0 0 0 3px rgba(255,211,74,.45),0 0 18px #ffd34a,inset 0 2px 0 rgba(255,255,255,.4),inset 0 -8px 12px rgba(0,0,0,.35)}
+#skp .skn.lk .tl{filter:grayscale(.9) brightness(.55);border-color:#4a5880}
+#skp .skn .lkc{position:absolute;right:-6px;top:-8px;font-size:17px;z-index:3;filter:drop-shadow(0 1px 2px #000)}
+#skp .skn .bd{margin-top:-7px;position:relative;z-index:1;padding:1px 8px;border-radius:10px;background:#2a6fd6;border:2px solid #0b1a3a;font-weight:bold;font-size:12px;white-space:nowrap;text-shadow:0 1px 1px #000}
+#skp .skn .bd i{font-style:normal;color:#b6ff5a}
+#skp .skn.lk .bd{background:#38425f;color:#9aa6c8}
+#skp .skn.mx .bd{background:#c7901a;color:#2b1c05;text-shadow:none}
+#skp .skm{position:absolute;left:50%;top:50%;width:18cqw;aspect-ratio:1;transform:translate(-50%,-50%)}
+#skp .skm svg{width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(0,0,0,.6))}
+#skp .skf{width:min(100%,420px);flex:1;min-height:0;overflow-y:auto;padding:10px 12px;border:2px solid #e0b24a;border-radius:16px;background:linear-gradient(#1a2f6a,#0d1838);box-shadow:inset 0 0 0 3px rgba(8,14,40,.6)}
+#skp .sfh{display:flex;align-items:center;gap:12px}
+#skp .sfi{position:relative;flex:none;width:56px;height:56px;border-radius:15px;border:3px solid #ffd34a;background:linear-gradient(160deg,var(--a),var(--b));box-shadow:inset 0 2px 0 rgba(255,255,255,.4),0 3px 6px rgba(0,0,0,.5)}
+#skp .sfi svg{position:absolute;inset:4px;width:calc(100% - 8px);height:calc(100% - 8px)}
+#skp .sfh b{font-size:19px}
+#skp .sfh span{color:#ffd34a;font-weight:bold;margin-left:4px}
+#skp .sfd{font-size:13px;color:#a9c0f0;line-height:1.3;margin-top:2px}
+#skp .sfe{font-size:14px;line-height:1.45;margin:8px 0 2px}
+#skp .sfb{display:flex;gap:8px;margin-top:8px}
+#skp .sfb button{flex:1;min-height:46px;font:inherit;font-size:17px;font-weight:bold;color:#2b1c05;border:2px solid #fff3c4;border-radius:13px;background:linear-gradient(#ffd966,#d8a02e 60%,#b9801c);box-shadow:0 3px 0 #7a5410;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+#skp .sfb button.rs{flex:1.5;color:#fff;border-color:#3a78e0;background:linear-gradient(#3b82f0,#1f4fb3);box-shadow:0 3px 0 #0b2466;text-shadow:0 1px 2px #000;font-size:15px}
+#skp .sfb button:active{transform:translateY(2px);box-shadow:none}
+#skp .sfb button:disabled{opacity:.4}
+</style></head>
 <body>
 <div id="app">
 <div id="pf"><canvas id="pfb" width="96" height="124"></canvas><div class="pl"><div id="pfn">Lord</div><div class="prk">Lord</div></div></div><div id="top"><span id="g">Gold 0</span><span id="tr">0</span><span id="n">Castles 1</span><span id="lvl" onclick="skOpen()" style="pointer-events:auto">⭐ Lv 1</span></div>
@@ -253,7 +291,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 <div id="sheet"></div>
 <div class="tabs"><button data-t="0" title="Skills">⚔️</button><button data-t="1" title="Forge">🔨</button><button data-t="2" title="Quests">📜</button><button data-t="3" title="League">🏆</button></div>
 </div>
-<div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><div id="lbi"></div><button id="lbx">✕</button></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="ver" style="position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);text-align:center;font:11px Georgia,serif;color:rgba(255,255,255,.55);z-index:11;pointer-events:none">version 12 · Nov 12</div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Go to my main castle">🏠</button><button id="mmb" title="Map">🗺</button><button id="rgb" title="Regroup all troops to main castle">📯</button></div><div id="sm"><button id="skb" title="Lord skills" aria-label="Lord skills" onclick="skOpen()">🌟</button><button id="lbz" title="Leaderboard" onclick="lbShow('w')">🏆</button><button id="bkm" title="Back to main menu" aria-label="Back to main menu">☰</button></div>
+<div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><div id="lbi"></div><button id="lbx">✕</button></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="ver" style="position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);text-align:center;font:11px Georgia,serif;color:rgba(255,255,255,.55);z-index:11;pointer-events:none">version 12 · Nov 12</div><div id="skp"></div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Go to my main castle">🏠</button><button id="mmb" title="Map">🗺</button><button id="rgb" title="Regroup all troops to main castle">📯</button></div><div id="sm"><button id="skb" title="Lord skills" aria-label="Lord skills" onclick="skOpen()">🌟</button><button id="lbz" title="Leaderboard" onclick="lbShow('w')">🏆</button><button id="bkm" title="Back to main menu" aria-label="Back to main menu">☰</button></div>
 <div id="ov"><canvas id="ovbg"></canvas><canvas id="ovfx"></canvas><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When 80% of the castles are taken, a new island rises from the clouds. A season lasts 5 days: the lord with the most kingdom points wins.</p><div id="ovsp"></div><div id="bnrow"><canvas id="bnp" width="64" height="84"></canvas><div class="bnrb"><button id="bne">Design banner</button><button id="bnrn" title="Random banner">🎲</button></div></div><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><div id="sec"><button id="sndm"></button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button></div><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>/* PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app) */
@@ -288,14 +326,46 @@ function skFx(k,p){const v=2*p;return({st:'Attack +'+v+'%',rc:'Troop growth +'+v
 fe:'Attack +'+v+'% (up to x3 vs high-level castles)',br:'Defense +'+v+'% (up to x3 on high-level castles)',
 sc:'+'+(.05*p).toFixed(2)+' gold per enemy troop you destroy',sv:'+'+(.05*p).toFixed(2)+' gold per attacker you destroy',
 ca:'Refund '+Math.min(50,v)+'% of a lost castle’s gold'})[k]}
-function skHtml(){try{return skHtml0()}catch(e){console.error(e);return'<div class="row"><div>Skills unavailable</div></div>'}}
-function skHtml0(){const nd=lvNeed(lLv),pc=lLv>=LMAX?100:lXp/nd*100;
-let h=`<div class="row"><div><b>⭐ Lord level ${lLv}</b> · <b>${lPt}</b> skill point${lPt==1?'':'s'}<div class="bar"><i style="width:${pc}%"></i></div><small>${lLv>=LMAX?'Max level':lXp+' / '+nd+' XP · capture castles to level up'}</small></div></div>`;
-SKD.forEach((s,i)=>{const p=lSk[s[0]]||0,miss=(s[3]||[]).filter(r=>(lSk[r[0]]||0)<r[1]),lock=miss.length>0;
-h+=(i==4?'<div class="row"><div><b>Auxiliary skills</b></div></div>':'')+`<div class="row" style="${lock?'opacity:.55':''}"><div><b>${s[2]} ${s[1]}</b> ${p}/${SKM}<br><small>${skFx(s[0],p)}${lock?'<br>🔒 Needs '+miss.map(r=>SKN[r[0]]+' '+r[1]).join(' + '):''}</small></div>${p>=SKM?'<span>Max</span>':btn(lPt>0&&!lock,`skUp('${s[0]}')`,'+1')}</div>`});return h}
-function skUp(k){try{skUp0(k)}catch(e){console.error(e)}}
+let skS='st';
+const SKP={st:[30,36],rc:[70,36],pr:[30,82],gu:[70,82],fe:[50,12],ru:[90,12],sc:[10,59],br:[90,59],sv:[50,106],ca:[10,106]},
+SKC={st:['#f0503f','#7a0f12'],rc:['#b84fe8','#46116e'],pr:['#ffd34a','#a8680c'],gu:['#3adbee','#0b5a78'],fe:['#f5389f','#6b0f52'],ru:['#9456ff','#35157a'],sc:['#ff9a3c','#8a3c0c'],ca:['#e0982c','#6a3a0a'],sv:['#66dc4e','#18631f'],br:['#6f82ff','#232c8a']},
+SKDS={st:'Your armies hit harder when attacking.',rc:'Your castles train troops faster.',pr:'Your castles earn more gold.',gu:'Your castles resist attacks better.',fe:'Extra attack, stronger against high-level castles.',ru:'Your armies march faster.',sc:'Earn gold for enemy troops you destroy when attacking.',ca:'Get gold back when you lose a castle.',sv:'Earn gold for attackers you destroy when defending.',br:'Extra defense, stronger on high-level castles.'},
+SO='stroke="#141b36" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"',
+gSw=(x,y,z,r)=>`<g transform="translate(${x} ${y}) rotate(${r||0}) scale(${z})"><path d="M0 -31L6 -24V6H-6V-24Z" fill="#f4f7fb" ${SO}/><path d="M-13 6H13V12H-13Z" fill="#f2c24a" ${SO}/><path d="M-3.5 12H3.5V26H-3.5Z" fill="#9a5a26" ${SO}/></g>`,
+gCo=(x,y,r)=>`<g transform="translate(${x} ${y})"><ellipse cx="0" cy="${r*.5}" rx="${r}" ry="${r*.45}" fill="#b8861a" ${SO}/><ellipse cx="0" cy="0" rx="${r}" ry="${r*.45}" fill="#ffd34a" ${SO}/></g>`,
+gSh=(x,y,z,f)=>`<g transform="translate(${x} ${y}) scale(${z})"><path d="M0 -25L20 -17V2C20 15 10 23 0 28C-10 23 -20 15 -20 2V-17Z" fill="${f||'#f4f7fb'}" ${SO}/></g>`,
+gPl=(x,y,z)=>`<path transform="translate(${x} ${y}) scale(${z})" d="M-3 -9H3V-3H9V3H3V9H-3V3H-9V-3H-3Z" fill="#fff" ${SO}/>`,
+gMn=(x,y,z)=>`<g transform="translate(${x} ${y}) scale(${z})"><circle cx="0" cy="-10" r="6.5" fill="#f4f7fb" ${SO}/><path d="M-10 15V3C-10 -3 -5 -4 0 -4C5 -4 10 -3 10 3V15Z" fill="#f4f7fb" ${SO}/></g>`;
+function skIcon(k){let b='';
+if(k==='st')b=gSw(32,33,.88,38);
+else if(k==='rc')b=gMn(15,40,.8)+gMn(49,40,.8)+gMn(32,36,1.05)+gPl(32,11,.9);
+else if(k==='pr')b=gCo(32,47,16)+gCo(32,39,16)+gCo(32,31,16)+gPl(50,14,.8);
+else if(k==='gu')b=gSh(32,33,1.05)+'<path d="M32 12L46 18V33C46 42 39 48 32 52Z" fill="#2fc7dc"/>';
+else if(k==='fe')b=`<path d="M32 3C45 18 54 29 47 46C44 57 20 57 17 46C13 33 26 27 32 3Z" fill="#ffb02e" ${SO}/><path d="M32 24C39 32 41 38 38 46C36 51 28 51 26 46C24 39 28 33 32 24Z" fill="#ff5a2a"/>`+gSw(32,36,.68,30);
+else if(k==='ru')b=`<path d="M22 10H40V33L53 39C60 42 59 55 51 55H22Z" fill="#f4f7fb" ${SO}/><path d="M22 45H56" stroke="#141b36" stroke-width="2.6"/><path d="M4 20H15M2 31H13M6 42H15" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>`;
+else if(k==='sc')b=gSw(27,29,.78,-35)+gCo(46,53,10)+gCo(46,47,10);
+else if(k==='ca')b=`<path d="M6 32L32 9L58 32V55H6Z" fill="#f4f7fb" ${SO}/><path d="M24 55V40H36V55Z" fill="#9a5a26" ${SO}/>`+gCo(47,54,10)+gCo(47,47,10);
+else if(k==='sv')b=gSh(27,33,.82)+gCo(46,53,10)+gCo(46,47,10)+gPl(49,14,.7);
+else if(k==='br'){let m='';for(let i=0;i<12;i++){const a=i/12*6.283;m+=`<circle cx="${32+Math.cos(a)*18}" cy="${32+Math.sin(a)*18}" r="8" fill="#f2a53a" ${SO}/>`}b=m+`<circle cx="32" cy="32" r="16" fill="#ffd27a" ${SO}/><circle cx="26" cy="29" r="2.4" fill="#141b36"/><circle cx="38" cy="29" r="2.4" fill="#141b36"/><path d="M28 36L36 36L32 41Z" fill="#c75a3a" ${SO}/>`}
+return`<svg viewBox="0 0 64 64">${b}</svg>`}
+function skShort(k,p){return k==='sc'||k==='sv'?'+'+(.05*p).toFixed(2):'+'+(k==='ca'?Math.min(50,2*p):2*p)+'%'}
+function skHtml(){skDraw();return''}
+function skDraw(){try{const el=document.getElementById('skp');if(!el||!el.classList.contains('on'))return;
+const pct=lLv>=LMAX?1:lXp/lvNeed(lLv),CI=2*Math.PI*17;let L='',N='';
+SKD.forEach(s=>(s[3]||[]).forEach(r=>{const a=SKP[r[0]],b=SKP[s[0]],dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d,x1=a[0]+ux*11,y1=a[1]+uy*11,x2=b[0]-ux*12,y2=b[1]-uy*12,c=(lSk[r[0]]||0)>=r[1]?'#fff':'#4a6199';
+L+=`<line x1="${x1}" y1="${y1}" x2="${x2-ux*2}" y2="${y2-uy*2}" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/><polygon points="${x2},${y2} ${x2-ux*3.6-uy*2.6},${y2-uy*3.6+ux*2.6} ${x2-ux*3.6+uy*2.6},${y2-uy*3.6-ux*2.6}" fill="${c}"/>`}));
+SKD.forEach(s=>{const k=s[0],p=lSk[k]||0,lk=(s[3]||[]).some(r=>(lSk[r[0]]||0)<r[1]),mx=p>=SKM,q=SKP[k],c=SKC[k];
+N+=`<div class="skn${lk?' lk':''}${mx?' mx':''}${k===skS?' sel':''}" style="left:${q[0]}%;top:${q[1]/118*100}%;--a:${c[0]};--b:${c[1]}" onclick="skSel('${k}')"><div class="tl">${skIcon(k)}${lk?'<span class="lkc">🔒</span>':''}</div><div class="bd">${mx?'MAX':p+(p?' <i>('+skShort(k,p)+')</i>':'')}</div></div>`});
+const s=SKD.find(x=>x[0]===skS)||SKD[0],k=s[0],p=lSk[k]||0,c=SKC[k],miss=(s[3]||[]).filter(r=>(lSk[r[0]]||0)<r[1]),mx=p>=SKM,can=lPt>0&&!miss.length&&!mx,spent=Object.values(lSk).reduce((a,b)=>a+b,0),rc=25*lLv;
+const h=`<div class="skh"><span class="skl">🌿</span><h2>Skill Tree</h2><button class="skx" onclick="skOpen()">✕</button></div><div class="skpt">📜 Skill points: <b>${lPt}</b></div>
+<div class="skt"><svg class="ln" viewBox="0 0 100 118" preserveAspectRatio="none">${L}</svg><div class="skm"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#0e1a3e" stroke="#2a3f7a" stroke-width="4"/><circle cx="20" cy="20" r="17" fill="none" stroke="#ffd34a" stroke-width="4" stroke-linecap="round" stroke-dasharray="${CI*pct} ${CI}" transform="rotate(-90 20 20)"/><text x="20" y="16" font-size="5" fill="#a9c0f0" text-anchor="middle" font-family="Georgia,serif">LORD</text><text x="20" y="28" font-size="12" font-weight="bold" fill="#ffd34a" text-anchor="middle" font-family="Georgia,serif">${lLv}</text></svg></div>${N}</div>
+<div class="skf"><div class="sfh"><div class="sfi" style="--a:${c[0]};--b:${c[1]}">${skIcon(k)}</div><div><b>${s[1]}</b><span>${p}/${SKM}</span><div class="sfd">${SKDS[k]}</div></div></div><div class="sfe">Now: ${skFx(k,p)}${mx?'':'<br>Next: '+skFx(k,p+1)}${miss.length?'<br>🔒 Needs '+miss.map(r=>SKN[r[0]]+' '+r[1]).join(' + '):''}</div><div class="sfb"><button class="rs" ${spent&&gold>=rc?'':'disabled'} onclick="skReset()">Reset 🪙${rc}</button><button ${can?'':'disabled'} onclick="skUp('${k}',1)">+1</button><button ${can?'':'disabled'} onclick="skUp('${k}',5)">+5</button></div></div>`;
+if(el._h!==h){el._h=h;el.innerHTML=h}}catch(e){console.error(e)}}
+function skSel(k){skS=k;skDraw()}
+function skUp(k,n){try{for(let i=0;i<(n||1);i++)skUp0(k)}catch(e){console.error(e)}}
 function skUp0(k){const s=SKD.find(x=>x[0]===k),p=lSk[k]||0;if(!s||lPt<1||p>=SKM||(s[3]||[]).some(r=>(lSk[r[0]]||0)<r[1]))return;if(typeof lSk!=='object'||!lSk)lSk={};lSk[k]=p+1;lPt--;pushPl();render()}
-function skOpen(){tab=tab===0?-1:0;sheet.classList.toggle('open',tab>=0);if(tab>=0)render();setTimeout(size,0)}
+function skReset(){const rc=25*lLv,n=Object.values(lSk).reduce((a,b)=>a+b,0);if(!n||gold<rc)return;gold-=rc;lSk={};lPt+=n;pushPl();render()}
+function skOpen(){const el=document.getElementById('skp'),on=!el.classList.contains('on');el.classList.toggle('on',on);tab=on?0:-1;if(on)skDraw()}
 /* ---- castle levels 1..100: all balance maths lives here ---- */
 const MAXL=100,
 upCost=l=>Math.round(14*Math.pow(l,1.5)),            /* gold to go from level l to l+1 */
