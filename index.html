@@ -401,6 +401,27 @@ box-shadow:0 -8px 24px rgba(0,0,0,.5),0 0 0 2px rgba(8,14,36,.8),0 0 0 3px rgba(
 #skp .sfb button.up{flex:1.2;color:#08300a;background:linear-gradient(#6fe05a,#2c9a2a);border-color:#d3ffc4;box-shadow:0 3px 0 #145012;text-shadow:0 1px 0 rgba(255,255,255,.4)}
 #skp .sfb button.ap:not(:disabled){box-shadow:0 3px 0 #7a5410,0 0 14px rgba(255,211,74,.6)}
 #skp .sfb button:disabled{opacity:.38;filter:grayscale(.7);box-shadow:none}
+
+/* ===== skill panel: fits the screen, no scrolling ===== */
+#skp{gap:5px}
+#skp .skt{width:clamp(230px,calc((100vh - 450px)/1.18),420px);width:clamp(230px,calc((100dvh - 450px)/1.18),420px);max-width:100%}
+#skp .skf{flex:0 1 auto;margin-top:auto;min-height:0;padding:10px 12px}
+#skp .sfi{width:56px;height:56px;border-radius:16px}
+#skp .sfn b{font-size:19px}
+#skp .sfh span.sfl{padding:1px 10px;font-size:15px}
+#skp .sfl s{text-decoration:none;color:#7dff7a;margin-left:4px;font-size:13px}
+#skp .sfl u{font-size:11.5px}
+#skp .sfd{font-size:12.5px;line-height:1.25;margin-top:3px}
+#skp .sfp{margin:8px 2px 6px;height:8px}
+#skp .sfs{margin-top:8px;padding:3px 10px}
+#skp .sr{font-size:14px;padding:2px 0}
+#skp .sfk{margin-top:6px;padding:4px 10px;font-size:13px}
+#skp .sfb{margin-top:8px}
+#skp .sfb button{min-height:46px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#skp .sfb button.dn{flex:.8}#skp .sfb button.up{flex:.8}#skp .sfb button.ap{flex:2.2}
+#skp .sfb.sm button{min-height:36px;font-size:14px;border-radius:12px}
+#skb.pt::after{content:attr(data-n);right:-7px;top:-8px;width:auto;min-width:21px;height:21px;padding:0 5px;box-sizing:border-box;border-radius:11px;display:flex;align-items:center;justify-content:center;font:bold 13px/1 Arial,Helvetica,sans-serif;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.5);background:linear-gradient(#ff6a5e,#d6261a);border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.6)}
+#skb.pt{overflow:visible;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 3px 6px rgba(0,0,0,.45),0 0 12px rgba(255,211,74,.7)}
 </style></head>
 <body>
 <div id="app">
@@ -474,7 +495,7 @@ feM=(o,l)=>1+.02*sP('fe',o)*Math.min(3,.5+l/20);
 function troopRate(){const m=gm();return cities.reduce((a,c)=>a+(c.o===1?.5*grwL(c.l)*(c.main?1.5:1)*m:0),0)}
 function lvReward(L,r){return Math.round(Math.max(20+10*L,r*60*(1.5+.1*L))*(L%5===0?1.5:1))}
 function addXp(n){try{addXp0(n)}catch(e){console.error(e)}}
-function addXp0(n){if(!(n>0)||lLv>=LMAX)return;lXp+=n;let up=0,pt=0;let rw=0;const tr=troopRate();while(lLv<LMAX&&lXp>=lvNeed(lLv)){lXp-=lvNeed(lLv);lLv++;pt+=lLv<10?2:lLv<20?3:4;rw+=lvReward(lLv,tr);up=1}if(lLv>=LMAX)lXp=0;if(up){lPt+=pt;const rc0=cities.find(c=>c.o===1&&c.main)||cities.find(c=>c.o===1);if(rc0)rc0.t+=rw;toast('⭐ Lord level '+lLv+'\n+'+pt+' skill points · +'+fmtT(rw)+' troops',3400);if(tab===0)render()}}
+function addXp0(n){if(!(n>0)||lLv>=LMAX)return;lXp+=n;let up=0,pt=0;let rw=0;const tr=troopRate();while(lLv<LMAX&&lXp>=lvNeed(lLv)){lXp-=lvNeed(lLv);lLv++;pt+=1;rw+=lvReward(lLv,tr);up=1}if(lLv>=LMAX)lXp=0;if(up){lPt+=pt;const rc0=cities.find(c=>c.o===1&&c.main)||cities.find(c=>c.o===1);if(rc0)rc0.t+=rw;toast('⭐ Lord level '+lLv+'\n+'+pt+' skill points · +'+fmtT(rw)+' troops',3400);if(tab===0)render()}}
 function survive(a,c,po,dmg,t0){try{const lostA=c.t<0?a.n*t0/dmg:a.n,sa=.01*sP('br',a.o);if(sa>0&&lostA>0){const src=cities[a.f];if(src&&src.o===a.o)src.t+=lostA*sa}
 if(c.t>=0){const sd=.01*sP('br',po);if(sd>0)c.t+=Math.min(t0,dmg)*sd}}catch(e){console.error(e)}}
 function lordHit(a,c,po,dmg,t0){try{lordHit0(a,c,po,dmg,t0);if(!isFinite(gold))gold=0}catch(e){console.error(e)}}
@@ -485,6 +506,7 @@ function skFx(k,p){const v=2*p;return({st:'Attack +'+v+'%',rc:'Troop growth +'+v
 fe:'Critical chance '+p+'% (crits deal 2x damage)',br:'Survival chance '+p+'% for defeated troops',
 sc:'+'+(.05*p).toFixed(2)+' gold per enemy troop you destroy',sv:'+'+(.05*p).toFixed(2)+' gold per attacker you destroy',
 ca:'Refund '+Math.min(50,v)+'% of a lost castle’s gold'})[k]}
+const SKX={fe:25,br:25,ca:25},skMax=k=>SKX[k]||Infinity;
 let skS='st',skPend={};const skEff=k=>(lSk[k]||0)+(skPend[k]||0),skPT=()=>Object.values(skPend).reduce((a,b)=>a+b,0),skOk=k=>{const d=SKD.find(x=>x[0]===k);return d&&(d[3]||[]).every(r=>skEff(r[0])>=r[1])};
 const SKP={st:[30,36],rc:[70,36],pr:[30,82],gu:[70,82],fe:[50,12],ru:[90,12],sc:[10,59],br:[90,59],sv:[50,106],ca:[10,106]},
 SKC={st:['#f0503f','#7a0f12'],rc:['#b84fe8','#46116e'],pr:['#ffd34a','#a8680c'],gu:['#3adbee','#0b5a78'],fe:['#f5389f','#6b0f52'],ru:['#9456ff','#35157a'],sc:['#ff9a3c','#8a3c0c'],ca:['#e0982c','#6a3a0a'],sv:['#66dc4e','#18631f'],br:['#6f82ff','#232c8a']},
@@ -498,17 +520,18 @@ function skDraw(){try{const el=document.getElementById('skp');if(!el||!el.classL
 const pct=lLv>=LMAX?1:lXp/lvNeed(lLv),CI=2*Math.PI*15.5;let L='',N='';
 SKD.forEach(s=>(s[3]||[]).forEach(r=>{const a=SKP[r[0]],b=SKP[s[0]],dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d,x1=a[0]+ux*11,y1=a[1]+uy*11,x2=b[0]-ux*12,y2=b[1]-uy*12,on=skEff(r[0])>=r[1],c=on?'#ffd34a':'#3d5694';
 L+=`<line x1="${x1}" y1="${y1}" x2="${x2-ux*2}" y2="${y2-uy*2}" stroke="${c}" stroke-width="${on?2:1.4}"${on?'':' stroke-dasharray="2.4 2.4"'} stroke-linecap="round"/><polygon points="${x2},${y2} ${x2-ux*3.6-uy*2.6},${y2-uy*3.6+ux*2.6} ${x2-ux*3.6+uy*2.6},${y2-uy*3.6-ux*2.6}" fill="${c}"/>`}));
-SKD.forEach(s=>{const k=s[0],p=skEff(k),lk=(s[3]||[]).some(r=>skEff(r[0])<r[1]),mx=p>=SKM,q=SKP[k],c=SKC[k];
-N+=`<div class="skn${lk?' lk':''}${mx?' mx':''}${k===skS?' sel':''}${skPend[k]?' pnd':''}${p?' has':''}" style="left:${q[0]}%;top:${q[1]/118*100}%;--a:${c[0]};--b:${c[1]}" onclick="skSel('${k}')"><div class="tl">${skIcon(k)}${lk?'<span class="lkc">🔒</span>':''}</div><div class="bd">${mx?'MAX':p+(skPend[k]?' <i>+'+skPend[k]+'</i>':p?' <i>('+skShort(k,p)+')</i>':'')}</div></div>`});
-const s=SKD.find(x=>x[0]===skS)||SKD[0],k=s[0],p=skEff(k),c=SKC[k],miss=(s[3]||[]).filter(r=>skEff(r[0])<r[1]),mx=p>=SKM,pT=skPT(),av=lPt-pT,can=av>0&&!miss.length&&!mx,spent=Object.values(lSk).reduce((a,b)=>a+b,0),rc=25*lLv,cd=!!skPend[k]&&skCanDec(k);
-const pend=skPend[k]||0,base=p-pend;
+SKD.forEach(s=>{const k=s[0],p=skEff(k),lk=(s[3]||[]).some(r=>skEff(r[0])<r[1]),mx=p>=skMax(k),q=SKP[k],c=SKC[k];
+N+=`<div class="skn${lk?' lk':''}${mx?' mx':''}${k===skS?' sel':''}${skPend[k]?' pnd':''}${p?' has':''}" style="left:${q[0]}%;top:${q[1]/118*100}%;--a:${c[0]};--b:${c[1]}" onclick="skSel('${k}')"><div class="tl">${skIcon(k)}${lk?'<span class="lkc">🔒</span>':''}</div><div class="bd">${mx?'MAX':p+(skPend[k]?' <i>+'+skPend[k]+'</i>':'')}</div></div>`});
+const s=SKD.find(x=>x[0]===skS)||SKD[0],k=s[0],p=skEff(k),c=SKC[k],miss=(s[3]||[]).filter(r=>skEff(r[0])<r[1]),mx=p>=skMax(k),pT=skPT(),av=lPt-pT,can=av>0&&!miss.length&&!mx,spent=Object.values(lSk).reduce((a,b)=>a+b,0),rc=25*lLv,cd=!!skPend[k]&&skCanDec(k);
+const pend=skPend[k]||0,base=p-pend,cap=skMax(k),capped=cap<Infinity;
 const h=`<div class="skh"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="skg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset="1" stop-color="#e29a18"/></linearGradient></defs><path d="M20 30V21M20 21L9.5 12M20 21L30.5 12M20 21V9" fill="none" stroke="#ffd34a" stroke-width="2.6" stroke-linecap="round"/><g fill="url(#skg2)" stroke="#5a3a06" stroke-width="1.5"><circle cx="20" cy="31.5" r="5.2"/><circle cx="9.5" cy="11.5" r="4.3"/><circle cx="30.5" cy="11.5" r="4.3"/><circle cx="20" cy="7.5" r="4.3"/></g><path d="M20 28.2l1.1 2.3 2.5.3-1.9 1.7.5 2.5-2.2-1.3-2.2 1.3.5-2.5-1.9-1.7 2.5-.3z" fill="#7a4a00"/></svg><h2>Skill Tree</h2><button class="skx" onclick="skOpen()">✕</button></div><div class="skpt${av>0?' has':''}"><i class="pgem">✦</i><span>Skill points</span><b>${av}</b>${pT?'<small>+'+pT+' pending</small>':''}</div>
 <div class="skt"><svg class="ln" viewBox="0 0 100 118" preserveAspectRatio="none">${L}</svg><div class="skm"><svg viewBox="0 0 40 40"><defs><linearGradient id="skrg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset="1" stop-color="#e29a18"/></linearGradient><radialGradient id="skrb" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="#23458f"/><stop offset="1" stop-color="#0a1330"/></radialGradient></defs><circle cx="20" cy="20" r="19" fill="url(#skrb)" stroke="#e0b24a" stroke-width="1.4"/><circle cx="20" cy="20" r="15.5" fill="none" stroke="#17265a" stroke-width="3.2"/>${pct>.01?`<circle cx="20" cy="20" r="15.5" fill="none" stroke="url(#skrg)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="${CI*pct} ${CI}" transform="rotate(-90 20 20)"/>`:''}<text x="20" y="17" font-size="4.4" letter-spacing=".6" fill="#a9c0f0" text-anchor="middle" font-family="Georgia,serif">LORD</text><text x="20" y="28.5" font-size="12.5" font-weight="bold" fill="#ffd34a" text-anchor="middle" font-family="Georgia,serif">${lLv}</text></svg></div>${N}</div>
-<div class="skf"><div class="sfh"><div class="sfi" style="--a:${c[0]};--b:${c[1]}">${skIcon(k)}</div><div class="sfm"><div class="sfn"><b>${s[1]}</b><span class="sfl">${p}<u>/${SKM}</u></span></div><span class="sft" style="color:${SKT[k][1]};background:${SKT[k][2]}">${SKT[k][0]}</span><div class="sfd">${SKDS[k]}</div></div></div><div class="sfp"><i class="b" style="width:${base/SKM*100}%"></i><i class="n" style="width:${pend/SKM*100}%"></i></div><div class="sfs"><div class="sr"><em>NOW</em><span>${skFx(k,p)}</span></div>${mx?'<div class="sr nx"><em>MAX</em><span>Fully mastered ✦</span></div>':'<div class="sr nx"><em>NEXT</em><span>'+skFx(k,p+1)+'</span></div>'}</div>${miss.length?'<div class="sfk">🔒 Requires '+miss.map(r=>SKN[r[0]]+' '+skEff(r[0])+'/'+r[1]).join(' + ')+'</div>':''}<div class="sfb"><button class="rs" ${spent&&gold>=rc&&!pT?'':'disabled'} onclick="skReset()">↺ Reset 🪙${rc}</button><button class="dn" ${cd?'':'disabled'} onclick="skDn('${k}')">−1</button><button class="up" ${can?'':'disabled'} onclick="skUp('${k}',1)">+1</button></div><div class="sfb"><button class="rs" ${pT?'':'disabled'} onclick="skClear()">Clear</button><button class="ap" ${pT?'':'disabled'} onclick="skApply()">✅ Apply${pT?' ('+pT+')':''}</button></div></div>`;
+<div class="skf"><div class="sfh"><div class="sfi" style="--a:${c[0]};--b:${c[1]}">${skIcon(k)}</div><div class="sfm"><div class="sfn"><b>${s[1]}</b><span class="sfl">${base}${pend?'<s>+'+pend+'</s>':''}<u>${capped?'/'+cap:' pts'}</u></span></div><span class="sft" style="color:${SKT[k][1]};background:${SKT[k][2]}">${SKT[k][0]}</span><div class="sfd">${SKDS[k]}</div></div></div>${capped?'<div class="sfp"><i class="b" style="width:${base/cap*100}%"></i><i class="n" style="width:${pend/cap*100}%"></i></div>':''}<div class="sfs"><div class="sr"><em>NOW</em><span>${skFx(k,p)}</span></div>${mx?'<div class="sr nx"><em>MAX</em><span>Fully mastered ✦</span></div>':'<div class="sr nx"><em>NEXT</em><span>'+skFx(k,p+1)+'</span></div>'}</div>${miss.length?'<div class="sfk">🔒 Requires '+miss.map(r=>SKN[r[0]]+' '+skEff(r[0])+'/'+r[1]).join(' + ')+'</div>':''}<div class="sfb"><button class="dn" ${cd?'':'disabled'} onclick="skDn('${k}')">−1</button><button class="up" ${can?'':'disabled'} onclick="skUp('${k}',1)">+1</button><button class="ap" ${pT?'':'disabled'} onclick="skApply()">✅ Apply${pT?' ('+pT+')':''}</button></div><div class="sfb sm"><button class="rs" ${spent&&gold>=rc&&!pT?'':'disabled'} onclick="skReset()">↺ Reset 🪙${rc}</button><button class="rs" ${pT?'':'disabled'} onclick="skClear()">Clear</button></div></div>`;
 if(el._h!==h){el._h=h;el.innerHTML=h}}catch(e){console.error(e)}}
+(function(){const e=document.getElementById('skp');if(!e)return;let t=0,iv=0;const stop=()=>{clearTimeout(t);clearInterval(iv)};e.addEventListener('pointerdown',ev=>{const b=ev.target.closest&&ev.target.closest('button.up,button.dn');if(!b||b.disabled)return;const f=b.classList.contains('up')?()=>skUp(skS,1):()=>skDn(skS);stop();t=setTimeout(()=>{iv=setInterval(f,60)},420)});['pointerup','pointercancel','pointerleave'].forEach(n=>e.addEventListener(n,stop))})();
 function skSel(k){skS=k;skDraw()}
 function skCanDec(k){if(!skPend[k])return false;return SKD.every(d=>{const j=d[0];if(!(skPend[j]>0))return true;return(d[3]||[]).every(r=>(skEff(r[0])-(r[0]===k?1:0))>=r[1])})}
-function skUp(k,n){try{for(let i=0;i<(n||1);i++){if(lPt-skPT()<1||skEff(k)>=SKM||!skOk(k))break;skPend[k]=(skPend[k]||0)+1}skDraw()}catch(e){console.error(e)}}
+function skUp(k,n){try{for(let i=0;i<(n||1);i++){if(lPt-skPT()<1||skEff(k)>=skMax(k)||!skOk(k))break;skPend[k]=(skPend[k]||0)+1}skDraw()}catch(e){console.error(e)}}
 function skDn(k){if(!skCanDec(k))return;skPend[k]--;if(!skPend[k])delete skPend[k];skDraw()}
 function skClear(){skPend={};skDraw()}
 function skApply(){const n=skPT();if(!n)return;if(typeof lSk!=='object'||!lSk)lSk={};for(const k in skPend)lSk[k]=(lSk[k]||0)+skPend[k];lPt=Math.max(0,lPt-n);skPend={};pushPl();render();toast('✅ Skills applied',1500);skDraw()}
@@ -621,7 +644,7 @@ ui=(uiT+=dt)>.25;if(ui)uiT=0;const pw=ui?myPower():(window.MYP||0);window.MYP=pw
 respT+=dt;if(!G&&respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o===o)&&!armies.some(a=>a.o===o)){let L=cities.filter(c=>c.o===0);if(!L.length){chkIsl();L=cities.filter(c=>c.o===0)}if(L.length){const c=L[Math.random()*L.length|0];c.o=o;c.t=15;c.l=1;c.main=1;if(o===1)toast('Your last castle fell!\nA new castle is yours.')}}})}
 [1,2,3,4].forEach(o=>{if(respT!==0)return;const L=cities.filter(c=>c.o===o);if(L.length&&!L.some(c=>c.main))L.reduce((a,c)=>c.l>a.l?c:a).main=1});
 if(seasonT>=SEASON_DAYS*SDAY)end();
-if(ui){document.getElementById('g').textContent=fmtN(Math.floor(gold));if(typeof updPf==='function')updPf();{const b=document.getElementById('pfl');if(b)b.textContent=lLv;const k=document.getElementById('skb');if(k)k.classList.toggle('pt',lPt>0)}document.getElementById('tr').textContent=fmtT(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0));
+if(ui){document.getElementById('g').textContent=fmtN(Math.floor(gold));if(typeof updPf==='function')updPf();{const b=document.getElementById('pfl');if(b)b.textContent=lLv;const k=document.getElementById('skb');if(k){k.classList.toggle('pt',lPt>0);k.dataset.n=lPt>99?'99+':lPt}}document.getElementById('tr').textContent=fmtT(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0));
 document.getElementById('n').textContent=cities.filter(c=>c.o===1).length;
 {const l=Math.ceil(REG_CD-(T-regT)),b=rgb;if(l>0){b.textContent=l;b.style.opacity=.55;b.style.fontSize='16px'}else{b.textContent='📯';b.style.opacity=1;b.style.fontSize=''}}panel()}}
 function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;try{SFX.play(w?'win':'lose')}catch(_){}
