@@ -246,14 +246,14 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 </head>
 <body>
 <div id="app">
-<div id="pf"><canvas id="pfb" width="96" height="124"></canvas><div class="pl"><div id="pfn">Lord</div><div class="prk">Lord</div></div></div><div id="top"><span id="g">Gold 0</span><span id="tr">0</span><span id="n">Castles 1</span></div>
+<div id="pf"><canvas id="pfb" width="96" height="124"></canvas><div class="pl"><div id="pfn">Lord</div><div class="prk">Lord</div></div></div><div id="top"><span id="g">Gold 0</span><span id="tr">0</span><span id="n">Castles 1</span><span id="lvl" onclick="skOpen()" style="pointer-events:auto">⭐ Lv 1</span></div>
 <canvas id="c"></canvas>
 <div id="cp"></div>
 <div id="sb">Send <input type="range" id="pct" min="10" max="100" step="10" value="50"><b id="pv">50%</b></div>
 <div id="sheet"></div>
 <div class="tabs"><button data-t="0" title="Skills">⚔️</button><button data-t="1" title="Forge">🔨</button><button data-t="2" title="Quests">📜</button><button data-t="3" title="League">🏆</button></div>
 </div>
-<div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><div id="lbi"></div><button id="lbx">✕</button></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="ver" style="position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);text-align:center;font:11px Georgia,serif;color:rgba(255,255,255,.55);z-index:11;pointer-events:none">version 12 · Nov 12</div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Go to my main castle">🏠</button><button id="mmb" title="Map">🗺</button><button id="rgb" title="Regroup all troops to main castle">📯</button></div><div id="sm"><button id="lbz" title="Leaderboard" onclick="lbShow('w')">🏆</button><button id="bkm" title="Back to main menu" aria-label="Back to main menu">☰</button></div>
+<div id="pk"><div class="pg"></div><div class="ph"><span id="pki">⚔️</span><div class="pht"><div id="pkt"></div><div id="pks"></div></div><div class="pn"><div id="pkv"></div><span class="pu">troops</span></div></div><div class="pr"><input type="range" id="pkr" min="1" max="10" value="5" oninput="updPick()"></div><div class="pq"><button onclick="quick(.25)">25%</button><button onclick="quick(.5)">50%</button><button onclick="quick(.75)">75%</button><button onclick="quick(1)">All</button></div><div class="pb"><button class="no" onclick="closePick()">Cancel</button><button class="ok" id="pkok" onclick="confirmPick()">Send troops</button></div></div><div id="lbp"><div id="lbh"><div id="lbi"></div><button id="lbx">✕</button></div><div id="lbl"></div><div id="lbm"></div></div><div id="mp"><h2>👥 Multiplayer</h2><div id="mpl"></div><input id="mpc" maxlength="4" placeholder="CODE" autocomplete="off"><button id="mpj">Join room</button><button id="mph">Host a room</button><button id="mps" style="display:none">Start match</button><button id="mpx">Back</button></div><div id="ver" style="position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);text-align:center;font:11px Georgia,serif;color:rgba(255,255,255,.55);z-index:11;pointer-events:none">version 12 · Nov 12</div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Go to my main castle">🏠</button><button id="mmb" title="Map">🗺</button><button id="rgb" title="Regroup all troops to main castle">📯</button></div><div id="sm"><button id="skb" title="Lord skills" aria-label="Lord skills" onclick="skOpen()">🌟</button><button id="lbz" title="Leaderboard" onclick="lbShow('w')">🏆</button><button id="bkm" title="Back to main menu" aria-label="Back to main menu">☰</button></div>
 <div id="ov"><canvas id="ovbg"></canvas><canvas id="ovfx"></canvas><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When 80% of the castles are taken, a new island rises from the clouds. A season lasts 5 days: the lord with the most kingdom points wins.</p><div id="ovsp"></div><div id="bnrow"><canvas id="bnp" width="64" height="84"></canvas><div class="bnrb"><button id="bne">Design banner</button><button id="bnrn" title="Random banner">🎲</button></div></div><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><div id="sec"><button id="sndm"></button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button></div><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>/* PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app) */
@@ -268,6 +268,30 @@ const _cc={},SPR={};let noTxt=0;const css=n=>_cc[n]||(_cc[n]=getComputedStyle(do
 const SK=[['gl','Troop growth','Castles train troops faster'],['al','Attack','Your armies hit harder'],['dl','Castle walls','Your castles resist attacks']];
 const IT=[['sword','Iron sword','+15% attack',40],['banner','War banner','+15% troop growth',40],['shield','Great shield','+20% defense',50]];
 const QS=[['Capture 3 castles',()=>stats.caps,3,25],['Send 10 armies',()=>stats.sent,10,20],['Earn 100 gold',()=>Math.floor(stats.earned),100,30]];
+/* ---- Lord level + skill tree (Million Lords style) ---- */
+let lSk={},lXp=0,lLv=1,lPt=3;
+const SKM=25,LMAX=50,
+SKD=[['st','Striker','⚔️'],['rc','Recruiter','🏰'],['pr','Prosperous','💰'],['gu','Guardian','🛡️'],
+['fe','Fearless','🔥',[['st',5],['rc',5]]],['ru','Rusher','🐎',[['rc',10]]],['sc','Scavenger','🪙',[['st',5],['pr',5]]],
+['ca','Cautious','📦',[['pr',10]]],['sv','Salvager','⚒️',[['pr',5],['gu',5]]],['br','Brave','🦁',[['gu',5],['rc',5]]]],
+SKN=Object.fromEntries(SKD.map(s=>[s[0],s[1]])),
+lvNeed=l=>Math.round(50*Math.pow(l,1.5)),
+sP=(k,o=1)=>{const p=PS(o);return(p.sk&&p.sk[k])||0},
+feM=(o,l)=>1+.02*sP('fe',o)*Math.min(3,.5+l/20);
+function addXp(n){if(!(n>0)||lLv>=LMAX)return;lXp+=n;let up=0,pt=0;while(lLv<LMAX&&lXp>=lvNeed(lLv)){lXp-=lvNeed(lLv);lLv++;pt+=lLv<10?2:lLv<20?3:4;up=1}if(lLv>=LMAX)lXp=0;if(up){lPt+=pt;toast('⭐ Lord level '+lLv+'\n+'+pt+' skill points',3200);if(tab===0)render()}}
+function lordHit(a,c,po,dmg,t0){const killed=Math.min(dmg,t0),cap=dmg>t0;
+if(a.o===1){const g=killed*.05*sP('sc');if(g>0){gold+=g;stats.earned+=g}addXp(Math.round(killed*.3)+(cap?25+6*c.l:0))}
+if(po===1){const lost=cap?a.n*t0/dmg:a.n,g=lost*.05*sP('sv');if(g>0){gold+=g;stats.earned+=g}if(cap)gold+=CUM[Math.min(MAXL,c.l)]*Math.min(.5,.02*sP('ca'))}}
+function skFx(k,p){const v=2*p;return({st:'Attack +'+v+'%',rc:'Troop growth +'+v+'%',pr:'Gold income +'+v+'%',gu:'Defense +'+v+'%',ru:'Army speed +'+v+'%',
+fe:'Attack +'+v+'% (up to x3 vs high-level castles)',br:'Defense +'+v+'% (up to x3 on high-level castles)',
+sc:'+'+(.05*p).toFixed(2)+' gold per enemy troop you destroy',sv:'+'+(.05*p).toFixed(2)+' gold per attacker you destroy',
+ca:'Refund '+Math.min(50,v)+'% of a lost castle’s gold'})[k]}
+function skHtml(){const nd=lvNeed(lLv),pc=lLv>=LMAX?100:lXp/nd*100;
+let h=`<div class="row"><div><b>⭐ Lord level ${lLv}</b> · <b>${lPt}</b> skill point${lPt==1?'':'s'}<div class="bar"><i style="width:${pc}%"></i></div><small>${lLv>=LMAX?'Max level':lXp+' / '+nd+' XP · capture castles to level up'}</small></div></div>`;
+SKD.forEach((s,i)=>{const p=lSk[s[0]]||0,miss=(s[3]||[]).filter(r=>(lSk[r[0]]||0)<r[1]),lock=miss.length>0;
+h+=(i==4?'<div class="row"><div><b>Auxiliary skills</b></div></div>':'')+`<div class="row" style="${lock?'opacity:.55':''}"><div><b>${s[2]} ${s[1]}</b> ${p}/${SKM}<br><small>${skFx(s[0],p)}${lock?'<br>🔒 Needs '+miss.map(r=>SKN[r[0]]+' '+r[1]).join(' + '):''}</small></div>${p>=SKM?'<span>Max</span>':btn(lPt>0&&!lock,`skUp('${s[0]}')`,'+1')}</div>`});return h}
+function skUp(k){const s=SKD.find(x=>x[0]===k),p=lSk[k]||0;if(!s||lPt<1||p>=SKM||(s[3]||[]).some(r=>(lSk[r[0]]||0)<r[1]))return;lSk[k]=p+1;lPt--;pushPl();render()}
+function skOpen(){tab=tab===0?-1:0;sheet.classList.toggle('open',tab>=0);if(tab>=0)render();setTimeout(size,0)}
 /* ---- castle levels 1..100: all balance maths lives here ---- */
 const MAXL=100,
 upCost=l=>Math.round(14*Math.pow(l,1.5)),            /* gold to go from level l to l+1 */
@@ -282,7 +306,7 @@ const troopsOf=o=>cities.reduce((a,c)=>a+(c.o===o?c.t:0),0)+armies.reduce((a,x)=
 myPower=()=>Math.floor((stats.spent||0)+troopsOf(1)),botPower=o=>Math.floor(cities.reduce((a,c)=>a+(c.o===o?CUM[Math.min(MAXL,c.l)]/3:0),0)+troopsOf(o)); /* bots pay 1/3 of the cost in troops */
 const LG=[['Bronze',0],['Silver',1],['Gold',3],['Platinum',6],['Diamond',10]];
 const league=()=>{let i=0;LG.forEach((l,k)=>{if(wins>=l[1])i=k});return i};
-const gm=(o=1)=>{const p=PS(o);return 1+.25*p.lv.gl+(p.own.banner?.15:0)+.15*cities.filter(c=>c.o===o&&c.tp).length}, am=(o=1)=>{const p=PS(o);return 1+.25*p.lv.al+(p.own.sword?.15:0)}, dm=(o=1)=>{const p=PS(o);return 1+.2*p.lv.dl+(p.own.shield?.2:0)};
+const gm=(o=1)=>{const p=PS(o);return 1+.02*(p.sk&&p.sk.rc||0)+(p.own.banner?.15:0)+.15*cities.filter(c=>c.o===o&&c.tp).length}, am=(o=1)=>{const p=PS(o);return 1+.02*(p.sk&&p.sk.st||0)+(p.own.sword?.15:0)}, dm=(o=1)=>{const p=PS(o);return 1+.02*(p.sk&&p.sk.gu||0)+(p.own.shield?.2:0)};
 function size(){VG=null;dpr=Math.min(1.5,devicePixelRatio||1);W=C.clientWidth;H=C.clientHeight;C.width=W*dpr;C.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0)}
 addEventListener('resize',size);
 const WP=c=>[c.x,c.y];
@@ -313,7 +337,7 @@ const o={k:kind,pts,r:Math.round(r),v:(RG()*4)|0,sd:(RG()*1e9)|0};
 if(!pts.every(q=>ell(q[0],q[1],.78)))continue;if(!cities.every(c=>pd(c.x,c.y,o)>o.r+105))continue;if(!ob.every(q=>oo(o,q)>q.r+o.r+170))continue;ob.push(o);break}});s.obs=ob}
 islands.slice(0,-1).forEach(o=>{if(Math.hypot(o.x-s.x,o.y-s.y)<CW*1.3)bridges.push(mkBr(o,s,k))});
 return s}
-function gen(){size();SEEDK=NET&&NET.seed!=null?NET.seed:curWeek();aiBanners(NET&&NET.seed!=null?NET.seed:(Math.random()*1e9|0));CP=[];seasonT=0;respT=0;regT=-99;cam={x:0,y:0};Z=1;cities=[];armies=[];sel=-1;T=0;tgt=-1;gold=0;lv={gl:0,al:0,dl:0};own={};stats={caps:0,sent:0,earned:0,spent:0};claimed=[];glide=null;islands=[];bridges=[];mainReady=0;closePick();
+function gen(){size();SEEDK=NET&&NET.seed!=null?NET.seed:curWeek();aiBanners(NET&&NET.seed!=null?NET.seed:(Math.random()*1e9|0));CP=[];seasonT=0;respT=0;regT=-99;cam={x:0,y:0};Z=1;cities=[];armies=[];sel=-1;T=0;tgt=-1;gold=0;lv={gl:0,al:0,dl:0};lSk={};lXp=0;lLv=1;lPt=3;own={};stats={caps:0,sent:0,earned:0,spent:0};claimed=[];glide=null;islands=[];bridges=[];mainReady=0;closePick();
 pickGhosts();buildSky();for(let k=0;k<START_ISL;k++)spawnIsl(k);islands.forEach(q=>q.grow=1);sand=[];mtn=[];trees=[];cam={x:cities[0].x-W/2,y:cities[0].y-H/2+40}}
 /* ---- army routing: rock ranges block the straight line, armies walk around them ---- */
 const polyInfo=pts=>{const cum=[0];for(let i=1;i<pts.length;i++)cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));return{pts,cum,len:cum[cum.length-1]||1}};
@@ -349,22 +373,22 @@ if(dist[G]<1e17){const path=[];for(let v=prev[G];v>=0&&v!==S;v=prev[v])path.push
 let pts;const ch=A.isl!==B.isl?bridgeChain(A.isl,B.isl):null;if(!ch)pts=walk(a,b);else{pts=[a];let cur=a;ch.forEach(([br,rev])=>{const bp=br.pts.map(p=>[p.x,p.y]);if(rev)bp.reverse();pts.push(...walk(cur,bp[0]).slice(1),...bp.slice(1));cur=bp[bp.length-1]});pts.push(...walk(cur,b).slice(1))}
 r=polyInfo(pts);if(RC.size>1500)RC.clear();RC.set(key,r);return r}
 function send(f,t,fr=.5){const a=cities[f],b=cities[t],n=Math.floor(a.t*fr);if(n<1||!islands[a.isl].open||!islands[b.isl].open||(a.o!==b.o&&prot(b)))return;a.t-=n;if(a.o===1){stats.sent++;SFX.play('march')}else if(b.o===1&&a.o!==1)SFX.warn();cmd({t:'s',f,to:t,fr});
-const[ax,ay]=WP(a),[bx,by]=WP(b);armies.push({f,to:t,o:a.o,n,p:0,d:routeOf(f,t).len/spd(n)*(HU(a.o)?1:1.6)})}
+const[ax,ay]=WP(a),[bx,by]=WP(b);armies.push({f,to:t,o:a.o,n,p:0,d:routeOf(f,t).len/spd(n)/(1+.02*sP('ru',a.o))*(HU(a.o)?1:1.6)})}
 function arrive(a){const c=cities[a.to];if(c.o===a.o){c.t+=a.n;if(a.o===1)SFX.play('reinforce');return}if(c.main)return;const po=c.o;
-const df=1+dfL(c.l)+(HU(c.o)?dm(c.o)-1:0),dmg=(HU(a.o)?a.n*am(a.o):a.n)/df;c.t-=dmg;if(c.t<0){CP[a.o]=(CP[a.o]||0)+1;if(a.o===1)stats.caps++;c.o=a.o;c.main=0;c.t=-c.t;c.l=Math.max(1,c.l-Math.max(1,Math.round(c.l*.2)));SFX.hit(po,a.o,1)}else SFX.hit(po,a.o,0)}
+const df=1+dfL(c.l)+(HU(c.o)?dm(c.o)-1+.02*sP('br',c.o)*Math.min(3,.5+c.l/20):0),dmg=(HU(a.o)?a.n*am(a.o)*feM(a.o,c.l):a.n)/df,t0=c.t;c.t-=dmg;lordHit(a,c,po,dmg,t0);if(c.t<0){CP[a.o]=(CP[a.o]||0)+1;if(a.o===1)stats.caps++;c.o=a.o;c.main=0;c.t=-c.t;c.l=Math.max(1,c.l-Math.max(1,Math.round(c.l*.2)));SFX.hit(po,a.o,1)}else SFX.hit(po,a.o,0)}
 function ai(){cities.forEach((s,i)=>{if(HUM[s.o])return;{const aiMax=Math.min(MAXL,3+Math.floor(13*seasonT/(SEASON_DAYS*SDAY))*2),uc=Math.ceil(upCost(s.l)/3);if(s.o>=2&&s.l<aiMax&&s.t>uc+15&&Math.random()<.05){s.t-=uc;s.l++}}if(s.o<2||s.t<30||Math.random()<.5||!islands[s.isl].open)return;const sx=s.x,sy=s.y;let best=-1,bd=1e9;
 cities.forEach((c,j)=>{if(c.o===s.o||prot(c)||!islands[c.isl].open)return;const cx=c.x,cy=c.y,d=Math.hypot(cx-sx,cy-sy);if(c.t*1.1*(1+dfL(c.l)+(HU(c.o)?dm(c.o)-1:0))<s.t/3&&d<bd){bd=d;best=j}});if(best>=0)send(i,best,.4)})}
 function upd(dt){const G=NET&&NET.role==='g';T+=dt;chkIsl();islands.forEach(q=>{q.grow=Math.min(1,q.grow+dt*.7)});if(fling){cam.x+=fling.vx*dt;cam.y+=fling.vy*dt;const f=Math.exp(-2.4*dt);fling.vx*=f;fling.vy*=f;if(Math.hypot(fling.vx,fling.vy)*Z<25)fling=null}if(glide){fling=null;const gk=Math.min(1,dt*(2.2+Math.min(4,Math.hypot(glide.x-cam.x,glide.y-cam.y)*Z/W*.6)));cam.x+=(glide.x-cam.x)*gk;cam.y+=(glide.y-cam.y)*gk;if(Math.hypot(glide.x-cam.x,glide.y-cam.y)<4)glide=null}
 const tpc={};cities.forEach(c=>{if(c.tp)tpc[c.o]=(tpc[c.o]||0)+1});const gmv=gm(),gmo={};cities.forEach(c=>{if(c.o===0){if(c.t<(c.tp?30:10))c.t+=.15*dt}else if(c.t<capL(c.l))c.t+=dt*.5*(c.main?1.5:1)*grwL(c.l)*(c.o===1?gmv:HU(c.o)?(gmo[c.o]=gmo[c.o]||gm(c.o)):(1+.15*(tpc[c.o]||0))*gboost(c.o))});
 armies.forEach(a=>a.p+=dt/a.d);armies.filter(a=>a.p>=1).forEach(a=>{if(!G)arrive(a)});armies=armies.filter(a=>a.p<1);{const inc=armies.filter(a=>a.o!==1&&cities[a.to]&&cities[a.to].o===1),ks=new Set(inc.map(a=>a.f+'>'+a.to+'>'+a.n));let n1=0;ks.forEach(k=>{if(!ALR.has(k))n1++});if(n1&&T-alT>5){alT=T;const gh=ghosts[inc[0].o-2];toast('⚠️ '+(gh?gh.n:'An enemy')+' is attacking your castle!')}ALR=ks}
-acc+=dt;if(acc>=1){acc=0;const m=cities.filter(c=>c.o===1).reduce((s,c)=>s+.5+.5*c.l,0)*(1+.1*cities.filter(c=>c.o===1&&c.tp).length);gold+=m;stats.earned+=m;if(tab>=0)render()}
+acc+=dt;if(acc>=1){acc=0;const m=cities.filter(c=>c.o===1).reduce((s,c)=>s+.5+.5*c.l,0)*(1+.1*cities.filter(c=>c.o===1&&c.tp).length)*(1+.02*(lSk.pr||0));gold+=m;stats.earned+=m;if(tab>=0)render()}
 aiT+=dt;if(aiT>7){aiT=0;if(!G)ai()}netT+=dt;if(NET&&NET.role==='h'&&netT>1){netT=0;pubSnap()}
 if(G)seasonT+=dt;else seasonT=(Date.now()-sStart)/1000;
 ui=(uiT+=dt)>.25;if(ui)uiT=0;const pw=ui?myPower():(window.MYP||0);window.MYP=pw;if(ui&&!NET)window.BOTP=[botPower(2),botPower(3),botPower(4)];if(!NET&&DB&&UID&&(subT+=dt)>15){subT=0;submitScore(pw)}
 respT+=dt;if(!G&&respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o===o)&&!armies.some(a=>a.o===o)){let L=cities.filter(c=>c.o===0);if(!L.length){chkIsl();L=cities.filter(c=>c.o===0)}if(L.length){const c=L[Math.random()*L.length|0];c.o=o;c.t=15;c.l=1;c.main=1;if(o===1)toast('Your last castle fell!\nA new castle is yours.')}}})}
 [1,2,3,4].forEach(o=>{if(respT!==0)return;const L=cities.filter(c=>c.o===o);if(L.length&&!L.some(c=>c.main))L.reduce((a,c)=>c.l>a.l?c:a).main=1});
 if(seasonT>=SEASON_DAYS*SDAY)end();
-if(ui){document.getElementById('g').textContent=fmtN(Math.floor(gold));if(typeof updPf==='function')updPf();document.getElementById('tr').textContent=fmtN(Math.floor(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0)));
+if(ui){document.getElementById('g').textContent=fmtN(Math.floor(gold));if(typeof updPf==='function')updPf();document.getElementById('lvl').textContent='⭐ Lv '+lLv+(lPt?' · +'+lPt:'');document.getElementById('tr').textContent=fmtN(Math.floor(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0)));
 document.getElementById('n').textContent=cities.filter(c=>c.o===1).length;
 {const l=Math.ceil(REG_CD-(T-regT)),b=rgb;if(l>0){b.textContent=l;b.style.opacity=.55;b.style.fontSize='16px'}else{b.textContent='📯';b.style.opacity=1;b.style.fontSize=''}}panel()}}
 function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;try{SFX.play(w?'win':'lose')}catch(_){}
@@ -425,7 +449,7 @@ g.fillStyle=f;g.beginPath();g.moveTo(bx,by+30);g.lineTo(bx+30,by+30);g.lineTo(bx
 g.fillStyle='#fff';g.font='bold 15px Georgia,serif';g.fillText(Math.floor(t),x,by+38)}
 let ALR=new Set(),alT=-99,TER=null,TS=1,T=0,tgt=-1,curLv=1,curRL=0,curMain=0,curTp=0,curT=0,lastCP='';
 const spd=n=>2*Math.max(25,90/Math.sqrt(1+n/60)),prot=c=>!!c.main,OW=['Neutral','You','Red lord','Purple lord','Orange lord'];
-function upg(){const c=cities[sel];if(!c||c.o!==1||c.l>=MAXL)return;const k=upCost(c.l);if(gold<k)return;gold-=k;stats.spent=(stats.spent||0)+k;c.l++;SFX.play('upgrade');cmd({t:'u',c:sel})}
+function upg(){const c=cities[sel];if(!c||c.o!==1||c.l>=MAXL)return;const k=upCost(c.l);if(gold<k)return;gold-=k;stats.spent=(stats.spent||0)+k;c.l++;addXp(2+c.l);SFX.play('upgrade');cmd({t:'u',c:sel})}
 let pickN=0,uiT=0,ui=1,regT=-99;const REG_CD=40;
 function setMain(){const c=cities[sel];if(!c||c.o!==1||c.main)return;if(T<mainReady||gold<mainCost)return;gold-=mainCost;stats.spent=(stats.spent||0)+mainCost;cities.forEach(d=>{if(d.o===1)d.main=0});c.main=1;cmd({t:'m',c:sel});mainReady=T+DAY*2;toast('👑 Main castle moved\nNext move in 2 days')}
 function doSend(){openPick()}
@@ -872,7 +896,7 @@ if(sel>=0&&cities[sel].o===1){tgt=hit;if(aim){aim=false;if(cities[hit].o!==1)doS
 sel=hit;tgt=-1}
 const btn=(on,fn,txt)=>`<button ${on?'':'disabled'} onclick="${fn}">${txt}</button>`;
 function render(){let h='';
-if(tab===0)SK.forEach(s=>{const l=lv[s[0]],c=15+15*l;h+=`<div class="row"><div><b>${s[1]} (level ${l})</b><br>${s[2]}</div>${l>=5?'<span>Max</span>':btn(gold>=c,`buy('${s[0]}')`,'Train · '+c)}</div>`});
+if(tab===0)h=skHtml();
 if(tab===1)IT.forEach(s=>{h+=`<div class="row"><div><b>${s[1]}</b><br>${s[2]}</div>${own[s[0]]?'<span>Owned</span>':btn(gold>=s[3],`craft('${s[0]}')`,'Craft · '+s[3])}</div>`});
 if(tab===2)QS.forEach((q,i)=>{const v=Math.min(q[2],q[1]()),done=v>=q[2];h+=`<div class="row"><div><b>${q[0]}</b> (${v}/${q[2]})<div class="bar"><i style="width:${v/q[2]*100}%"></i></div></div>${claimed[i]?'<span>Claimed</span>':btn(done,`claim(${i})`,'Claim '+q[3])}</div>`});
 if(tab===3){const i=league(),nx=LG[i+1];h+=`<div class="row"><div><b>${LG[i][0]} league</b><br>Victories: ${wins}${nx?'<br>Next: '+nx[0]+' at '+nx[1]+' victories':'<br>Top league reached'}</div></div>`;
@@ -945,11 +969,11 @@ function lbPush(){if(!DB||!UID||!run||NET||!(window.MYP>0))return;const wk=curWe
 let rkT=0;setInterval(()=>{try{if(DB&&UID){const open=$('lbp').classList.contains('on');if(rdb()||open||Date.now()-rkT>90000){rkT=Date.now();lbSub('w')}if(open)lbSub(lbTab);lbPush();lbDraw()}}catch(_){}},1000);
 setInterval(()=>{try{if(DB&&UID&&run&&!NET&&window.MYP>0)submitScore(window.MYP)}catch(_){}},30000);
 $('lbb').onclick=()=>lbShow('w');$('lbx').onclick=()=>{$('lbp').classList.remove('on');if(LBS.a.un){try{LBS.a.un()}catch(_){}LBS.a.un=null;LBS.a.key=''}};$('lbp').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lbShow(b.dataset.k));
-function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,stats,claimed,seasonT,mainReady,T,Z,cam,ghosts,SEEDK,bn:[BN[2],BN[3],BN[4]],savedAt:Date.now()},(k,v)=>k==='cv'?undefined:v)}
+function snap(){return JSON.stringify({cities,armies,islands,bridges,gold,lv,own,sk:lSk,xp:lXp,ll:lLv,sp:lPt,stats,claimed,seasonT,mainReady,T,Z,cam,ghosts,SEEDK,bn:[BN[2],BN[3],BN[4]],savedAt:Date.now()},(k,v)=>k==='cv'?undefined:v)}
 const LK=()=>'cl_save_'+UID;
 let slWait=0;function saveLocal(){if(!UID||!run||NET)return;if(drag||pinch||glide||fling){if(!slWait){slWait=1;setTimeout(()=>{slWait=0;saveLocal()},1200)}return}(window.requestIdleCallback||setTimeout)(()=>{try{localStorage.setItem(LK(),JSON.stringify({s:snap(),at:Date.now()}))}catch(_){}})}
 function saveNow(){if(!UID||!run||NET)return;const s=snap(),at=Date.now();try{localStorage.setItem(LK(),JSON.stringify({s,at}))}catch(_){}if(!DB)return;try{ud('save').set({s,at}).catch(()=>{})}catch(_){}}
-function loadGame(d){size();if(d.bn&&d.bn.length===3){BN[2]=d.bn[0];BN[3]=d.bn[1];BN[4]=d.bn[2];bnClearSpr()}closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;stats=d.stats;if(stats.spent==null)stats.spent=cities.reduce((a,c)=>a+(c.o===1?CUM[Math.min(MAXL,c.l)]:0),0);claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;ghosts=d.ghosts||[];applyGhosts();SEEDK=d.SEEDK||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
+function loadGame(d){size();if(d.bn&&d.bn.length===3){BN[2]=d.bn[0];BN[3]=d.bn[1];BN[4]=d.bn[2];bnClearSpr()}closePick();buildSky();cities=d.cities;armies=d.armies;islands=d.islands;bridges=d.bridges;gold=d.gold;lv=d.lv;own=d.own;lSk=d.sk||{};lXp=d.xp||0;lLv=d.ll||1;lPt=d.sp==null?3:d.sp;stats=d.stats;if(stats.spent==null)stats.spent=cities.reduce((a,c)=>a+(c.o===1?CUM[Math.min(MAXL,c.l)]:0),0);claimed=d.claimed||[];seasonT=d.seasonT;mainReady=d.mainReady||0;ghosts=d.ghosts||[];applyGhosts();SEEDK=d.SEEDK||0;T=d.T;respT=0;Z=d.Z||1;cam=d.cam;sel=-1;tgt=-1;glide=null;sand=[];mtn=[];trees=[];islands.forEach(q=>{q.grow=1;q.cv=null});bridges.forEach(q=>q.cv=null)}
 /* Single player only: while you were away the AI lords may raid you. Gentle by design:
    one raid chance per 20 min away, max 3 raids, max 2 castles lost, never the main castle,
    never more than a quarter of your castles, and only if the raiders really outnumber the defenders. */
@@ -1005,14 +1029,14 @@ menu();$('a_so').style.display='';loadLb()})})();
 
 /* ===== LIVE MULTIPLAYER: host runs the sim, guests send commands and get snapshots ===== */
 const RR=()=>DB.collection('rooms'),HU=o=>o===1||!!HUM[o],cmd=m=>{if(NET&&NET.role==='g')NET.out(m)};
-const PS=o=>o===1?{lv,own}:(NET&&NET.pl&&NET.pl[o])||{lv:{gl:0,al:0,dl:0},own:{}};
+const PS=o=>o===1?{lv,own,sk:lSk}:(NET&&NET.pl&&NET.pl[o])||{lv:{gl:0,al:0,dl:0},own:{},sk:{}};
 const NOLV={gl:0,al:0,dl:0};
 const snErr=e=>toast(((e&&e.code)||'').includes('permission')?'⚠️ Multiplayer blocked by\nFirestore rules':'⚠️ Multiplayer connection problem');
 function mpErr(e,t){const c=(e&&e.code)||'error';ctl('','none');mpShow(1,t+'\n'+(c.includes('permission')?'Firestore is blocking rooms (permission-denied).\nAdd the “rooms” rules to your Firestore rules, then try again.':'Problem: '+c))}
 function seatHumans(){[3,4].forEach(o=>{if(!HUM[o]||cities.some(c=>c.o===o))return;const mn=cities.filter(c=>c.o>0&&c.main),L=cities.filter(c=>c.o===0&&c.isl===0&&!c.tp);let b=null,bd=-1;L.forEach(c=>{const d=Math.min(...mn.map(m=>Math.hypot(m.x-c.x,m.y-c.y)));if(d>bd){bd=d;b=c}});if(b){b.o=o;b.t=20;b.l=1;b.main=1}})}
 function mpStop(){unsubs.forEach(f=>{try{f()}catch(_){}});unsubs=[];NET=null;HUM={}}
 function mpShow(on,t){$('mp').classList.toggle('on',on);if(t!=null)$('mpl').textContent=t}
-function pushPl(){if(!NET||NET.role!=='g'||!NET.me)return;NET.me.set({lv,own,at:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(()=>{})}
+function pushPl(){if(!NET||NET.role!=='g'||!NET.me)return;NET.me.set({lv,own,sk:lSk,at:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(()=>{})}
 function ctl(a,b,c,d){$('mph').style.display=a;$('mpj').style.display=a;$('mpc').style.display=a;$('mps').style.display=b}
 function pubSnap(){const t=Date.now();for(const o in HUM){const p=NET.pl[o];if(p&&p.at&&t-p.at>45000)delete HUM[o]}
 const s={ni:islands.length,T:+T.toFixed(2),st:+seasonT.toFixed(1),c:cities.map(c=>[c.o,c.l,+c.t.toFixed(1),c.main?1:0,c.tp?1:0]),a:armies.map(a=>[a.f,a.to,a.o,a.n,+a.p.toFixed(3),+a.d.toFixed(2)]),cp:[1,2,3,4].map(o=>CP[o]||0)};
@@ -1036,7 +1060,7 @@ $('mpx').onclick=()=>{if(NET){if(NET.role==='g'&&NET.me)NET.me.delete().catch(()
 $('mph').onclick=async()=>{try{let code,ref;for(let i=0;i<8;i++){code=Math.random().toString(36).slice(2,6).toUpperCase().padEnd(4,'X');ref=RR().doc(code);if(!(await ref.get()).exists)break}
 await ref.set({host:UID,hn:PROF.name,state:'lobby',at:Date.now()});NET={role:'h',code,ref,pl:{},slots:{},guests:[]};ctl('none','');
 mpShow(1,'Room code: '+code+'\n\nWaiting for players…');
-unsubs.push(ref.collection('players').onSnapshot(q=>{if(!NET)return;const gs=[];q.docs.forEach(d=>{const v=d.data();gs.push({uid:d.id,name:String(v.name||'?').slice(0,14),j:+v.j||0});const sl=NET.slots[d.id];if(sl)NET.pl[sl]={lv:v.lv||NOLV,own:v.own||{},at:v.at&&v.at.toMillis?v.at.toMillis():Date.now()}});
+unsubs.push(ref.collection('players').onSnapshot(q=>{if(!NET)return;const gs=[];q.docs.forEach(d=>{const v=d.data();gs.push({uid:d.id,name:String(v.name||'?').slice(0,14),j:+v.j||0});const sl=NET.slots[d.id];if(sl)NET.pl[sl]={lv:v.lv||NOLV,own:v.own||{},sk:v.sk||{},at:v.at&&v.at.toMillis?v.at.toMillis():Date.now()}});
 gs.sort((a,b)=>a.j-b.j);NET.guests=gs;if(!run)mpShow(1,'Room code: '+code+'\n\nPlayers ('+(Math.min(3,gs.length)+1)+'/4):\n'+[PROF.name].concat(gs.slice(0,3).map(x=>x.name)).join('\n')+'\n\nEmpty slots are filled by AI.')},snErr))}catch(e){mpErr(e,'Could not create a room.')}};
 $('mps').onclick=()=>{const names=[PROF.name,'Red lord','Purple lord','Orange lord'],slots={};NET.guests.slice(0,3).forEach((p,i)=>{slots[p.uid]=i+2;names[i+1]=p.name;HUM[i+2]=1;NET.pl[i+2]={lv:NOLV,own:{},at:Date.now()}});
 NET.slots=slots;NET.names=names;NET.nl=names;NET.seed=curWeek();NET.ref.update({state:'playing',slots,names,seed:NET.seed}).catch(snErr);mpShow(0);fs();startMP();seatHumans()};
