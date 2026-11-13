@@ -1207,7 +1207,7 @@ if(TER){const S=1024*Z,ox=-(((cam.x*Z)%S)+S)%S,oy=-(((cam.y*Z)%S)+S)%S;for(let x
 if(CLD.length){const nw=performance.now()/1000;g.save();for(let i=0;i<16;i++){const sp=.5+.2*(i%3),sc=Z*(.8+.12*(i%5)),cw=360*sc,mx=W+cw*1.5,my=H+260*Z,sx=(((i*613+nw*9*(1+.15*(i%4))-cam.x*Z*sp)%mx)+mx)%mx-cw*.75,sy=(((i*389-cam.y*Z*sp)%my)+my)%my-130*Z;g.globalAlpha=.34+.06*(i%3);g.drawImage(CLD[i%5],sx,sy,cw,170*sc)}g.restore()}
 let built=0;islands.forEach(q=>{const e=.6+.4*q.grow,sc=Z*e,x0=(q.x-cam.x)*Z+(q.ox-q.x)*sc,y0=(q.y-cam.y)*Z+(q.oy-q.y)*sc+(1-q.grow)*80*Z,vis=x0<W&&y0<H&&x0+q.w*sc>0&&y0+q.h*sc>0;if(!vis)return;VIS.add(q);if(!q.cv){islPh(q,sc);return}g.globalAlpha=q.grow;g.drawImage(q.cv,x0,y0,q.w*sc,q.h*sc);g.globalAlpha=1});
 bridges.forEach(b=>{const x0=(b.ox-cam.x)*Z,y0=(b.oy-cam.y)*Z,vis=x0<W&&y0<H&&x0+b.w*Z>0&&y0+b.h*Z>0;if(!vis)return;if(!b.cv){if(built++)return;mkBridge(b)}g.globalAlpha=Math.min(1,islands[b.k].grow);g.drawImage(b.cv,x0,y0,b.w*Z,b.h*Z);g.globalAlpha=1});
-{const mv=drag||glide||fling||pinch;pumpBuild(mv?5:(VIS.size&&[...VIS].some(q=>!q.cv)?20:10))}
+{const mv=drag||glide||fling||pinch;pumpBuild(mv?2.5:5)}
 g.fillStyle=css('--sand');sand.forEach(s=>{g.beginPath();g.ellipse(s.x-cam.x,s.y-cam.y,s.rx,s.ry,0,0,7);g.fill()});
 mtn.forEach(m=>{const x=m.x-cam.x,y=m.y-cam.y;if(x<-50||y<-50||x>W+50||y>H+50)return;g.fillStyle=css('--mtn');g.beginPath();g.moveTo(x-m.s,y+m.s*.7);g.lineTo(x,y-m.s);g.lineTo(x+m.s,y+m.s*.7);g.closePath();g.fill();g.fillStyle=css('--snow');g.beginPath();g.moveTo(x-m.s*.3,y-m.s*.4);g.lineTo(x,y-m.s);g.lineTo(x+m.s*.3,y-m.s*.4);g.closePath();g.fill()});
 g.strokeStyle=css('--line');g.lineWidth=1;
