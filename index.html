@@ -463,6 +463,22 @@ box-shadow:0 -8px 24px rgba(0,0,0,.5),0 0 0 2px rgba(8,14,36,.8),0 0 0 3px rgba(
 #skp .skf{grid-row:3!important;max-height:100%!important;overflow-y:auto!important;align-self:stretch!important}
 #skp .skh h2{font-size:22px!important}
 }
+
+/* ===== button layout: menu/leaderboard top-right, home bottom-left, skills/regroup bottom-right ===== */
+#n{display:none!important}
+#top span#n,#top>span:has(#n){display:none!important}
+#zm button,#sm button{position:fixed!important;margin:0!important}
+#bkm{top:calc(env(safe-area-inset-top,0px) + 10px)!important;right:8px!important;bottom:auto!important;left:auto!important}
+#lbz{top:calc(env(safe-area-inset-top,0px) + 10px)!important;right:60px!important;bottom:auto!important;left:auto!important}
+#mmb{top:calc(env(safe-area-inset-top,0px) + 62px)!important;right:8px!important;bottom:auto!important;left:auto!important}
+#hmb{bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;left:8px!important;top:auto!important;right:auto!important}
+#rgb{bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;right:8px!important;top:auto!important;left:auto!important}
+#skb{bottom:calc(env(safe-area-inset-bottom,0px) + 62px)!important;right:8px!important;top:auto!important;left:auto!important}
+
+/* ===== compact counters ===== */
+#top{grid-template-columns:repeat(2,max-content)!important}
+#top span{min-width:72px!important;max-width:120px!important;width:auto!important;justify-self:start!important;white-space:nowrap!important;font-size:15px!important;padding-right:10px!important}
+#g{padding-right:10px!important;font-size:15px!important}
 </style>
 <div id="lp"><div class="lc"><div class="lh"><canvas id="lpb" width="128" height="168"></canvas><div><div class="ln" id="lpn"></div><span class="ll" id="lpl"></span></div></div><div class="lg" id="lpg"></div><div class="ls" id="lps"></div><div class="lb"><button id="lpx">Close</button><button class="go" id="lpf">📍 Find main city</button></div></div></div>
 <script>
@@ -659,7 +675,7 @@ ui=(uiT+=dt)>.25;if(ui)uiT=0;const pw=ui?myPower():(window.MYP||0);window.MYP=pw
 respT+=dt;if(!G&&respT>3){respT=0;[1,2,3,4].forEach(o=>{if(!cities.some(c=>c.o===o)&&!armies.some(a=>a.o===o)){let L=cities.filter(c=>c.o===0);if(!L.length){chkIsl();L=cities.filter(c=>c.o===0)}if(L.length){const c=L[Math.random()*L.length|0];c.o=o;c.t=15;c.l=1;c.main=1;if(o===1)toast('Your last castle fell!\nA new castle is yours.')}}})}
 [1,2,3,4].forEach(o=>{if(respT!==0)return;const L=cities.filter(c=>c.o===o);if(L.length&&!L.some(c=>c.main))L.reduce((a,c)=>c.l>a.l?c:a).main=1});
 if(seasonT>=SEASON_DAYS*SDAY)end();
-if(ui){document.getElementById('g').textContent=fmtN(Math.floor(gold));if(typeof updPf==='function')updPf();{const b=document.getElementById('pfl');if(b)b.textContent=lLv;const k=document.getElementById('skb');if(k){k.classList.toggle('pt',lPt>0);k.dataset.n=lPt>99?'99+':lPt}}document.getElementById('tr').textContent=fmtT(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0));
+if(ui){document.getElementById('g').textContent=fmtT(Math.floor(gold));if(typeof updPf==='function')updPf();{const b=document.getElementById('pfl');if(b)b.textContent=lLv;const k=document.getElementById('skb');if(k){k.classList.toggle('pt',lPt>0);k.dataset.n=lPt>99?'99+':lPt}}document.getElementById('tr').textContent=fmtT(cities.reduce((s,c)=>s+(c.o===1?c.t:0),0)+armies.reduce((s,a)=>s+(a.o===1?a.n:0),0));
 document.getElementById('n').textContent=cities.filter(c=>c.o===1).length;
 {const l=Math.ceil(REG_CD-(T-regT)),b=rgb;if(l>0){b.textContent=l;b.style.opacity=.55;b.style.fontSize='16px'}else{b.textContent='📯';b.style.opacity=1;b.style.fontSize=''}}panel()}}
 function end(){const nl=NET&&NET.nl,mp=!!NET;if(NET&&NET.role==='h')NET.ref.update({state:'done'}).catch(()=>{});mpStop();run=false;closePick();try{loadLb()}catch(_){}try{if(DB&&!mp)ud('save').delete().catch(()=>{})}catch(_){}const N=nl||[pname,ghosts[0].n,ghosts[1].n,ghosts[2].n],sc=o=>cities.filter(c=>c.o===o).reduce((a,c)=>a+ptsL(c.l),0),R=[1,2,3,4].map(o=>[N[o-1],sc(o),o]).sort((a,b)=>b[1]-a[1]),p=R.findIndex(r=>r[2]===1)+1,w=p===1;try{SFX.play(w?'win':'lose')}catch(_){}
