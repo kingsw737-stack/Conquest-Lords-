@@ -614,7 +614,7 @@ grwL=l=>1+.4*(l-1),                                   /* troop growth multiplier
 dfL=l=>l<=1?0:.6*Math.log(l),                         /* defense bonus (soft-capped, ~+97% at lv5, +276% at lv100) */
 ptsL=l=>10+5*Math.min(l,5)+(l>5?Math.floor((l-5)/3):0), /* kingdom points per castle */
 visL=(l,o)=>o===0?0:l>=100?5:l>=60?4:l>=30?3:l>=10?2:1,                                /* art only has 5 looks */
-szL=(l,o)=>1.75*(o===0?.78:1)*(.85+.15*Math.sqrt((Math.min(l,MAXL)-1)/(MAXL-1))),BYT=[-211,-234,-267,-299,-332],bannerY=(t,o)=>o===0||t<1?-156:BYT[t-1];
+szL=(l,o)=>1.75*(o===0?.78:1.16)*(.85+.15*Math.sqrt((Math.min(l,MAXL)-1)/(MAXL-1))),BYT=[-211,-234,-267,-299,-332],bannerY=(t,o)=>o===0||t<1?-156:BYT[t-1];
 const CUM=[0,0];for(let l=1;l<MAXL;l++)CUM[l+1]=CUM[l]+upCost(l); /* total gold to reach level l */
 const troopsOf=o=>cities.reduce((a,c)=>a+(c.o===o?c.t:0),0)+armies.reduce((a,x)=>a+(x.o===o?x.n:0),0),
 myPower=()=>Math.floor((stats.spent||0)+troopsOf(1)),botPower=o=>Math.floor(cities.reduce((a,c)=>a+(c.o===o?CUM[Math.min(MAXL,c.l)]/3:0),0)+troopsOf(o)); /* bots pay 1/3 of the cost in troops */
@@ -634,7 +634,7 @@ for(let j=0,NI=Math.round(26*ISC*ISC);j<NI;j++){const a=rnd(0,6.283),d=Math.sqrt
 const s={x,y,rx,ry,pts,k,seed:k*7919+13+SEEDK%9973,open:true,grow:k?0:1};s.ox=x-rx-170;s.oy=y-ry-170;s.w=2*rx+340;s.h=2*ry+450;islands.push(s);const mine=[];let n=k?47:50,tr=0;
 /* spread-out placement: each city goes to the candidate spot farthest from the others, with a hard minimum gap (vertical gap counts extra because castles are tall) */
 const cdist=(ax,ay,bx,by)=>Math.hypot(ax-bx,(ay-by)*1.25),spread=(cnt,dmin)=>{const out=[];for(let i=0;i<cnt;i++){let bp=null,bd=-1;for(let t=0;t<160;t++){const a=rnd(0,6.283),d=Math.sqrt(RG())*.8,px=x+Math.cos(a)*rx*d,py=y+Math.sin(a)*ry*d;let m=1e9;for(const q of out){const e=cdist(q[0],q[1],px,py);if(e<m)m=e}if(m>bd){bd=m;bp=[px,py]}}if(bd<dmin)return null;out.push(bp)}return out};
-let spots=null;for(const dm of [1400,1300,1200,1100,1000,900,800,700,600,500,400,340]){for(let at=0;at<8&&!spots;at++)spots=spread(n,dm);if(spots)break}
+let spots=null;for(const dm of [1400,1300,1200,1100,1000,900,800,700,600,520]){for(let at=0;at<8&&!spots;at++)spots=spread(n,dm);if(spots)break}
 if(!spots)spots=spread(n,0);
 spots.forEach(q=>{const c={x:q[0],y:q[1],o:0,l:1+(RG()<.3?1:0)+(k>3?1:0),t:4+RG()*8+k*2,isl:k};cities.push(c);mine.push(c);n--});
 const give=(c0,m)=>mine.filter(c=>!c.o).sort((a,b)=>Math.hypot(a.x-c0.x,a.y-c0.y)-Math.hypot(b.x-c0.x,b.y-c0.y)).slice(0,m).forEach(c=>{c.o=c0.o;c.t=10+k});
@@ -784,7 +784,7 @@ switch(B.pat){case 1:R(.5,0,.5,1);break;case 2:R(0,.5,1,.5);break;case 3:Pg([[1,
 bnEmblem(c,B.em,x+w/2,y+h*(cyf||.4),Math.min(w,h)*.27,B.e);c.restore()}
 function bnShape(c,x,y,w,h){c.beginPath();c.moveTo(x,y);c.lineTo(x+w,y);c.lineTo(x+w,y+h*.8);c.lineTo(x+w/2,y+h);c.lineTo(x,y+h*.8);c.closePath()}
 function bnDraw(cv,B,ring){const c=cv.getContext('2d'),w=cv.width,h=cv.height,m=Math.max(2,w*.05);c.clearRect(0,0,w,h);c.save();c.shadowColor='rgba(0,0,0,.45)';c.shadowBlur=m*1.5;c.shadowOffsetY=m*.6;bnShape(c,m,m,w-2*m,h-2*m-m*.5);c.fillStyle=B.p;c.fill();c.restore();c.save();bnShape(c,m,m,w-2*m,h-2*m-m*.5);c.clip();bnArt(c,B,m,m,w-2*m,h-2*m-m*.5);const g2=c.createLinearGradient(0,0,0,h);g2.addColorStop(0,'rgba(255,255,255,.16)');g2.addColorStop(.5,'rgba(255,255,255,0)');g2.addColorStop(1,'rgba(0,0,0,.35)');c.fillStyle=g2;c.fillRect(0,0,w,h);c.restore();bnShape(c,m,m,w-2*m,h-2*m-m*.5);c.lineJoin='round';c.lineWidth=Math.max(2,w*.045);c.strokeStyle=ring||'#fff3c4';c.stroke()}
-function col(o){return o>=1&&o<=4&&BN[o]?BN[o].p:css('--neu')}
+function col(o){return o>=1&&o<=4&&BN[o]?BN[o].p:'#e09a35'}
 function castle(x,y,o,t,on){const ink=css('--ink'),f=col(o);
 if(on){g.strokeStyle=css('--ring');g.lineWidth=4;g.beginPath();g.ellipse(x,y+2,31,27,0,0,7);g.stroke()}
 g.lineWidth=2;g.strokeStyle=ink;g.fillStyle=f;
@@ -1143,19 +1143,19 @@ g.save();
 g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(x,y+9,w*.44,w*.09,0,0,7);g.fill();
 if(!NE){const ga=[.1,.14,.2,.28,.36][LV-1],q=g.createRadialGradient(x,y+12,2,x,y+12,w*.9);q.addColorStop(0,'rgba('+GR+','+ga+')');q.addColorStop(1,'rgba('+GR+',0)');g.save();g.translate(0,0);g.fillStyle=q;g.beginPath();g.ellipse(x,y+12,w*.9,w*.26,0,0,7);g.fill();g.restore();
 if(LV>=3){const hq=g.createRadialGradient(x,y-H*.5,2,x,y-H*.5,H*.55);hq.addColorStop(0,'rgba('+GR+','+[0,0,.12,.18,.26][LV-1]+')');hq.addColorStop(1,'rgba('+GR+',0)');g.fillStyle=hq;g.beginPath();g.arc(x,y-H*.5,H*.55,0,7);g.fill()}}
-g.drawImage(im,x-w/2,y+11-H+dy+bob,w,H);
+g.drawImage(im,x-w/2,y+11-H+dy+bob+(NE?0:[10,8,8,6,8][T-1]/[146,231,277,335,421][T-1]*H),w,H);
 if(LV>=4&&!NE){g.globalCompositeOperation='lighter';const n=LV>=5?9:5;for(let i=0;i<n;i++){const a=i*2.399+LV,r=.55+.35*((i*37)%10)/10,px=x+Math.cos(a)*w*.55*r,py=y-H*(.2+.7*((i*53)%10)/10),s=1.1+((i*7)%3)*.5;g.fillStyle='rgba(255,236,170,.85)';g.beginPath();g.moveTo(px,py-s*2.2);g.lineTo(px+s*.6,py-s*.6);g.lineTo(px+s*2.2,py);g.lineTo(px+s*.6,py+s*.6);g.lineTo(px,py+s*2.2);g.lineTo(px-s*.6,py+s*.6);g.lineTo(px-s*2.2,py);g.lineTo(px-s*.6,py-s*.6);g.closePath();g.fill()}}
 g.restore()}
 function castleNeu(x,y){const k=1.25;g.save();g.translate(x,y+9);g.scale(k,k);g.lineJoin='round';
 const ol='rgba(35,28,22,.75)',R=(a,b,w,h,c)=>{g.fillStyle=c;g.fillRect(a,b,w,h);g.strokeStyle=ol;g.lineWidth=1.2;g.strokeRect(a,b,w,h)};
 g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(0,1,38,8,0,0,7);g.fill();
-R(-34,-15,68,15,'#8f8b82');for(let i=-34;i<30;i+=12)R(i,-20,7,5,'#8f8b82');
-R(-14,-48,28,48,'#a7a399');g.fillStyle='rgba(0,0,0,.18)';g.fillRect(4,-48,10,48);
+R(-34,-15,68,15,'#a8966f');for(let i=-34;i<30;i+=12)R(i,-20,7,5,'#8f8b82');
+R(-14,-48,28,48,'#c9b590');g.fillStyle='rgba(0,0,0,.18)';g.fillRect(4,-48,10,48);
 for(let i=-14;i<12;i+=10)R(i,-53,6,5,'#a7a399');
 g.fillStyle='#5a3a22';g.beginPath();g.moveTo(-7,0);g.lineTo(-7,-14);g.arc(0,-14,7,Math.PI,0);g.lineTo(7,0);g.closePath();g.fill();g.stroke();
 g.fillStyle='#1d1814';g.fillRect(-1.5,-38,3,9);
-R(-34,-34,15,34,'#9b978d');g.fillStyle='#7a4b2a';g.beginPath();g.moveTo(-37,-34);g.lineTo(-26.5,-54);g.lineTo(-16,-34);g.closePath();g.fill();g.stroke();
-R(19,-28,15,28,'#9b978d');g.fillStyle='#7a4b2a';g.beginPath();g.moveTo(16,-28);g.lineTo(26.5,-46);g.lineTo(37,-28);g.closePath();g.fill();g.stroke();
+R(-34,-34,15,34,'#bba783');g.fillStyle='#c2552d';g.beginPath();g.moveTo(-37,-34);g.lineTo(-26.5,-54);g.lineTo(-16,-34);g.closePath();g.fill();g.stroke();
+R(19,-28,15,28,'#bba783');g.fillStyle='#c2552d';g.beginPath();g.moveTo(16,-28);g.lineTo(26.5,-46);g.lineTo(37,-28);g.closePath();g.fill();g.stroke();
 g.fillStyle='rgba(95,130,50,.55)';[[-30,-8,6],[22,-12,5],[-10,-44,4],[8,-5,5]].forEach(a=>{g.beginPath();g.ellipse(a[0],a[1],a[2],a[2]*.5,0,0,7);g.fill()});
 g.fillStyle='#8a867c';[[-40,0,4],[42,1,3],[-44,3,2.5]].forEach(a=>{g.beginPath();g.ellipse(a[0],a[1],a[2],a[2]*.6,0,0,7);g.fill()});
 g.restore()}
