@@ -575,7 +575,7 @@ const m=own.find(v=>v[0].main)||own.reduce((a,b)=>b[0].l>a[0].l?b:a),c=m[0];lord
 #ldg .ldb i{display:block;position:relative;height:100%;width:0;border-radius:1px;background:linear-gradient(#8fd6f7,#3f9fd6 45%,#235f93);box-shadow:0 0 8px rgba(80,170,240,.75);transition:width .25s ease-out}
 #ldg .ldb i::after{content:"";position:absolute;left:0;right:0;top:0;height:40%;background:linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,0))}
 #ldg .ldx{position:relative;margin-top:clamp(5px,1.4vh,9px);font-size:clamp(10px,2.1vh,13px);font-weight:normal;font-style:italic;letter-spacing:.04em;color:rgba(214,222,236,.7);text-shadow:0 1px 3px #000;min-height:1.2em}
-#brb{bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;right:112px!important;top:auto!important;left:auto!important;position:fixed!important}
+#brb{bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;right:164px!important;top:auto!important;left:auto!important;position:fixed!important}
 #brb svg{width:62%;height:62%;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.65))}
 #brb .bd{position:absolute;right:-7px;top:-8px;min-width:21px;height:21px;padding:0 5px;box-sizing:border-box;border-radius:11px;align-items:center;justify-content:center;font:bold 13px/1 Arial,sans-serif;color:#fff;background:linear-gradient(#ff6a5e,#d6261a);border:2px solid #fff}
 #brp{display:none;position:fixed;inset:0;z-index:31;align-items:center;justify-content:center;background:rgba(3,6,20,.62);font-family:Georgia,"Times New Roman",serif;color:#fff}
@@ -1983,6 +1983,81 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout
 <script>
 function sprLod(cv,q){try{const need=SW*q*dpr,m=cv.width/need;if(!(m>1.5))return cv;let f=1;while(f<8&&cv.width/(f*2)>=need*.85)f*=2;if(f===1)return cv;const L=cv.__lod||(cv.__lod={});if(L[f])return L[f];
 let src=cv,w=cv.width,h=cv.height,k=1;while(k<f){w=Math.max(1,w>>1);h=Math.max(1,h>>1);const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(src,0,0,w,h);src=c;k*=2;L[k]=c}return L[f]}catch(e){return cv}}
+</script>
+<style id="bagcss">
+#bgb{bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;right:112px!important;top:auto!important;left:auto!important;position:fixed!important}
+#brb{right:164px!important}
+#bgb svg{width:66%;height:66%;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.65))}
+#bgp{display:none;position:fixed;inset:0;z-index:21;flex-direction:column;align-items:center;color:#fff;font-family:Georgia,serif;padding:calc(env(safe-area-inset-top,0px) + 6px) 8px calc(env(safe-area-inset-bottom,0px) + 6px);background:radial-gradient(120% 70% at 50% 0,#243f86 0,#0f1c42 55%,#070d24 100%);box-sizing:border-box}
+#bgp.on{display:flex}
+#bgp .bh{display:flex;align-items:center;gap:10px;width:min(100%,900px);padding:2px 4px 8px;background:linear-gradient(90deg,transparent,#e0b24a 18%,#ffe38a 50%,#e0b24a 82%,transparent) bottom/100% 2px no-repeat}
+#bgp .bh svg{width:30px;height:30px}
+#bgp .bh h2{margin:0;flex:1;font-size:24px;background:linear-gradient(#fff6cf,#ffd34a 55%,#e8a528);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+#bgp .bx{width:38px;height:38px;border-radius:50%;border:2px solid #e0b24a;background:radial-gradient(circle at 35% 30%,#4a6fc0,#142450);color:#fff;font-size:18px;font-weight:bold}
+#bgp .bb{flex:1;min-height:0;width:min(100%,900px);display:grid;grid-template-columns:minmax(0,1.15fr) 74px minmax(0,1.1fr);gap:8px;padding-top:8px}
+#bgp .bc{min-height:0;display:flex;flex-direction:column;gap:6px;border:2px solid #e0b24a;border-radius:14px;background:linear-gradient(#142654,#0a1334);padding:8px;box-shadow:inset 0 0 0 3px rgba(8,14,40,.6)}
+#bgp .eq{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+#bgp .sl,#bgp .it{position:relative;aspect-ratio:1;border-radius:10px;border:3px solid #3a4a78;background:#0b1433;display:grid;place-items:center;font-size:clamp(20px,6vw,34px);overflow:hidden;padding:0;color:#fff}
+#bgp .sl .gh{opacity:.28;filter:grayscale(1)}
+#bgp .it.e{border-style:dashed;opacity:.35}
+#bgp .r1{border-color:#37a0d8;background:linear-gradient(160deg,#0f4560,#082030)}
+#bgp .r2{border-color:#a43bd6;background:linear-gradient(160deg,#4b1a6a,#1b0830)}
+#bgp .r3{border-color:#f0a020;background:linear-gradient(160deg,#6a4210,#2a1804)}
+#bgp .r4{border-color:#ff5a4a;background:linear-gradient(160deg,#6a1a14,#2a0806)}
+#bgp .st{position:absolute;left:3px;bottom:1px;font-size:9px;color:#ffe38a;letter-spacing:-1px;text-shadow:0 1px 1px #000}
+#bgp .eqm{position:absolute;right:3px;top:1px;font-size:12px}
+#bgp .sts{display:flex;justify-content:space-around;margin-top:auto;gap:4px;text-align:center;font-size:11px;font-weight:bold}
+#bgp .sts div{flex:1}#bgp .sts i{display:grid;place-items:center;height:34px;font-style:normal;font-size:22px;border-radius:8px;background:linear-gradient(160deg,#6a2aa8,#2a0e50);margin-bottom:2px}
+#bgp .md{align-items:stretch}
+#bgp .md button{flex:none;aspect-ratio:1;border-radius:10px;border:2px solid #3a78e0;background:linear-gradient(#2a4c96,#0f1c3d);box-shadow:0 3px 0 #06102a;color:#fff;font-size:24px;padding:0}
+#bgp .md button.on{border-color:#ffd34a;box-shadow:0 0 10px #ffd34a,0 3px 0 #06102a}
+#bgp .md button.ea{aspect-ratio:auto;padding:6px 2px;font-size:12px;font-weight:bold;color:#fff;border-color:#e0b24a}
+#bgp .md button.go{background:linear-gradient(#ffd966,#d8a02e 60%,#b9801c);color:#2b1c05}
+#bgp .gr{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;align-content:start}
+#bgp .gm{display:flex;align-items:center;justify-content:center;gap:8px;font-size:18px;font-weight:bold;color:#ffd34a}
+#bgp .emp{grid-column:1/-1;text-align:center;font-size:13px;color:#9fb2e8;padding:6px 0}
+@media (orientation:portrait){#bgp .bb{grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr}#bgp .md{grid-column:1/-1;grid-row:1;flex-direction:row}#bgp .md button{flex:1;aspect-ratio:auto;height:44px}#bgp .md button.ea{flex:2}}
+</style>
+<script>
+/* ===== Inventory / bag (gear framework: items are added later via BAG.add) ===== */
+const BAG=(function(){
+const SL=[['weapon','🗡️'],['helm','⛑️'],['amulet','📿'],['armor','🛡️'],['belt','🎗️'],['gloves','🧤'],['ring','💍'],['boots','🥾'],['cape','🧣']];
+const ST=[['spd','👢','Speed'],['tro','👥','Troops'],['def','🛡️','Defense'],['atk','⚔️','Attack']];
+const FL=[['⭐',null],['🗡️',['weapon','ring','amulet']],['🛡️',['helm','armor','gloves','belt','boots','cape']]];
+let items=[],eq={},filt=0,uid=1;
+try{const d=JSON.parse(localStorage.getItem('bagv1')||'null');if(d){items=d.items||[];eq=d.eq||{};uid=d.uid||1}}catch(_){}
+const $=id=>document.getElementById(id);
+const save=()=>{try{localStorage.setItem('bagv1',JSON.stringify({items,eq,uid}))}catch(_){}};
+const pw=i=>i.rar*10+(i.stars||0)+Object.values(i.stats||{}).reduce((a,b)=>a+b,0);
+function bonus(){const t={spd:0,tro:0,def:0,atk:0};Object.values(eq).forEach(id=>{const i=items.find(x=>x.id===id);if(i)for(const k in i.stats)t[k]=(t[k]||0)+i.stats[k]});return t}
+function add(it){it.id=uid++;it.rar=it.rar||1;it.stats=it.stats||{};items.push(it);save();draw();return it.id}
+function tap(id){const i=items.find(x=>x.id===id);if(!i)return;if(eq[i.slot]===id)delete eq[i.slot];else eq[i.slot]=id;save();draw()}
+function equipAll(){SL.forEach(([s])=>{const c=items.filter(i=>i.slot===s).sort((a,b)=>pw(b)-pw(a))[0];if(c)eq[s]=c.id});save();draw()}
+function sell(){const eqd=new Set(Object.values(eq)),sold=items.filter(i=>i.rar===1&&!eqd.has(i.id));if(!sold.length){if(typeof toast==='function')toast('Nothing to sell');return}const g=sold.reduce((a,i)=>a+(i.value||5),0);items=items.filter(i=>!sold.includes(i));try{gold+=g}catch(_){}save();draw();if(typeof toast==='function')toast('Sold '+sold.length+' items · +'+g+' gold')}
+function cell(i,mark){const b=document.createElement('button');b.className='it r'+i.rar;b.innerHTML=(i.icon||(SL.find(s=>s[0]===i.slot)||[0,'❔'])[1])+'<span class="st">'+'★'.repeat(i.stars||0)+'</span>'+(mark?'<span class="eqm">✔️</span>':'');b.onclick=()=>tap(i.id);return b}
+function draw(){const p=$('bgp');if(!p||!p.classList.contains('on'))return;
+const e=p.querySelector('.eq');e.innerHTML='';SL.forEach(([s,ic])=>{const i=items.find(x=>x.id===eq[s]);if(i){const b=cell(i,0);e.appendChild(b)}else{const d=document.createElement('div');d.className='sl';d.innerHTML='<span class="gh">'+ic+'</span>';e.appendChild(d)}});
+const b=bonus();p.querySelector('.sts').innerHTML=ST.map(([k,ic,n])=>'<div title="'+n+'"><i>'+ic+'</i>+'+b[k]+'%</div>').join('');
+const f=FL[filt][1],eqd=new Set(Object.values(eq)),list=items.filter(i=>(!f||f.includes(i.slot))).sort((a,b)=>pw(b)-pw(a)),g=p.querySelector('.gr');g.innerHTML='';
+list.forEach(i=>g.appendChild(cell(i,eqd.has(i.id))));
+const fill=Math.max(0,12-list.length);for(let k=0;k<fill;k++){const d=document.createElement('div');d.className='it e';g.appendChild(d)}
+if(!items.length){const m=document.createElement('div');m.className='emp';m.textContent='Your bag is empty. Gear will drop here.';g.appendChild(m)}
+p.querySelectorAll('.md .fl').forEach((x,n)=>x.classList.toggle('on',n===filt));
+p.querySelector('.gm b').textContent=(typeof fmtT==='function'&&typeof gold!=='undefined')?fmtT(Math.floor(gold)):'0'}
+function open(){const p=$('bgp'),on=!p.classList.contains('on');p.classList.toggle('on',on);if(on)draw()}
+function init(){if($('bgb'))return;const z=$('zm');if(!z)return;
+const b=document.createElement('button');b.id='bgb';b.title='Inventory';b.setAttribute('aria-label','Inventory');b.onclick=open;
+b.innerHTML='<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 15c0-5 3.5-8 8-8s8 3 8 8" fill="none" stroke="#e29a18" stroke-width="3" stroke-linecap="round"/><path d="M9 15h22l3 18a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3z" fill="#ffd34a" stroke="#8a5a10" stroke-width="2"/><rect x="13" y="22" width="14" height="8" rx="2" fill="#e29a18" stroke="#8a5a10" stroke-width="1.5"/></svg>';z.appendChild(b);
+const p=document.createElement('div');p.id='bgp';
+p.innerHTML='<div class="bh"><svg viewBox="0 0 40 40"><path d="M12 15c0-5 3.5-8 8-8s8 3 8 8" fill="none" stroke="#ffd34a" stroke-width="3"/><path d="M9 15h22l3 18a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3z" fill="#ffd34a"/></svg><h2>Inventory</h2><button class="bx" aria-label="Close">✕</button></div>'
++'<div class="bb"><div class="bc"><div class="eq"></div><div class="sts"></div></div>'
++'<div class="bc md"><button class="ea go">Equip All</button>'+FL.map((f,n)=>'<button class="fl" data-f="'+n+'">'+f[0]+'</button>').join('')+'<button class="sl$">🪙</button></div>'
++'<div class="bc"><div class="gr"></div><div class="gm">🔶 <b>0</b></div></div></div>';
+document.body.appendChild(p);
+p.querySelector('.bx').onclick=open;p.querySelector('.ea').onclick=equipAll;p.querySelector('.sl\\$').onclick=sell;
+p.querySelectorAll('.fl').forEach(x=>x.onclick=()=>{filt=+x.dataset.f;draw()})}
+if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+return{add,open,bonus,items:()=>items,equipped:()=>eq,redraw:draw}})();
 </script>
 </body>
 </html>
