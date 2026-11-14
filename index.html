@@ -1507,6 +1507,8 @@ const h=Math.floor(off/3600),m=Math.floor(off%3600/60),away=(h?h+'h ':'')+m+'m';
 if(lost)return '🌙 Away for '+away+'\n⚔️ '+hit.join(' & ')+' captured '+(lost>1?lost+' of your castles':'one of your castles')+'.\nRetake '+(lost>1?'them':'it')+'!';
 if(held)return '🌙 Away for '+away+'\n🛡️ Your castles repelled '+held+' raid'+(held>1?'s':'')+'.';
 return ''}catch(_){return ''}}
+function startGameSmooth(d){try{const L=document.getElementById('ldg');if(L){L.style.transition='none';L.style.opacity='1';L.style.pointerEvents='auto';L.style.display='flex';const b=L.querySelector('i'),t=L.querySelector('b');if(b)b.style.width='2%';if(t)t.textContent='Preparing…'}}catch(_){}
+requestAnimationFrame(()=>setTimeout(()=>startGame(d),30))}
 function startGame(d){let off='';if(d){try{loadGame(d)}catch(_){gen()}if(!NET)off=offlineRaids(d.savedAt)}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');sStart=((d&&d.savedAt&&seasonT>0)?d.savedAt:Date.now())-seasonT*1000;startZoom();loadGo();if(off)toast(off,7000);}
 function loadGo(){if(window.__loadingNow)return;window.__loadingNow=1;const L=document.getElementById('ldg'),bar=L.querySelector('i'),tx=L.querySelector('b'),st=[];L.style.transition='none';L.style.opacity='1';L.style.pointerEvents='auto';L.style.display='flex';
 islands.forEach((q,i)=>st.push(['Raising island '+(i+1),()=>{if(!q.cv)mkIsland(q)}]));st.push(['Charting roads',()=>{navBuild()}]);
@@ -1533,8 +1535,8 @@ else{if(NET.role==='g'&&NET.me)NET.me.delete().catch(()=>{});if(NET.role==='h')N
 run=false;closePick();aim=false;showMap=false;sel=-1;tgt=-1;sheet.classList.remove('open');tab=-1;document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
 mpShow(0);ov.classList.remove('hide');if(PROF)menu();try{loadLb()}catch(_){}};
 play.onclick=async()=>{fs();if(mode===0){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.focus();return}PROF={name:n,wins:0};try{await ud('profile').set(PROF)}catch(_){}try{DB.collection('leaderboard').doc(UID).set({name:n,wins:0}).catch(()=>{})}catch(_){}}
-pname=PROF.name;OW[1]=pname;startGame(mode===1?SAVE:null)};
-nw.onclick=()=>{fs();SAVE=null;try{localStorage.removeItem(LK())}catch(_){}try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGame(null)};
+pname=PROF.name;OW[1]=pname;startGameSmooth(mode===1?SAVE:null)};
+nw.onclick=()=>{fs();SAVE=null;try{localStorage.removeItem(LK())}catch(_){}try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGameSmooth(null)};
 setInterval(saveLocal,20000);setInterval(()=>{if(run&&!NET&&window.MYP>0)submitScore(window.MYP)},20000);setInterval(()=>{(window.requestIdleCallback||setTimeout)(saveNow)},60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 play.style.display='none';nm.style.display='none';$('d').textContent='Signing in…';
 async function loadLb(){let rows=[];try{const q=await DB.collection('leaderboard').orderBy('wins','desc').limit(20).get();LBD=q.docs.map(d=>d.data());rows=q.docs.map(d=>({name:String(d.data().name||'?'),wins:+d.data().wins||0}))}catch(_){}fakeBoard().forEach(b=>rows.push({name:b.name,wins:b.wins}));rows.sort((a,b)=>b.wins-a.wins);try{$('a_lb').textContent='🏆 Top lords\n'+rows.slice(0,10).map((d,i)=>(i+1)+'. '+d.name+' — '+d.wins).join('\n')}catch(_){}}
@@ -1811,7 +1813,7 @@ try{const o=screen.orientation;if(o){if(inGame){if(o.lock)o.lock('landscape').ca
 new MutationObserver(sync).observe(ov,{attributes:true,attributeFilter:['class']});sync();
 document.addEventListener('pointerup',()=>{if(ov.classList.contains('hide'))sync()},{capture:true,passive:true});})();</script>
 <script>(function(){const go=()=>{try{const m=(document.getElementById('ldgcss')||{}).textContent.match(/url\((data:image\/[a-z]+;base64,[^)]+)\)/);if(!m)return;const im=new Image();im.decoding='async';im.src=m[1];(window.__keep=window.__keep||[]).push(im);if(im.decode)im.decode().catch(()=>{})}catch(_){}};
-(window.requestIdleCallback?requestIdleCallback(go,{timeout:2500}):setTimeout(go,1200))})();</script>
+setTimeout(go,50)})();</script>
 <script>
 /* Watchdog: phones can silently discard big canvas bitmaps under memory pressure (islands then show as empty ocean).
    Remember a solid pixel of every island/bridge bitmap and rebuild any whose pixel has gone transparent. */
