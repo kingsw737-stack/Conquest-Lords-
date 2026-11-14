@@ -920,14 +920,14 @@ let gr=t.createLinearGradient(0,0,0,1024);gr.addColorStop(0,'#3d9cf5');gr.addCol
 const pal=[['160,220,255',.55],['95,190,255',.45],['45,135,240',.28],['125,205,255',.25],['240,250,255',.4]];
 for(let i=0;i<30;i++){const x=rnd(0,1024),y=rnd(0,1024),r=rnd(100,260),c=pal[i%5];wrap((ox,oy)=>softC(t,x+ox,y+oy,r,c[0],c[1]))}
 for(let i=0;i<18;i++){const x=rnd(0,1024),y=rnd(0,1024),L=rnd(170,380),a=rnd(-.22,.1);wrap((ox,oy)=>{t.save();t.translate(x+ox,y+oy);t.rotate(a);t.scale(1,.085);softC(t,0,0,L,'245,252,255',.3);t.restore()})}
-for(let i=0;i<18;i++){const cx=rnd(0,1024),cy=rnd(0,1024),n=6+(Math.random()*4|0),ps=[];for(let j=0;j<n;j++)ps.push([rnd(-170,170),rnd(-34,34),rnd(80,150)]);
-wrap((ox,oy)=>{ps.forEach(([dx,dy,r])=>softC(t,cx+ox+dx+16,cy+oy+dy+34,r,'40,110,210',.14));ps.forEach(([dx,dy,r])=>softC(t,cx+ox+dx,cy+oy+dy,r,'255,255,255',.7));ps.forEach(([dx,dy,r])=>softC(t,cx+ox+dx-r*.25,cy+oy+dy-r*.3,r*.55,'255,255,255',.6))})}
+for(let i=0;i<12;i++){const cx=rnd(0,1024),cy=rnd(0,1024),n=6+(Math.random()*4|0),ps=[];for(let j=0;j<n;j++)ps.push([rnd(-170,170),rnd(-34,34),rnd(80,150)]);
+wrap((ox,oy)=>{ps.forEach(([dx,dy,r])=>softC(t,cx+ox+dx+16,cy+oy+dy+34,r,'40,110,210',.14));ps.forEach(([dx,dy,r])=>softC(t,cx+ox+dx,cy+oy+dy,r,'255,255,255',.7));ps.forEach(([dx,dy,r])=>softC(t,cx+ox+dx-r*.25,cy+oy+dy-r*.3,r*.55,'255,250,236',.6))})}
 for(let i=0;i<0;i++){t.fillStyle=Math.random()<.5?'rgba(225,244,255,.08)':'rgba(15,60,140,.06)';t.fillRect(rnd(0,1024),rnd(0,1024),rnd(1,2.4),rnd(1,2.4))}
 CLD=[];CLW=[];CLM=[];
 const rr=(a,b)=>a+Math.random()*(b-a);
-const puff=(u,x,y,r)=>{softC(u,x+r*.1,y+r*.6,r*1.1,'150,150,196',.13);
+const puff=(u,x,y,r)=>{softC(u,x+r*.1,y+r*.6,r*1.1,'110,170,240',.14);
 const q=u.createRadialGradient(x-r*.26,y-r*.38,r*.06,x,y,r);q.addColorStop(0,'rgba(255,255,255,.98)');q.addColorStop(.55,'rgba(240,244,252,.88)');q.addColorStop(1,'rgba(206,218,240,0)');u.fillStyle=q;u.beginPath();u.arc(x,y,r,0,7);u.fill();
-softC(u,x-r*.32,y-r*.42,r*.5,'255,255,255',.7);softC(u,x+r*.3,y+r*.45,r*.6,'168,172,210',.16);softC(u,x-r*.55,y-r*.1,r*.4,'255,236,200',.18)};
+softC(u,x-r*.32,y-r*.42,r*.5,'255,255,255',.7);softC(u,x+r*.3,y+r*.45,r*.6,'130,185,245',.16);softC(u,x-r*.55,y-r*.1,r*.4,'255,236,200',.18)};
 for(let c=0;c<8;c++){const cv=document.createElement('canvas');cv.width=512;cv.height=240;const u=cv.getContext('2d'),n=11+(Math.random()*6|0),ps=[];
 for(let j=0;j<n;j++){const f=j/(n-1),sn=Math.sin(f*Math.PI);ps.push([70+f*372+rr(-18,18),156-sn*(44+rr(0,26))+rr(-10,10),rr(36,60)*(.62+sn*.7)])}
 for(let j=0;j<n*.55;j++){const f=rr(.15,.85),sn=Math.sin(f*Math.PI);ps.push([70+f*372,104-sn*(18+rr(0,40)),rr(30,52)*(.7+sn*.6)])}
@@ -1324,7 +1324,7 @@ const mg=g.createRadialGradient(x,y+L*.9,2,x,y+L*.9,w*1.5);mg.addColorStop(0,'rg
 g.restore()}
 function drawLive(q){drawTrees(q);drawRocks(q)}
 let _bnF=0;function draw(){if((_bnF++%20)===0)for(let o=1;o<=4;o++)BNK[o]=bnKey(o);g.fillStyle='#55adf8';g.fillRect(0,0,W,H);clampCam();
-if(TER){const S=1024*Z,ox=-(((cam.x*Z)%S)+S)%S,oy=-(((cam.y*Z)%S)+S)%S;for(let x=ox;x<W;x+=S)for(let y=oy;y<H;y+=S)g.drawImage(TER,x,y,S+1,S+1)}
+if(TER){const S=1024*(.95+.8*Z),P=Z*.55,ox=-(((cam.x*P)%S)+S)%S,oy=-(((cam.y*P)%S)+S)%S;for(let x=ox;x<W;x+=S)for(let y=oy;y<H;y+=S)g.drawImage(TER,x,y,S+1,S+1)}
 if(CLD.length){const nw=performance.now()/1000;g.save();for(let i=0;i<26;i++){const dp=i%4,sp=.28+.16*dp+.03*(i%3),sc=Z*(1+.18*(i%6)),cw=512*sc,ch=240*sc,mx=W+cw*1.6,my=H+ch*2.4,sx=(((i*613+nw*(5+2.4*dp)*(1+.1*(i%3))-cam.x*Z*sp)%mx)+mx)%mx-cw*.8,sy=(((i*389-cam.y*Z*sp)%my)+my)%my-ch*1.2;g.globalAlpha=.45+.05*dp;g.drawImage(CLD[i%8],sx,sy,cw,ch)}g.restore()}
 RB.n=0;let built=0;islands.forEach(q=>{const e=.6+.4*q.grow,sc=Z*e,x0=(q.x-cam.x)*Z+(q.ox-q.x)*sc,y0=(q.y-cam.y)*Z+(q.oy-q.y)*sc+(1-q.grow)*80*Z,vis=x0<W&&y0<H&&x0+q.w*sc>0&&y0+q.h*sc>0;if(!vis){if(q.cv&&(x0>W*26||y0>H*26||x0+q.w*sc<-W*25||y0+q.h*sc<-H*25))q.cv=null;return}if(!q.cv){if(built++)return;mkIsland(q)}g.globalAlpha=q.grow;g.drawImage(q.cv,x0,y0,q.w*sc,q.h*sc);g.globalAlpha=1;if(q.B&&q.grow>=1)drawLive(q);
 if(q.grow>=1&&Z>.1&&CLM.length){if(!q.mist)q.mist=buildMist(q);const nw=performance.now()/1000;g.save();for(let j=0;j<q.mist.length;j++){const m=q.mist[j],sn=m[2],bt=sn>0,sx=(m[0]-cam.x)*Z+Math.sin(nw*.3+m[3])*16*Z,sy=(m[1]-cam.y)*Z+(bt?96*sn+8:-8)*Z+Math.sin(nw*.45+m[3]*1.3)*5*Z,cw=(300+170*m[5])*Z;if(sx<-cw||sx>W+cw||sy<-cw||sy>H+cw)continue;g.globalAlpha=(bt?1:.55)*(.82+.18*Math.sin(nw*.6+m[3]));g.drawImage(CLM[m[4]],sx-cw/2,sy-cw*.25,cw,cw*.5)}g.restore()}});
