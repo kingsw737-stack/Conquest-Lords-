@@ -1386,7 +1386,7 @@ cam.x=hx<lx?(x0+x1)/2-vw/2:Math.max(lx,Math.min(hx,cam.x));cam.y=hy<ly?(y0+y1)/2
 if(glide){glide.x=hx<lx?cam.x:Math.max(lx,Math.min(hx,glide.x));glide.y=hy<ly?cam.y:Math.max(ly,Math.min(hy,glide.y))}}catch(_){}}
 function zoomTo(z,cx,cy){const r=C.getBoundingClientRect(),sx=cx-r.left,sy=cy-r.top,wx=cam.x+sx/Z,wy=cam.y+sy/Z;Z=Math.max(.055,Math.min(1.6,z));cam.x=wx-sx/Z;cam.y=wy-sy/Z;clampCam()}
 const ptr=new Map();let pinch=null;
-C.addEventListener('wheel',e=>{e.preventDefault();zoomTo(Z*(e.deltaY<0?1.12:.89),e.clientX,e.clientY)},{passive:false});
+C.addEventListener('wheel',e=>{e.preventDefault();let d=e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1);d=Math.max(-120,Math.min(120,d));if(e.ctrlKey)d*=2.2;if(!d)return;zoomTo(Z*Math.exp(-d*.0009),e.clientX,e.clientY)},{passive:false});
 const mid=()=>{const r=C.getBoundingClientRect();return[r.left+W/2,r.top+H/2]};
 mmb.onclick=()=>{showMap=!showMap};
 hmb.onclick=()=>{if(!run)return;const m=cities.find(c=>c.o===1&&c.main);if(!m){toast('No main city yet');return}glide={x:m.x-W/Z/2,y:m.y-H/Z/2}};
