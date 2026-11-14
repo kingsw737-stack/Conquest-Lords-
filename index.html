@@ -7,6 +7,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#17274d">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <style>
@@ -537,7 +540,16 @@ const m=own.find(v=>v[0].main)||own.reduce((a,b)=>b[0].l>a[0].l?b:a),c=m[0];lord
 #ldg .ldx{position:relative;margin-top:clamp(5px,1.4vh,9px);font-size:clamp(10px,2.1vh,13px);font-weight:normal;font-style:italic;letter-spacing:.04em;color:rgba(214,222,236,.7);text-shadow:0 1px 3px #000;min-height:1.2em}
 </style><div id="ldg"><div class="ldt">Loading</div><div class="ldb"><i></i></div><b class="ldx">Loading…</b></div><div id="skp"></div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Go to my main castle">🏠</button><button id="skb" title="Lord skills" aria-label="Lord skills" onclick="skOpen()"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="skg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset="1" stop-color="#e29a18"/></linearGradient></defs><path d="M20 30V21M20 21L9.5 12M20 21L30.5 12M20 21V9" fill="none" stroke="#ffd34a" stroke-width="2.6" stroke-linecap="round"/><g fill="url(#skg1)" stroke="#5a3a06" stroke-width="1.5"><circle cx="20" cy="31.5" r="5.2"/><circle cx="9.5" cy="11.5" r="4.3"/><circle cx="30.5" cy="11.5" r="4.3"/><circle cx="20" cy="7.5" r="4.3"/></g><path d="M20 28.2l1.1 2.3 2.5.3-1.9 1.7.5 2.5-2.2-1.3-2.2 1.3.5-2.5-1.9-1.7 2.5-.3z" fill="#7a4a00"/></svg></button><button id="rgb" title="Regroup: send all troops to your main castle" aria-label="Regroup troops">📯</button></div><div id="sm"><button id="bkm" title="Back to main menu" aria-label="Back to main menu">☰</button><button id="lbz" title="Leaderboard" onclick="lbShow('w')">🏆</button><button id="mmb" title="Map" aria-label="Map">🗺</button></div>
 <div id="ov"><canvas id="ovbg"></canvas><canvas id="ovfx"></canvas><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When 80% of the castles are taken, a new island rises from the clouds. A season lasts 5 days: the lord with the most kingdom points wins.</p><div id="ovsp"></div><div id="bnrow"><canvas id="bnp" width="64" height="84"></canvas><div class="bnrb"><button id="bne">Design banner</button><button id="bnrn" title="Random banner">🎲</button></div></div><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><div id="sec"><button id="sndm"></button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button></div><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* Non-blocking Firebase loader: the page paints and the game code parses immediately; sign-in waits on window.__fbReady */
+(function(){const B='https://www.gstatic.com/firebasejs/10.12.2/',mods=['firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js'],done={};
+const ld=f=>new Promise((res,rej)=>{if(done[f])return res();const s=document.createElement('script');s.src=B+f;s.async=false;s.onload=()=>{done[f]=1;res()};s.onerror=()=>{s.remove();rej(new Error(f))};document.head.appendChild(s)});
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+window.__fbReady=(async()=>{let err;for(let a=0;a<4;a++){try{for(const f of mods)if(!done[f])await ld(f);err=null;break}catch(e){err=e;await wait(600*(a+1))}}
+if(err)throw err;
+try{if(typeof RDB_URL!=='undefined'&&RDB_URL)ld('firebase-database-compat.js').catch(()=>{})}catch(_){}})();
+window.__fbReady.catch(()=>{});})();
+</script>
 <script>/* PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web app) */
 /* Optional but recommended: paste your Realtime Database URL here for a free, truly live leaderboard. */
 const RDB_URL="";
@@ -1151,9 +1163,8 @@ if(hh===0){R=C;G=X}else if(hh===1){R=X;G=C}else if(hh===2){G=C;B=X}else if(hh===
 o[i]=(R+m)*255;o[i+1]=(G+m)*255;o[i+2]=(B+m)*255}
 x.putImageData(d,0,0);return c};
 const load=t=>{const im=new Image();im.onload=()=>{try{const W0=im.width,H0=im.height,base=document.createElement('canvas');base.width=W0;base.height=H0;const bx=base.getContext('2d');bx.drawImage(im,0,0);const idt=bx.getImageData(0,0,W0,H0),src=idt.data;
-CST.d[t]=[W0,H0];const V=CST.t[t]={};V[1]=base;V[2]=tint(src,W0,H0,1,358);V[3]=tint(src,W0,H0,1,285);V[4]=tint(src,W0,H0,1,34);V[0]=tint(src,W0,H0,0,0);
-if(--left===0){CST.ok=1;for(const k in SPR)delete SPR[k]}}catch(e){}};im.src=SRC[t]};
-for(let t=1;t<=5;t++)load(t)})();
+CST.d[t]=[W0,H0];const V=CST.t[t]={};V[1]=base;const jobs=[[2,1,358],[3,1,285],[4,1,34],[0,0,0]];const stp=()=>{const j=jobs.shift();if(!j){if(--left===0){CST.ok=1;for(const k in SPR)delete SPR[k]}return}try{V[j[0]]=tint(src,W0,H0,j[1],j[2])}catch(e){}setTimeout(stp,0)};stp()}catch(e){if(--left===0){CST.ok=1;for(const k in SPR)delete SPR[k]}}};im.src=SRC[t]};
+const go=()=>{let t=1;const nx=()=>{if(t>5)return;load(t++);setTimeout(nx,60)};nx()};(window.requestIdleCallback?requestIdleCallback(go,{timeout:1500}):setTimeout(go,300))})();
 const GLW={1:'#8fd2ff',2:'#ff8f7a',3:'#e0a0ff',4:'#ffd27e'};
 function rgbOf(h){return parseInt(h.slice(1,3),16)+','+parseInt(h.slice(3,5),16)+','+parseInt(h.slice(5,7),16)}
 const CZ=1.35,CH=[101,118,142,166,190]; /* castle height per tier (lv1/10/30/60/100) */
@@ -1496,15 +1507,19 @@ if(lost)return '🌙 Away for '+away+'\n⚔️ '+hit.join(' & ')+' captured '+(l
 if(held)return '🌙 Away for '+away+'\n🛡️ Your castles repelled '+held+' raid'+(held>1?'s':'')+'.';
 return ''}catch(_){return ''}}
 function startGame(d){let off='';if(d){try{loadGame(d)}catch(_){gen()}if(!NET)off=offlineRaids(d.savedAt)}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');sStart=((d&&d.savedAt&&seasonT>0)?d.savedAt:Date.now())-seasonT*1000;startZoom();loadGo();if(off)toast(off,7000);}
-function loadGo(){const L=document.getElementById('ldg'),bar=L.querySelector('i'),tx=L.querySelector('b'),st=[];L.style.display='flex';
+function loadGo(){if(window.__loadingNow)return;window.__loadingNow=1;const L=document.getElementById('ldg'),bar=L.querySelector('i'),tx=L.querySelector('b'),st=[];L.style.transition='none';L.style.opacity='1';L.style.pointerEvents='auto';L.style.display='flex';
 islands.forEach((q,i)=>st.push(['Raising island '+(i+1),()=>{if(!q.cv)mkIsland(q)}]));st.push(['Charting roads',()=>{navBuild()}]);
 bridges.forEach((b,k)=>st.push(['Laying bridge '+(k+1),()=>{if(!b.cv)mkBridge(b)}]));
 st.push(['Gathering clouds',()=>islands.forEach(q=>{if(!q.mist)q.mist=buildMist(q)})]);
 st.push(['Raising castles',()=>cities.forEach(c=>{try{spr(c)}catch(_){}})]);
 st.push(['Planting trees',()=>islands.forEach(q=>{if(!q.B)return;for(let v=0;v<3;v++){for(let c=0;c<4;c++)treeSpr(q.B,'round',v,c);['pine','palm','cactus','crystal'].forEach(k=>treeSpr(q.B,k,v,0))}})]);
 for(let n=0;n<8;n++)st.push(['Carving mountains',()=>{RB.n=0;islands.forEach(q=>q.B&&drawRocks(q))}]);
-for(let n=0;n<3;n++)st.push(['Warming up',()=>{try{draw()}catch(_){}}]);
-let i=0;const nx=()=>{if(i>=st.length){L.style.display='none';run=true;last=performance.now();requestAnimationFrame(loop);return}const e=st[i++];tx.textContent=e[0]+'…';bar.style.width=(i/st.length*100)+'%';setTimeout(()=>{try{e[1]()}catch(x){console.error(x)}nx()},30)};nx()}
+for(let n=0;n<2;n++)st.push(['Warming up',()=>{try{draw()}catch(_){}}]);
+const yUI=()=>new Promise(r=>{let d=0;const f=()=>{if(!d){d=1;r()}};requestAnimationFrame(()=>setTimeout(f,0));setTimeout(f,90)});
+(async()=>{tx.textContent='Preparing castles…';await yUI();const t0=performance.now();while(typeof CST!=='undefined'&&!CST.ok&&performance.now()-t0<6000)await new Promise(r=>setTimeout(r,40));
+for(let i=0;i<st.length;i++){const e=st[i];tx.textContent=e[0]+'…';bar.style.width=((i+1)/st.length*100)+'%';await yUI();try{e[1]()}catch(x){console.error(x)}}
+bar.style.width='100%';await yUI();run=true;last=performance.now();requestAnimationFrame(loop);
+L.style.pointerEvents='none';L.style.transition='opacity .35s ease-out';L.style.opacity='0';setTimeout(()=>{L.style.display='none';L.style.transition='none';window.__loadingNow=0},380)})()}
 function startZoom(){Z=.055;fling=null;drag=null;const m=cities.find(c=>c.o===1&&c.main)||cities.find(c=>c.o===1);if(m)cam={x:m.x-W/Z/2,y:m.y-H/Z/2+40};glide=null}
 function menu(){const a=$('t'),b=$('d');nm.style.display=PROF?'none':'';nw.style.display='none';play.style.display='';mode=PROF?(SAVE?1:2):0;
 if(!PROF){a.textContent='Conquest Lords';b.textContent='Register your lord name to begin. Your kingdom is saved to your account, so you always continue where you left off.'}
@@ -1519,11 +1534,13 @@ mpShow(0);ov.classList.remove('hide');if(PROF)menu();try{loadLb()}catch(_){}};
 play.onclick=async()=>{fs();if(mode===0){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.focus();return}PROF={name:n,wins:0};try{await ud('profile').set(PROF)}catch(_){}try{DB.collection('leaderboard').doc(UID).set({name:n,wins:0}).catch(()=>{})}catch(_){}}
 pname=PROF.name;OW[1]=pname;startGame(mode===1?SAVE:null)};
 nw.onclick=()=>{fs();SAVE=null;try{localStorage.removeItem(LK())}catch(_){}try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGame(null)};
-setInterval(saveLocal,20000);setInterval(()=>{if(run&&!NET&&window.MYP>0)submitScore(window.MYP)},20000);setInterval(saveNow,60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
+setInterval(saveLocal,20000);setInterval(()=>{if(run&&!NET&&window.MYP>0)submitScore(window.MYP)},20000);setInterval(()=>{(window.requestIdleCallback||setTimeout)(saveNow)},60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 play.style.display='none';nm.style.display='none';$('d').textContent='Signing in…';
 async function loadLb(){let rows=[];try{const q=await DB.collection('leaderboard').orderBy('wins','desc').limit(20).get();LBD=q.docs.map(d=>d.data());rows=q.docs.map(d=>({name:String(d.data().name||'?'),wins:+d.data().wins||0}))}catch(_){}fakeBoard().forEach(b=>rows.push({name:b.name,wins:b.wins}));rows.sort((a,b)=>b.wins-a.wins);try{$('a_lb').textContent='🏆 Top lords\n'+rows.slice(0,10).map((d,i)=>(i+1)+'. '+d.name+' — '+d.wins).join('\n')}catch(_){}}
 (async()=>{const T1=$('t'),D1=$('d'),msg=t=>$('a_msg').textContent=t||'';
-if(typeof firebase==='undefined'||String(FIREBASE_CONFIG.apiKey).startsWith('PASTE')){T1.textContent='Setup needed';D1.textContent='Add your Firebase config at the top of this file (see SETUP.md).';return}
+if(String(FIREBASE_CONFIG.apiKey).startsWith('PASTE')){T1.textContent='Setup needed';D1.textContent='Add your Firebase config at the top of this file (see SETUP.md).';return}
+try{await window.__fbReady}catch(_){}
+if(typeof firebase==='undefined'){T1.textContent='Connection problem';D1.textContent='Could not reach the game servers. Check your connection, then tap to retry.';document.addEventListener('pointerup',()=>{if(!run&&!window.__loadingNow)location.reload()});return}
 firebase.initializeApp(FIREBASE_CONFIG);const auth=firebase.auth();DB=firebase.firestore();
 const em=()=>$('a_em').value.trim(),pw=()=>$('a_pw').value;
 const fail=e=>{const c=(e&&e.code)||'';msg(c.includes('wrong-password')||c.includes('invalid-credential')?'Wrong email or password.':c.includes('email-already')?'That email is already registered. Sign in instead.':c.includes('weak')?'Password must be at least 6 characters.':c.includes('invalid-email')?'Enter a valid email.':c.includes('popup')?'Google sign-in was cancelled.':'Something went wrong. Try again.')};
@@ -1792,5 +1809,7 @@ const sync=()=>{const inGame=ov.classList.contains('hide');document.body.classLi
 try{const o=screen.orientation;if(o){if(inGame){if(o.lock)o.lock('landscape').catch(()=>{})}else if(o.unlock)o.unlock()}}catch(_){}};
 new MutationObserver(sync).observe(ov,{attributes:true,attributeFilter:['class']});sync();
 document.addEventListener('pointerup',()=>{if(ov.classList.contains('hide'))sync()},{capture:true,passive:true});})();</script>
+<script>(function(){const go=()=>{try{const m=(document.getElementById('ldgcss')||{}).textContent.match(/url\((data:image\/[a-z]+;base64,[^)]+)\)/);if(!m)return;const im=new Image();im.decoding='async';im.src=m[1];(window.__keep=window.__keep||[]).push(im);if(im.decode)im.decode().catch(()=>{})}catch(_){}};
+(window.requestIdleCallback?requestIdleCallback(go,{timeout:2500}):setTimeout(go,1200))})();</script>
 </body>
 </html>
