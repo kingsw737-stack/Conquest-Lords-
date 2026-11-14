@@ -1498,8 +1498,12 @@ return ''}catch(_){return ''}}
 function startGame(d){let off='';if(d){try{loadGame(d)}catch(_){gen()}if(!NET)off=offlineRaids(d.savedAt)}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');sStart=((d&&d.savedAt&&seasonT>0)?d.savedAt:Date.now())-seasonT*1000;startZoom();loadGo();if(off)toast(off,7000);}
 function loadGo(){const L=document.getElementById('ldg'),bar=L.querySelector('i'),tx=L.querySelector('b'),st=[];L.style.display='flex';
 islands.forEach((q,i)=>st.push(['Raising island '+(i+1),()=>{if(!q.cv)mkIsland(q)}]));st.push(['Charting roads',()=>{navBuild()}]);
+bridges.forEach((b,k)=>st.push(['Laying bridge '+(k+1),()=>{if(!b.cv)mkBridge(b)}]));
+st.push(['Gathering clouds',()=>islands.forEach(q=>{if(!q.mist)q.mist=buildMist(q)})]);
+st.push(['Raising castles',()=>cities.forEach(c=>{try{spr(c)}catch(_){}})]);
 st.push(['Planting trees',()=>islands.forEach(q=>{if(!q.B)return;for(let v=0;v<3;v++){for(let c=0;c<4;c++)treeSpr(q.B,'round',v,c);['pine','palm','cactus','crystal'].forEach(k=>treeSpr(q.B,k,v,0))}})]);
 for(let n=0;n<8;n++)st.push(['Carving mountains',()=>{RB.n=0;islands.forEach(q=>q.B&&drawRocks(q))}]);
+for(let n=0;n<3;n++)st.push(['Warming up',()=>{try{draw()}catch(_){}}]);
 let i=0;const nx=()=>{if(i>=st.length){L.style.display='none';run=true;last=performance.now();requestAnimationFrame(loop);return}const e=st[i++];tx.textContent=e[0]+'…';bar.style.width=(i/st.length*100)+'%';setTimeout(()=>{try{e[1]()}catch(x){console.error(x)}nx()},30)};nx()}
 function startZoom(){Z=.055;fling=null;drag=null;const m=cities.find(c=>c.o===1&&c.main)||cities.find(c=>c.o===1);if(m)cam={x:m.x-W/Z/2,y:m.y-H/Z/2+40};glide=null}
 function menu(){const a=$('t'),b=$('d');nm.style.display=PROF?'none':'';nw.style.display='none';play.style.display='';mode=PROF?(SAVE?1:2):0;
