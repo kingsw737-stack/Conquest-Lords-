@@ -1352,7 +1352,7 @@ g.fillStyle='rgba(255,255,255,.12)';g.beginPath();for(let j=0;j<4;j++){const a=T
 g.textAlign='center';g.textBaseline='middle';
 
 armies.filter(visA).forEach(a=>trailLine(cities[a.f],cities[a.to],col(a.o),a.p,a.o!==1,routeOf(a.f,a.to)));if(sel>=0&&tgt>=0&&cities[sel]&&cities[sel].o===1&&cities[tgt])trailLine(cities[sel],cities[tgt],'#ffd34a',0,0,routeOf(sel,tgt));
-cityOrder().forEach(([c,i])=>{const[x,y]=P(c);if(x<-110||x>W+110||y<-70||y>H+300)return;g.save();g.translate(x,y);const q=(.2+.8*Z)*szL(c.l,c.o);g.scale(q,q);g.globalAlpha=islands[c.isl].grow;const tv=c.o===1||c.sc>T?c.t:-1,on=i===sel||i===tgt;if(c.main){curLv=visL(c.l,c.o);curRL=c.l;curMain=c.main;curTp=c.tp;curT=T;keep2(0,0,c.o,tv,on);curRL=0}else{if(on){g.strokeStyle='#fff';g.lineWidth=3;g.setLineDash([6,5]);g.beginPath();g.ellipse(0,10,43,18,0,0,7);g.stroke();g.setLineDash([])}g.drawImage(spr(c),-SOX,-SOY,SW,SH);lbl(c.l,tv,c.o)}g.restore()});
+cityOrder().forEach(([c,i])=>{const[x,y]=P(c);if(x<-110||x>W+110||y<-70||y>H+300)return;g.save();g.translate(x,y);const q=(.2+.8*Z)*szL(c.l,c.o);g.scale(q,q);g.globalAlpha=islands[c.isl].grow;const tv=c.o===1||c.sc>T?c.t:-1,on=i===sel||i===tgt;if(c.main){curLv=visL(c.l,c.o);curRL=c.l;curMain=c.main;curTp=c.tp;curT=T;keep2(0,0,c.o,tv,on);curRL=0}else{if(on){g.strokeStyle='#fff';g.lineWidth=3;g.setLineDash([6,5]);g.beginPath();g.ellipse(0,10,43,18,0,0,7);g.stroke();g.setLineDash([])}g.drawImage(sprLod(spr(c),q),-SOX,-SOY,SW,SH);lbl(c.l,tv,c.o)}g.restore()});
 {const nw=performance.now()/1000,m=Math.min(W,H);g.fillStyle=getVG(m);g.fillRect(0,0,W,H);
 for(let i=0;i<34;i++){const px=(((i*277+nw*(6+i%5*2)-cam.x*Z*.9)%(W+40))+(W+40))%(W+40)-20,py=(((i*173-nw*(5+i%4*3)-cam.y*Z*.9)%(H+40))+(H+40))%(H+40)-20,al=.25+.25*Math.sin(nw*1.4+i);g.fillStyle='rgba(255,236,180,'+al.toFixed(2)+')';g.beginPath();g.arc(px,py,1+(i%3)*.6,0,7);g.fill()}
 g.save();g.globalCompositeOperation='lighter';
@@ -1835,6 +1835,10 @@ let chk=0;setInterval(()=>{try{if(!document.hidden&&typeof run!=='undefined'&&ru
 if(document.hidden||typeof run==='undefined'||!run)return;try{const L=[].concat(islands,bridges);const o=L[chk++%L.length];if(o&&o.cv&&!alive(o)){console.warn('canvas lost, rebuilding');o.cv=null;o.pp=null;if(o.mist)o.mist=null}}catch(_){}},900);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>{try{[].concat(islands,bridges).forEach(o=>{if(o.cv&&!alive(o)){o.cv=null;o.pp=null}})}catch(_){}},300)});
 })();
+</script>
+<script>
+function sprLod(cv,q){try{const need=SW*q*dpr,m=cv.width/need;if(!(m>1.5))return cv;let f=1;while(f<8&&cv.width/(f*2)>=need*.85)f*=2;if(f===1)return cv;const L=cv.__lod||(cv.__lod={});if(L[f])return L[f];
+let src=cv,w=cv.width,h=cv.height,k=1;while(k<f){w=Math.max(1,w>>1);h=Math.max(1,h>>1);const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(src,0,0,w,h);src=c;k*=2;L[k]=c}return L[f]}catch(e){return cv}}
 </script>
 </body>
 </html>
