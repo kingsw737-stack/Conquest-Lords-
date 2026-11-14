@@ -1435,7 +1435,7 @@ function applyGhosts(){if(!ghosts||ghosts.length<3)ghosts=GDEF.map(n=>({n,w:0,g:
 const gboost=o=>.6;
 const $=i=>document.getElementById(i),ud=k=>DB.collection('users').doc(UID).collection('d').doc(k);
 const lockLand=()=>{try{const o=screen.orientation;if(o&&o.lock)o.lock('landscape').catch(()=>{})}catch(_){}};
-const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;if(f)Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
+const fs=()=>{try{const e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen;window.__fsP=null;if(f)window.__fsP=Promise.resolve(f.call(e)).catch(()=>{})}catch(_){}};
 
 let lastSub={k:'',v:-1,at:0};
 async function submitScore(score,force){score=Math.max(0,Math.floor(+score||0));const wk=curWeek();try{if(UID)localStorage.setItem('cl_best_'+wk+'_'+UID,score)}catch(_){}if(!DB||!UID)return;
@@ -1507,9 +1507,17 @@ const h=Math.floor(off/3600),m=Math.floor(off%3600/60),away=(h?h+'h ':'')+m+'m';
 if(lost)return '🌙 Away for '+away+'\n⚔️ '+hit.join(' & ')+' captured '+(lost>1?lost+' of your castles':'one of your castles')+'.\nRetake '+(lost>1?'them':'it')+'!';
 if(held)return '🌙 Away for '+away+'\n🛡️ Your castles repelled '+held+' raid'+(held>1?'s':'')+'.';
 return ''}catch(_){return ''}}
-function startGameSmooth(d){try{const L=document.getElementById('ldg');if(L){L.style.transition='none';L.style.opacity='1';L.style.pointerEvents='auto';L.style.display='flex';const b=L.querySelector('i'),t=L.querySelector('b');if(b)b.style.width='2%';if(t)t.textContent='Preparing…'}}catch(_){}
-requestAnimationFrame(()=>setTimeout(()=>startGame(d),30))}
-function startGame(d){let off='';if(d){try{loadGame(d)}catch(_){gen()}if(!NET)off=offlineRaids(d.savedAt)}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');sStart=((d&&d.savedAt&&seasonT>0)?d.savedAt:Date.now())-seasonT*1000;startZoom();loadGo();if(off)toast(off,7000);}
+function startGameSmooth(d){window.__starting=1;
+try{const L=document.getElementById('ldg');if(L){L.style.transition='none';L.style.opacity='1';L.style.pointerEvents='auto';L.style.display='flex';const b=L.querySelector('i'),t=L.querySelector('b');if(b)b.style.width='2%';if(t)t.textContent='Preparing…'}}catch(_){}
+/* Heavy world generation used to start while Android was still switching to fullscreen/landscape; the blocked page could not draw at the new size, so the screen went black. Now it waits for that switch to finish first. */
+const t0=performance.now();let last=t0,fired=0;
+const bump=()=>{last=performance.now()},ev=[[window,'resize'],[window,'orientationchange'],[document,'fullscreenchange'],[document,'webkitfullscreenchange']];
+ev.forEach(a=>a[0].addEventListener(a[1],bump));
+const fsP=window.__fsP;window.__fsP=null;let fsDone=!fsP;
+if(fsP)Promise.race([fsP,new Promise(r=>setTimeout(r,1500))]).then(()=>{fsDone=true;bump();try{const o=screen.orientation;if(o&&o.lock&&(document.fullscreenElement||document.webkitFullscreenElement))o.lock('landscape').catch(()=>{})}catch(_){}});
+const go=()=>{if(fired)return;fired=1;clearInterval(iv);ev.forEach(a=>a[0].removeEventListener(a[1],bump));requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>startGame(d),0)))};
+const iv=setInterval(()=>{const n=performance.now();if((fsDone&&n-last>=300&&n-t0>=250)||n-t0>2500)go()},50)}
+function startGame(d){window.__starting=0;let off='';if(d){try{loadGame(d)}catch(_){gen()}if(!NET)off=offlineRaids(d.savedAt)}else gen();aim=false;tab=-1;sheet.classList.remove('open');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));ov.classList.add('hide');sStart=((d&&d.savedAt&&seasonT>0)?d.savedAt:Date.now())-seasonT*1000;startZoom();loadGo();if(off)toast(off,7000);}
 function loadGo(){if(window.__loadingNow)return;window.__loadingNow=1;const L=document.getElementById('ldg'),bar=L.querySelector('i'),tx=L.querySelector('b'),st=[];L.style.transition='none';L.style.opacity='1';L.style.pointerEvents='auto';L.style.display='flex';
 islands.forEach((q,i)=>st.push(['Raising island '+(i+1),()=>{if(!q.cv)mkIsland(q)}]));st.push(['Charting roads',()=>{navBuild()}]);
 bridges.forEach((b,k)=>st.push(['Laying bridge '+(k+1),()=>{if(!b.cv)mkBridge(b)}]));
@@ -1534,7 +1542,7 @@ if(!NET){saveNow();try{SAVE=JSON.parse(snap())}catch(_){}}
 else{if(NET.role==='g'&&NET.me)NET.me.delete().catch(()=>{});if(NET.role==='h')NET.ref.update({state:'closed'}).catch(()=>{});mpStop();SAVE=null}
 run=false;closePick();aim=false;showMap=false;sel=-1;tgt=-1;sheet.classList.remove('open');tab=-1;document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
 mpShow(0);ov.classList.remove('hide');if(PROF)menu();try{loadLb()}catch(_){}};
-play.onclick=async()=>{fs();if(mode===0){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.focus();return}PROF={name:n,wins:0};try{await ud('profile').set(PROF)}catch(_){}try{DB.collection('leaderboard').doc(UID).set({name:n,wins:0}).catch(()=>{})}catch(_){}}
+play.onclick=async()=>{fs();if(mode===0){const n=(nm.value||'').trim().slice(0,14);if(!n){nm.focus();return}PROF={name:n,wins:0};try{await Promise.race([ud('profile').set(PROF),new Promise(r=>setTimeout(r,2500))])}catch(_){}try{DB.collection('leaderboard').doc(UID).set({name:n,wins:0}).catch(()=>{})}catch(_){}}
 pname=PROF.name;OW[1]=pname;startGameSmooth(mode===1?SAVE:null)};
 nw.onclick=()=>{fs();SAVE=null;try{localStorage.removeItem(LK())}catch(_){}try{ud('save').delete().catch(()=>{})}catch(_){}pname=PROF.name;OW[1]=pname;startGameSmooth(null)};
 setInterval(saveLocal,20000);setInterval(()=>{if(run&&!NET&&window.MYP>0)submitScore(window.MYP)},20000);setInterval(()=>{(window.requestIdleCallback||setTimeout)(saveNow)},60000);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
@@ -1801,7 +1809,7 @@ flags.forEach(f=>{const s=f.s,w=Math.sin(tt*3+f.x*.1);c.fillStyle='#e0402f';c.be
 birds.forEach(b=>{b.x-=b.v*dt;if(b.x<-20)b.x=W+20;const fl=Math.sin(tt*7+b.p),s=b.s;c.strokeStyle='rgba(32,14,52,.85)';c.lineWidth=Math.max(1,s*.28);c.lineCap='round';c.beginPath();c.moveTo(b.x-s,b.y-fl*s*.7);c.quadraticCurveTo(b.x-s*.4,b.y-s*.5*fl-s*.3,b.x,b.y);c.quadraticCurveTo(b.x+s*.4,b.y-s*.5*fl-s*.3,b.x+s,b.y-fl*s*.7);c.stroke()});
 c.globalCompositeOperation='lighter';parts.forEach(p=>{p.y-=p.v*dt;p.x+=Math.sin(tt*.7+p.p)*8*dt;if(p.y<LAY.yt-LAY.w*.5){p.y=LAY.yt+LAY.w*.6;p.x=Math.random()*W}const a=p.a*(.5+.5*Math.sin(tt*2+p.p)),g=c.createRadialGradient(p.x,p.y,0,p.x,p.y,p.s*3);g.addColorStop(0,'rgba(255,214,140,'+a.toFixed(2)+')');g.addColorStop(1,'rgba(255,170,90,0)');c.fillStyle=g;c.beginPath();c.arc(p.x,p.y,p.s*3,0,7);c.fill()});c.globalCompositeOperation='source-over'}
 function start(){if(!raf&&!ov.classList.contains('hide'))raf=requestAnimationFrame(frame)}
-function refresh(force){if(ov.classList.contains('hide'))return;const l=layout(),k=[innerWidth,innerHeight,Math.round(l.top/8),Math.round(l.h/8)].join();if(force||k!==builtKey)build();start()}
+function refresh(force){if(ov.classList.contains('hide')||window.__starting)return;const l=layout(),k=[innerWidth,innerHeight,Math.round(l.top/8),Math.round(l.h/8)].join();if(force||k!==builtKey)build();start()}
 new MutationObserver(()=>{clearTimeout(tmr);tmr=setTimeout(()=>refresh(0),150)}).observe(ov,{attributes:true,childList:true,subtree:true,characterData:true,attributeFilter:['class','style']});
 addEventListener('resize',()=>{clearTimeout(tmr);tmr=setTimeout(()=>refresh(1),200)});document.addEventListener('visibilitychange',start);
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>refresh(1));setTimeout(()=>refresh(1),400);
