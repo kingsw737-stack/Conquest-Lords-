@@ -609,6 +609,65 @@ const m=own.find(v=>v[0].main)||own.reduce((a,b)=>b[0].l>a[0].l?b:a),c=m[0];lord
 #brp .bdt{text-align:center;font-size:22px;font-weight:bold;margin:16px 0 10px}#brp .cols2{display:grid;grid-template-columns:1fr 1fr;gap:10px}#brp .dc{padding:10px 12px;border-radius:12px;background:#0a1630}
 #brp .rw{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:15px;font-weight:bold}#brp .rw i{flex:1;font-style:normal;color:#9cc0ff}#brp .rw.tt{font-size:17px}#brp .dc hr{border:0;border-top:2px solid #cfd8ee;margin:6px 0}
 @media(max-width:560px){#brp .ow{width:96px}#brp .tp{width:78px}#brp .bg{width:60px}#brp .nm{font-size:14px}#brp .br .ic{display:none}#brp .hc canvas{width:48px!important;height:62px!important}}
+/* ===== battle reports: beautify ===== */
+@keyframes brIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes brPulse{50%{transform:scale(1.18)}}
+@keyframes brShine{from{background-position:-200% 0}to{background-position:200% 0}}
+#brp{background:radial-gradient(120% 90% at 50% 35%,rgba(26,52,120,.5),rgba(2,4,14,.86));backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+#brp .brc{border:3px solid #e9bb55;border-radius:22px;background:radial-gradient(120% 60% at 50% -5%,#27489c 0,#13265a 38%,#0a1332 100%);box-shadow:0 0 0 2px #5a3d0c,0 0 0 5px rgba(8,14,36,.92),0 22px 60px rgba(0,0,0,.8),0 0 46px rgba(255,196,80,.2),inset 0 1px 0 rgba(255,255,255,.35);scrollbar-width:thin;scrollbar-color:#e0b24a #0a1332}
+#brp .brc::-webkit-scrollbar{width:7px}#brp .brc::-webkit-scrollbar-thumb{background:#e0b24a;border-radius:4px}
+#brp .brh{position:sticky;top:0;z-index:3;padding:11px 16px;background:linear-gradient(#2c4fa6,#142a62 60%,#0f2150);border-bottom:3px solid #e9bb55;box-shadow:0 5px 14px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+#brp .tl{font-size:24px;letter-spacing:.5px;background:linear-gradient(#fffbe3,#ffd86a 55%,#e29a18);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 2px rgba(0,0,0,.7))}
+#brp .tl::before{content:"⚔️ ";-webkit-text-fill-color:initial;filter:none}
+#brp .flt span{color:#cfe0ff;text-shadow:0 1px 2px #000}
+#brp .flt button,#brp .bk,#brp .pgn button{border:2px solid #cfe4ff;background:linear-gradient(#5b92f0,#1f4fb4 55%,#173d8c);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 3px 6px rgba(0,0,0,.5);transition:transform .08s,filter .15s}
+#brp .flt button{border-radius:12px;opacity:.5;filter:saturate(.5)}#brp .flt button.on{opacity:1;filter:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 12px rgba(120,180,255,.85)}
+#brp .flt button.x{background:linear-gradient(#ff7a6a,#d6261a 55%,#a51a12);border-color:#fff;filter:none}
+#brp button:active{transform:scale(.92)}
+#brp .rvv{position:relative;overflow:hidden;margin:10px 10px 4px;padding:10px 14px;border-radius:16px;border:2px solid #9af0b0;background:linear-gradient(#45c062,#228a40 55%,#17692f);box-shadow:0 4px 12px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.5)}
+#brp .rvv::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);background-size:200% 100%;animation:brShine 3.2s linear infinite;pointer-events:none}
+#brp .rvv>b{font-size:26px;display:inline-block;animation:brPulse 1.4s ease-in-out infinite;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+#brp .rvv>div b{font-size:19px;text-shadow:0 2px 3px rgba(0,0,0,.6)}
+#brp .rvv button{border:2px solid #cfe4ff;background:linear-gradient(#ffd86a,#e29a18 55%,#b9780c);color:#3a2403;text-shadow:0 1px 0 rgba(255,255,255,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 3px 6px rgba(0,0,0,.5)}
+#brp .rl{gap:10px;padding:10px}
+#brp .br{position:relative;overflow:hidden;padding:9px 10px 9px 14px;border-radius:16px;border:2px solid #556a9c;background:linear-gradient(100deg,rgba(60,100,190,.38),rgba(10,20,52,.94) 55%);box-shadow:0 4px 10px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.14);animation:brIn .28s ease-out both;transition:transform .12s,filter .12s}
+#brp .br:nth-child(2){animation-delay:.05s}#brp .br:nth-child(3){animation-delay:.1s}
+#brp .br:hover{transform:translateY(-1px);filter:brightness(1.1)}
+#brp .br::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:#7f8fb8}
+#brp .br.w{border-color:#4fbd68;background:linear-gradient(100deg,rgba(50,150,80,.3),rgba(10,24,40,.94) 55%)}#brp .br.w::before{background:linear-gradient(#7dee95,#2d9a48)}
+#brp .br.l{border-color:#e8673f;background:linear-gradient(100deg,rgba(190,70,40,.32),rgba(26,14,30,.94) 55%)}#brp .br.l::before{background:linear-gradient(#ff9a6a,#c9361c)}
+#brp .bg b{padding:4px 6px;border-radius:7px;font-size:11.5px;letter-spacing:.6px;background:linear-gradient(#7c8cb8,#4c5b86);border:1px solid rgba(255,255,255,.35);box-shadow:0 2px 4px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.35);text-shadow:0 1px 2px #000}
+#brp .br.w .bg b{background:linear-gradient(#58d273,#25813d)}#brp .br.l .bg b{background:linear-gradient(#ff7d5a,#b32a18)}
+#brp .cb{border-radius:11px;border:2px solid #cfe4ff;background:linear-gradient(#5b92f0,#1f4fb4 55%,#173d8c);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 3px 6px rgba(0,0,0,.5)}
+#brp .sh,#brp .sh2{clip-path:polygon(0 0,100% 0,100% 62%,50% 100%,0 62%);border:0;background:linear-gradient(#6aa0ff,#1f4aa8 60%,#15336f);text-shadow:0 1px 2px #000;padding-bottom:5px;box-sizing:border-box;min-width:30px;height:34px}
+#brp .nm{border-radius:9px;background:linear-gradient(#3b82e6,#1a52b6 55%,#143f90);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 5px rgba(0,0,0,.45);text-shadow:0 2px 3px rgba(0,0,0,.6);letter-spacing:.3px}
+#brp .lc2 button{border-radius:10px;border:2px solid #cfe4ff;background:linear-gradient(#5b92f0,#1f4fb4 55%,#173d8c);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 3px 6px rgba(0,0,0,.5)}
+#brp .tp b{font-size:17px;text-shadow:0 2px 3px rgba(0,0,0,.6)}#brp .tp small{font-weight:bold;text-shadow:0 1px 2px #000}
+#brp .ow b{text-shadow:0 2px 3px rgba(0,0,0,.6)}
+#brp .fr{border:2px solid #f0c978;border-radius:9px;background:linear-gradient(#6a4b22,#2a1b0a);box-shadow:0 3px 8px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,240,190,.35)}
+#brp .fr canvas{border-radius:5px}
+#brp .fr .sh2{background:linear-gradient(#ffe487,#d9a028);color:#2b1c05;text-shadow:none}
+#brp .brn{background:linear-gradient(#cfc7b0,#8d856f);color:#3a3322;font-size:20px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+#brp .pgn{padding:4px 0 14px}#brp .pgn b{padding:5px 16px;border-radius:14px;background:#0a1330;border:2px solid #e0b24a;font-size:17px;box-shadow:inset 0 2px 5px rgba(0,0,0,.6)}
+#brp .pgn button{width:46px;height:36px;border-radius:12px;font-size:20px}
+#brp .em{border:2px dashed #3a5190;border-radius:14px;margin:6px;color:#9fb6ec}
+/* detail */
+#brp .bs{padding:12px 18px;background:linear-gradient(#2a62b8,#173f86);border-bottom:3px solid #e9bb55;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+#brp .bl b{font-size:19px;text-shadow:0 2px 3px rgba(0,0,0,.7)}
+#brp .bm{border-radius:14px;padding:6px 18px;background:radial-gradient(#d84a2a,#8a1d12);border:2px solid #ffc98a;box-shadow:0 4px 10px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.4)}
+#brp .bm.v{background:radial-gradient(#3fbf5e,#1c6b32);border-color:#c8ffb0}
+#brp .bm b{font-size:18px;color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.7)}
+#brp .ht b{border-radius:9px;background:linear-gradient(#0e1a3d,#070d22);border:1px solid rgba(255,255,255,.18);font-size:22px;box-shadow:inset 0 2px 5px rgba(0,0,0,.6)}
+#brp .tb{border-radius:11px;background:linear-gradient(#2e6ccf,#17418f);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 3px 6px rgba(0,0,0,.4)}
+#brp .loc{background:linear-gradient(#3b82e6,#1a52b6);border:2px solid #cfe4ff;box-shadow:0 3px 7px rgba(0,0,0,.5)}
+#brp .lvs span{clip-path:polygon(0 0,100% 0,100% 62%,50% 100%,0 62%);background:linear-gradient(#6aa0ff,#1f4aa8);padding:2px 9px 7px}
+#brp .xp{border-radius:13px;background:radial-gradient(#1c3170,#0a1330);border:2px solid #4a6fc4;box-shadow:inset 0 2px 8px rgba(0,0,0,.6),0 3px 8px rgba(0,0,0,.4)}
+#brp .xp em{font-size:20px;color:#7fc0ff;text-shadow:0 0 8px rgba(100,180,255,.8)}
+#brp .bdt{font-size:23px;background:linear-gradient(#fffbe3,#ffd86a 55%,#e29a18);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 2px rgba(0,0,0,.7));position:relative}
+#brp .bdt::before,#brp .bdt::after{content:"";position:absolute;top:52%;width:22%;height:2px;background:linear-gradient(90deg,transparent,#e9bb55)}#brp .bdt::before{left:6%}#brp .bdt::after{right:6%;transform:scaleX(-1)}
+#brp .dc{border-radius:15px;background:linear-gradient(#0f1d46,#070d22);border:1px solid rgba(120,160,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 4px 10px rgba(0,0,0,.45)}
+#brp .rw{border-bottom:1px solid rgba(255,255,255,.06)}#brp .rw.tt{border:0}
+#brp .dc hr{border-top:2px solid #e9bb55;opacity:.8}
 </style><div id="ldg"><div class="ldt">Loading</div><div class="ldb"><i></i></div><b class="ldx">Loading…</b></div><div id="skp"></div><div id="toast"></div><div id="bn"><div class="bnc"><div class="bng"></div><h2>Your banner</h2><canvas id="bnv" width="150" height="196"></canvas><div class="bnt"><button data-t="pat" class="on">Pattern</button><button data-t="em">Emblem</button><button data-t="col">Colors</button></div><div id="bnb"></div><div class="bnf"><button id="bnr">🎲 Random</button><button id="bnd">Done</button></div></div></div><div id="zm"><button id="hmb" title="Go to my main castle">🏠</button><button id="skb" title="Lord skills" aria-label="Lord skills" onclick="skOpen()"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="skg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset="1" stop-color="#e29a18"/></linearGradient></defs><path d="M20 30V21M20 21L9.5 12M20 21L30.5 12M20 21V9" fill="none" stroke="#ffd34a" stroke-width="2.6" stroke-linecap="round"/><g fill="url(#skg1)" stroke="#5a3a06" stroke-width="1.5"><circle cx="20" cy="31.5" r="5.2"/><circle cx="9.5" cy="11.5" r="4.3"/><circle cx="30.5" cy="11.5" r="4.3"/><circle cx="20" cy="7.5" r="4.3"/></g><path d="M20 28.2l1.1 2.3 2.5.3-1.9 1.7.5 2.5-2.2-1.3-2.2 1.3.5-2.5-1.9-1.7 2.5-.3z" fill="#7a4a00"/></svg></button><button id="rgb" title="Regroup: send all troops to your main castle" aria-label="Regroup troops">📯</button></div><div id="sm"><button id="bkm" title="Back to main menu" aria-label="Back to main menu">☰</button><button id="lbz" title="Leaderboard" onclick="lbShow('w')">🏆</button><button id="mmb" title="Map" aria-label="Map">🗺</button></div>
 <div id="ov"><canvas id="ovbg"></canvas><canvas id="ovfx"></canvas><h1 id="t">Conquest Lords</h1><p id="d">Tap your blue castle to upgrade it. Pick a target, choose how many troops to send, then attack. Bigger armies march slower, so split them up! When 80% of the castles are taken, a new island rises from the clouds. A season lasts 5 days: the lord with the most kingdom points wins.</p><div id="ovsp"></div><div id="bnrow"><canvas id="bnp" width="64" height="84"></canvas><div class="bnrb"><button id="bne">Design banner</button><button id="bnrn" title="Random banner">🎲</button></div></div><input id="nm" maxlength="14" placeholder="Your lord name" autocomplete="off"><button id="play">Play</button><div id="sec"><button id="sndm"></button><button id="nw" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">Start over</button><button id="lbb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">🏆 Leaderboard</button><button id="mpb" style="display:none;font-size:15px;padding:10px 24px;background:none;border:2px solid currentColor;color:inherit;border-radius:12px">👥 Multiplayer</button></div><div id="au" style="display:none;flex-direction:column;gap:10px;width:min(280px,86%)"><input id="a_em" type="email" placeholder="Email" autocomplete="email"><input id="a_pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><button id="a_si">Sign in</button><button id="a_su">Create account</button><button id="a_go">Continue with Google</button><a id="a_fp" href="#">Forgot password?</a><div id="a_msg"></div></div><div id="a_lb" style="font-size:14px;line-height:1.5;white-space:pre-line"></div><button id="a_so" style="display:none">Sign out</button></div>
 <script>
@@ -950,7 +1009,7 @@ const df=Math.round((dfL(c.l)+(own?dm()-1:0))*100);
 const l1=(own?pname+'’s':OW[c.o])+' castle'+(c.main?' \ud83d\udc51':'')+(c.tp?' \u2728':'');
 const l2=own?'Troops '+fmtT(c.t)+' \u00b7 +'+(.5*grwL(c.l)*gm()).toFixed(1)+'/s':'Troops '+(vis?fmtT(c.t):'?');
 let l3='';if(aim&&!isT&&own)l3='Tap a castle to attack it';else if(isT){const[ax,ay]=WP(S),[bx2,by2]=WP(c),sp=spd(n);l3=pt?'Main castle: can’t be conquered':'Send '+fmtT(n)+' \u00b7 speed '+Math.round(sp)+' \u00b7 arrives '+(Math.hypot(ax-bx2,ay-by2)/sp).toFixed(1)+'s'}else if(!vis)l3='Scout to reveal troops';else l3='Defense +'+df+'%'+(own&&c.l<MAXL?' \u00b7 next level +'+Math.round((dfL(c.l+1)-dfL(c.l))*100)+'% def':'');
-const cw=304,cx=Math.max(cw/2+4,Math.min(W-cw/2-4,x0)),L=cx-cw/2,T0=Math.max(100,y0-130*q-100),R=L+cw;
+const cw=304,cx=W/2,L=cx-cw/2,T0=100,R=L+cw;
 g.save();
 const fitT=(t,mw,fs,w)=>{g.font=w+' '+fs+'px Georgia,serif';while(g.measureText(t).width>mw&&fs>8){fs--;g.font=w+' '+fs+'px Georgia,serif'}return t};
 cardR={x:L,y:T0,w:cw,h:72,ci:ai};
