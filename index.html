@@ -965,7 +965,7 @@ const poly=(lo,hi,k,dy=0)=>{t.beginPath();for(let i=lo;i<=hi;i++){const p=E(i,-k
 const line=(lo,hi,k,dy=0)=>{t.beginPath();for(let i=lo;i<=hi;i++){const p=E(i,k,dy);i===lo?t.moveTo(p[0],p[1]):t.lineTo(p[0],p[1])}};
 const SLAB=44,seed4=(b.seed|0)&3;
 /* 1. soft shadow on the clouds below */
-runs.forEach(([lo,hi])=>{for(let i=lo;i<=hi;i+=3){const s=S[i];softC(t,s.x+26,s.y+SLAB+150,s.hw*1.35,'15,40,100',.12)}});
+runs.forEach(([lo,hi])=>{for(let i=lo;i<=hi;i+=3){const s=S[i];{const sx=s.x+26,sy=s.y+SLAB+150,sr=Math.min(s.hw*1.35,sx-b.ox,b.ox+b.w-sx,sy-b.oy,b.oy+b.h-sy);if(sr>8)softC(t,sx,sy,sr,'30,70,150',.1)}}});
 /* 2. stone piers dropping away into the mist */
 const piers=[];runs.forEach(([lo,hi])=>{for(let i=lo+14;i<=hi-10;i+=17){const s=S[i],sg=s.ny>=0?1:-1,e=E(i,sg*.78,SLAB-8);piers.push([e[0],e[1],i])}});
 piers.forEach(([x,y,i])=>{const w1=rnd(26,32),w2=rnd(15,19),len=rnd(150,190);let gp=t.createLinearGradient(0,y,0,y+len);gp.addColorStop(0,'rgb(142,96,58)');gp.addColorStop(.55,'rgba(120,78,46,.8)');gp.addColorStop(1,'rgba(120,78,46,0)');t.fillStyle=gp;t.beginPath();t.moveTo(x-w1,y);t.lineTo(x+w1,y);t.lineTo(x+w2,y+len);t.lineTo(x-w2,y+len);t.closePath();t.fill();
@@ -1080,7 +1080,7 @@ const inOther=(qx,qy,i,m)=>{for(let j=0;j<C.length;j++){if(j===i)continue;const 
 const uni=(dy,dr)=>{t.beginPath();C.forEach(p=>{t.moveTo(p.x+p.r+dr,p.y+dy);t.arc(p.x,p.y+dy,p.r+dr,0,7)})};
 const BP=[];C.forEach((p,i)=>{for(let k=0;k<26;k++){const a=k/26*6.2832+R2()*.12,qx=p.x+Math.cos(a)*p.r,qy=p.y+Math.sin(a)*p.r;if(!inOther(qx,qy,i,3))BP.push([qx,qy,a])}});
 /* soft cast shadow on the clouds */
-C.forEach((p,i)=>{if(i%3===0)softC(t,p.x+30,p.y+DEPTH+95,p.r*1.7,'60,22,0',.16)});
+C.forEach((p,i)=>{if(i%3===0){const sx=p.x+30,sy=p.y+DEPTH+95,sr=Math.min(p.r*1.7,sx-ox,ox+w-sx,sy-oy,oy+h-sy);if(sr>8)softC(t,sx,sy,sr,'30,70,150',.11)}});
 /* hanging rock spires under the cliff */
 BP.forEach(([x,y,a])=>{if(Math.sin(a)<.55||R2()>.2)return;const w2=rn2(10,26),len=rn2(34,72),yy=y+DEPTH-16;t.fillStyle=mixH(B.sp[0],B.sp[1],R2());t.beginPath();t.moveTo(x-w2,yy);t.quadraticCurveTo(x-w2*.55,yy+len*.55,x+rn2(-5,5),yy+len);t.quadraticCurveTo(x+w2*.55,yy+len*.55,x+w2,yy);t.closePath();t.fill()});
 /* layered sandstone cliff */
