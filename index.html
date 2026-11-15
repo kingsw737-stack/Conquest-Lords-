@@ -2153,7 +2153,7 @@ function draw(){const p=$('bgp');if(!p||!p.classList.contains('on'))return;
 const e=p.querySelector('.eq');e.innerHTML='';for(let s=0;s<9;s++){const i=st.items.find(x=>x.id===st.eq[st.act][s]);let n;if(i)n=cell(i,0);else{n=document.createElement('div');n.className='sl';n.innerHTML=img(st.act,s)}n.dataset.s=s;e.appendChild(n)}
 p.querySelector('.sts').innerHTML=Object.keys(EB).length?Object.entries(EB).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<div>'+(()=>{try{return skIcon(k)}catch(_){return''}})()+'<b>'+SKN[k]+'</b><span>'+gv(k,v)+'</span></div>').join(''):'<div class="emp" style="flex:1">Equip gear to add ranks to your skills</div>';
 const g=p.querySelector('.gr'),eqd=new Set(Object.values(st.eq[st.act])),l=st.items.slice().sort((a,b)=>(b.c===st.act)-(a.c===st.act)||b.r-a.r||pw(b)-pw(a));g.innerHTML='';l.forEach(i=>g.appendChild(cell(i,eqd.has(i.id))));
-for(let k=Math.max(0,36-l.length);k>0;k--){const d=document.createElement('div');d.className='it e';g.appendChild(d)}
+for(let k=Math.max(0,Math.ceil(Math.max(l.length+1,15)/5)*5-l.length);k>0;k--){const d=document.createElement('div');d.className='it e';g.appendChild(d)}
 if(!st.items.length){const m=document.createElement('div');m.className='emp';m.textContent='Bag empty — buy chests in the Market, then open them in Storage';g.appendChild(m)}
 p.querySelectorAll('.fl').forEach((x,n)=>x.classList.toggle('on',n===st.act));
 p.querySelector('.cap b').textContent=st.items.length+'/'+CAP;p.querySelector('.gm').innerHTML=di+' <b>'+st.dust+'</b>';p.querySelector('h2').innerHTML=ic(st.act)+' '+CT[st.act]}
@@ -2294,9 +2294,9 @@ save();sdraw();vdraw();vbadge();toast('📦 '+cnm(t,z)+' added to Storage ('+st.
 function vbadge(){const b=$('invb');if(!b)return;const n=vlist().reduce((a,x)=>a+x.n,0),d=b.querySelector('.bd');d.textContent=vfmt(n);d.style.display=n?'flex':'none'}
 function vdraw(){const p=$('invp');if(!p||!p.classList.contains('on'))return;
 const l=vlist();if(!l.some(x=>x.k===vSel))vSel=l[0]?l[0].k:null;
-p.querySelector('.ig').innerHTML=l.map(x=>'<button class=\"ic2'+(x.k===vSel?' on':'')+'\" data-k=\"'+x.k+'\" style=\"--cc:'+CH[x.t].col+'\" aria-label=\"'+cnm(x.t,x.z)+'\"><img src=\"'+CHA[x.z][x.t]+'\" alt=\"\"><b>'+vfmt(x.n)+'</b></button>').join('')+'<div class=\"ic2 em\"></div>'.repeat(Math.max(0,36-l.length));
+p.querySelector('.ig').innerHTML=l.map(x=>'<button class=\"ic2'+(x.k===vSel?' on':'')+'\" data-k=\"'+x.k+'\" style=\"--cc:'+CH[x.t].col+'\" aria-label=\"'+cnm(x.t,x.z)+'\"><img src=\"'+CHA[x.z][x.t]+'\" alt=\"\"><b>'+vfmt(x.n)+'</b></button>').join('')+'<div class=\"ic2 em\"></div>'.repeat(Math.max(0,Math.ceil(Math.max(l.length+1,15)/5)*5-l.length));
 const s=l.find(x=>x.k===vSel),d=p.querySelector('.id');
-if(!s){d.innerHTML='<h3>Storage</h3><div class=\"ibg\"><div class=\"ifr ghost\"><img src=\"'+SGI+'\" alt=\"\"></div></div><div class=\"itx\">Everything you buy in the Market is kept here.</div>';return}
+if(!s){d.innerHTML='<h3>Storage</h3><div class=\"ibg\"><div class=\"ifr ghost\"><img src=\"'+SGI+'\" alt=\"\"></div></div>';return}
 const T=CH[s.t],Z=CSZ[s.z];
 d.innerHTML='<h3>'+cnm(s.t,s.z)+'</h3><div class=\"ibg\"><div class=\"ifr\" style=\"--cc:'+T.col+'\"><img src=\"'+CHA[s.z][s.t]+'\" alt=\"\"><b>x'+s.n+'</b></div></div><div class=\"itx\"><div class=\"chip\">'+Z.k+' random gear drops</div><br>'+T.d+(s.z?'<span>★ Legendary guaranteed in every '+PITY+'th Grand chest without one</span>':'')+'</div><button class=\"igo\">Open</button>';
 d.querySelector('.igo').onclick=()=>openChest(s.t,s.z)}
@@ -2306,7 +2306,7 @@ const s=document.createElement('style');s.id='invcss';s.textContent=`
 #invb{position:fixed!important;bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;right:8px!important;left:auto!important;top:auto!important;z-index:5;width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;border:2px solid #e0b24a;border-radius:13px;background:linear-gradient(#35569f,#0f1c3d);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 3px 6px rgba(0,0,0,.45);transition:transform .08s}
 #invb:active{transform:scale(.92)}#invb img{width:86%;height:86%;object-fit:contain;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
 #invb .bd{position:absolute;right:-7px;top:-8px;min-width:21px;height:21px;padding:0 5px;box-sizing:border-box;border-radius:11px;display:none;align-items:center;justify-content:center;font:bold 13px/1 Arial,sans-serif;color:#fff;background:linear-gradient(#ff6a5e,#d6261a);border:2px solid #fff;pointer-events:none}
-#invp{display:none;position:fixed;inset:0;z-index:24;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,rgba(20,40,90,.55),rgba(3,6,20,.82));backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);color:#fff;font-family:Georgia,'Times New Roman',serif;padding:calc(env(safe-area-inset-top,0px) + 6px) 8px calc(env(safe-area-inset-bottom,0px) + 6px)}
+#invp{display:none;position:fixed;inset:0;z-index:24;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,rgba(20,40,90,.55),rgba(3,6,20,.82));color:#fff;font-family:Georgia,'Times New Roman',serif;padding:calc(env(safe-area-inset-top,0px) + 6px) 8px calc(env(safe-area-inset-bottom,0px) + 6px)}
 #invp.on{display:flex;animation:ivf .22s ease-out}#invp *{box-sizing:border-box}
 @keyframes ivf{from{opacity:0}to{opacity:1}}@keyframes ivp{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
 @keyframes ivb{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes ivs{0%{left:-60%}60%,100%{left:130%}}
@@ -2318,7 +2318,7 @@ const s=document.createElement('style');s.id='invcss';s.textContent=`
 #invp .ix{width:38px;height:38px;border-radius:11px;border:2px solid #e0b24a;background:linear-gradient(#4a72c4,#14244f);color:#fff;font-size:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 3px 6px rgba(0,0,0,.5);transition:transform .1s,filter .15s}
 #invp .ix:hover{filter:brightness(1.2)}#invp .ix:active{transform:scale(.9)}
 #invp .ib{flex:1;min-height:0;display:flex;gap:12px;padding:12px}
-#invp .ig{flex:1.6;min-width:0;overflow-y:auto;border-radius:16px;background:radial-gradient(ellipse at 50% 0,#0e1c3c,#050b1c 70%);border:2px solid #1b3566;box-shadow:inset 0 4px 18px rgba(0,0,0,.7);padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px;align-content:start;grid-auto-rows:max-content;justify-content:stretch;scrollbar-width:thin;scrollbar-color:#3a62b0 transparent}
+#invp .ig{flex:1.6;min-width:0;overflow-y:auto;border-radius:16px;background:radial-gradient(ellipse at 50% 0,#0e1c3c,#050b1c 70%);border:2px solid #1b3566;box-shadow:inset 0 4px 18px rgba(0,0,0,.7);padding:12px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-content:start;grid-auto-rows:max-content;justify-content:stretch;scrollbar-width:thin;scrollbar-color:#3a62b0 transparent}
 #invp .ic2{--cc:#4db0ff;position:relative;aspect-ratio:1;align-self:start;width:100%;height:auto;border-radius:13px;border:3px solid color-mix(in srgb,var(--cc) 60%,#1a2c55);background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--cc) 28%,#1b3262),#09111f 82%);padding:0;overflow:hidden;box-shadow:inset 0 0 14px rgba(0,0,0,.55),0 3px 6px rgba(0,0,0,.45);transition:transform .15s,box-shadow .15s}
 #invp .ic2:hover{transform:translateY(-2px) scale(1.04)}#invp .ic2:active{transform:scale(.95)}
 #invp .ic2.on{border-color:#fff3b0;box-shadow:0 0 0 2px var(--cc),0 0 18px var(--cc),inset 0 0 14px rgba(0,0,0,.4)}
