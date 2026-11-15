@@ -1006,8 +1006,8 @@ let n=0,pt=false;if(isT){n=pickN>0?Math.min(pickN,Math.floor(S.t)):Math.floor(S.
 if(isT){if(own){B('pick',-64,-44,'#2f8f46','\ud83d\udc46','',0);B('go',64,50,'#e0b24a','\ud83d\udee1\ufe0f','Send',n<1)}else{B('scout',64,-44,'#2f6fcf','\ud83d\udd0d','5\ud83e\ude99',gold<5);B('go',64,50,'#e0b24a','IMG:sw','Attack',n<1||pt);if(c.o>=2)B('lord',-64,-44,'#8a5cd0','\ud83d\udc64','Lord',0)}}
 else if(own){const l=c.l,k=upCost(l),can=l<MAXL&&gold>=k,pu=.5+.5*Math.sin(performance.now()/260);if(can){const ux=x0-64*mS,uy=y0+50*mS,gr2=(50+10*pu)*mS,rg=g.createRadialGradient(ux,uy,12*mS,ux,uy,gr2);g.save();g.globalAlpha=Math.min(1,mS)*(.55+.4*pu);rg.addColorStop(0,'rgba(130,255,150,.85)');rg.addColorStop(1,'rgba(130,255,150,0)');g.fillStyle=rg;g.beginPath();g.arc(ux,uy,gr2,0,7);g.fill();g.restore()}const ur=can?33+2.5*pu:31;hexb(x0-64*mS,y0+50*mS,ur,can?'#3ccf5a':'#2f8f46','IMG:up',l>=MAXL?'MAX':k+'\ud83e\ude99',l>=MAXL||gold<k);mbtn.push({x:x0-64*mS,y:y0+50*mS,r:40,id:'upg',dis:l>=MAXL||gold<k});(c.main?0:B('main',-64,-44,'#8a5cd0','\ud83d\udc51',T<mainReady?Math.ceil(mainReady-T)+'s':fmtN(mainCost)+'\ud83e\ude99',gold<mainCost||T<mainReady)),B('march',64,50,'#e0b24a','IMG:sw',aim?'Pick target':'Attack',false)}
 else{B('scout',64,-44,'#2f6fcf','\ud83d\udd0d','5\ud83e\ude99',gold<5);if(c.o>=2)B('lord',-64,-44,'#8a5cd0','\ud83d\udc64','Lord',0)}
-B('info',own&&!isT?64:-64,own&&!isT?-44:50,'#17274d','IMG:info','',0);B('close',0,86,'#17274d','\u2715','',0);
-if(!infoOpen)return;
+if(own&&!isT)B('info',64,-44,'#17274d','IMG:info','',0);B('close',0,86,'#17274d','\u2715','',0);
+if(infoOpen&&own&&!isT)prodChip(c,x0,y0+142*mS);
 const df=Math.round((dfL(c.l)+(own?dm()-1:0))*100);
 const l1=(own?pname+'’s':OW[c.o])+' castle'+(c.main?' \ud83d\udc51':'')+(c.tp?' \u2728':'');
 const l2=own?'Troops '+fmtT(c.t)+' \u00b7 +'+(.5*grwL(c.l)*gm()).toFixed(1)+'/s':'Troops '+(vis?fmtT(c.t):'?');
@@ -1048,7 +1048,7 @@ g.fillStyle='#b9cdfa';g.fillText(fitT(l2,mw,12,''),tx2,T0+39);
 g.font='bold 11.5px Georgia,serif';fitT(l3,mw-16,11.5,'bold');const pw=Math.min(mw,g.measureText(l3).width+16);
 g.fillStyle='rgba(6,12,34,.72)';g.beginPath();g.roundRect(tx2-2,T0+47,pw,18,9);g.fill();g.lineWidth=1;g.strokeStyle='rgba(255,211,74,.45)';g.stroke();
 g.fillStyle='#ffd34a';g.textBaseline='middle';g.fillText(l3,tx2+6,T0+56.5);
-g.restore();if(own)prodChip(c,x0,T0+72+20)}
+g.restore()}
 function panel(){const el=document.getElementById('cp'),S=sel>=0?cities[sel]:null;let h='';
 if(S&&S.o===1&&tgt<0){const l=S.l,k=upCost(l),df=Math.round((dfL(l)+dm()-1)*100);
 h=`<b>${S.main?'👑 Main castle':'Castle'} · level ${l}${S.tp?' · ✨ Temple':''}</b><br>Troops ${fmtT(S.t)} · +${(.5*grwL(l)*gm()).toFixed(1)}/s · Gold +${(.5+.5*l).toFixed(1)}/s · Defense +${df}%`+(l>=MAXL?`<div class='bt'><button disabled>Max level</button></div>`:`<br>Next level: +${Math.round((grwL(l+1)/grwL(l)-1)*100)}% troop growth, +${Math.round((dfL(l+1)-dfL(l))*100)}% defense, +0.5 gold/s<div class='bt'><button ${gold>=k?'':'disabled'} onpointerdown='upg()'>Upgrade · ${k} gold</button></div>`)}
