@@ -2189,7 +2189,7 @@ p.querySelectorAll('.sec').forEach((x,n)=>x.classList.toggle('on',n===shS));
 p.querySelector('.odd').style.display=shS?'none':'';
 if(shS){p._h=null;p.querySelector('.cds').innerHTML=SHI[shS].map(I=>'<div class="cd cs" style="--cc:'+I.col+'"><div class="ca"><div class="ei">'+I.i+'</div></div><div class="cn">'+I.n+'</div><div class="cm">'+I.d+'</div><div class="pt n"><span>Coming soon</span></div><button class="ob" disabled>Coming soon</button></div>').join('');return}
 const pi=st.pity|0,cdsEl=p.querySelector('.cds');
-const h=[0,1,2].map(t=>[0,1].map(z=>{const T=CH[t],Z=CSZ[z],nm=cnm(t,z);return '<div class="cd z'+z+'" style="--cc:'+T.col+'"><div class="ca"><img src="'+CHA[z][t]+'" alt="'+nm+'"></div><div class="cn">'+nm+'</div><div class="cm">'+Z.k+' drops · '+T.d+'</div>'
+const h=[0,1].map(z=>[0,1,2].map(t=>{const T=CH[t],Z=CSZ[z],nm=cnm(t,z);return '<div class="cd z'+z+'" style="--cc:'+T.col+'"><div class="ca"><img src="'+CHA[z][t]+'" alt="'+nm+'"></div><div class="cn">'+nm+'</div><div class="cm">'+Z.k+' drops · '+T.d+'</div>'
 +(z?'<div class="pt" title="A Legendary is guaranteed in every 10th Grand chest without one"><i style="width:'+pi*10+'%"></i><span>Legendary guarantee '+pi+'/'+PITY+(pi>=PITY-1?' · NEXT CHEST!':'')+'</span></div>':'<div class="pt n"><span>Gear from all 4 collections</span></div>')
 +'<button class="ob" data-t="'+t+'" data-z="'+z+'"'+(gnow()<CHP?' disabled':'')+'>Buy · '+CHP+' 🪙</button></div>'}).join('')).join('');
 if(p._h!==h){p._h=h;const sl=cdsEl.scrollLeft;cdsEl.innerHTML=h;cdsEl.scrollLeft=sl;cdsEl.querySelectorAll('.ob').forEach(x=>x.onclick=()=>buyAsk(+x.dataset.t,+x.dataset.z))}}
@@ -2269,6 +2269,11 @@ const s=document.createElement('style');s.id='stcss';s.textContent=`
 #stc .cb{width:min(92%,380px);max-height:96%;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px;border-radius:18px;border:2px solid var(--cc);background:radial-gradient(ellipse at 50% 20%,color-mix(in srgb,var(--cc) 30%,#1d3677),#0a1232 80%);box-shadow:0 0 30px color-mix(in srgb,var(--cc) 50%,transparent),0 10px 30px rgba(0,0,0,.6)}
 #stc .cb img{height:min(30vh,150px);object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.6))}#stc .cn{font-weight:700;font-size:19px;text-align:center}#stc .cm{font-size:12.5px;color:#9fb2e8;text-align:center}#stc .cq{font-size:17px;margin-top:4px}#stc .cq b{color:#ffd34a}
 #stc .cr{display:flex;gap:10px;width:100%;margin-top:6px}#stc .cr button{flex:1;padding:10px;border-radius:12px;border:2px solid #e0b24a;font:700 16px Georgia,serif;color:#fff;text-shadow:0 1px 2px #000}#stc .cx{background:linear-gradient(#35569f,#0f1c3d);border-color:#6f8fd8!important}#stc .cy{background:linear-gradient(#e0a93a,#9a5f10)}#stc .cr button:active{transform:scale(.96)}
+#stp .cds:not(:has(.cs)){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:8px;overflow:hidden;max-width:900px;padding:2px 0}
+#stp .cds:not(:has(.cs)) .cd{flex:none;min-height:0;min-width:0;padding:4px 6px 6px;gap:2px;overflow:hidden}
+#stp .cds:not(:has(.cs)) .ca{min-height:0}#stp .cds:not(:has(.cs)) .cn{font-size:clamp(11px,3vh,16px);line-height:1.15}#stp .cds:not(:has(.cs)) .cm{font-size:clamp(9px,2.3vh,11.5px);line-height:1.1}
+#stp .cds:not(:has(.cs)) .pt{height:clamp(12px,3vh,16px)}#stp .cds:not(:has(.cs)) .pt span{font-size:clamp(8.5px,2.2vh,10.5px);line-height:clamp(10px,2.6vh,14px)}
+#stp .cds:not(:has(.cs)) .ob{padding:clamp(3px,1vh,8px) 8px;font-size:clamp(12px,3vh,15px)}
 `;document.head.appendChild(s);
 const b=document.createElement('button');b.id='stb';b.title='Market';b.setAttribute('aria-label','Market');b.innerHTML='<img class="ui" src="'+UCH+'" alt="">';b.onclick=sopen;document.body.appendChild(b);
 const p=document.createElement('div');p.id='stp';
