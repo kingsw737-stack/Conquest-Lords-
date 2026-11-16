@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#1a1038">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Arcane Warfare">
 <title>Arcane Warfare</title>
 <style>
 :root{--ui:#1a1038e8;--gold:#ffd86b}
@@ -170,6 +174,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <button class="big" id="p1">Play vs AI</button>
   <button class="big on" id="p3">Play Online</button>
   <button class="big alt" id="p2">Local 2-Player</button>
+  <p id="iosHint" class="hide" style="font-size:12px;opacity:.75;max-width:320px;margin:4px 0 0">iPhone tip: Safari can't go fullscreen. Tap Share &rarr; <b>Add to Home Screen</b>, then open the game from the icon for true fullscreen. Turn your phone sideways to play.</p>
   <div id="snd"><button id="mu" aria-label="Sound effects">🔊 Sound</button><button id="mm" aria-label="Music">🎵 Music</button></div>
   <small>Move: &larr; &rarr; / A D &middot; Jump: W (hold &larr; &rarr; for a side jump) &middot; Enter / Backspace: jump forward / back &middot; Aim: &uarr; &darr; or drag on the battlefield &middot; Power: Q E &middot; Fire: Space (hold to fly with the Jetpack) &middot; Spells: 1 2 3 4 &middot; Zoom: wheel<br>On phones use the on-screen buttons and sliders.</small>
 </div>
@@ -226,8 +231,8 @@ const SPELLS={
   jet:{name:'Jetpack',icon:'\u{1F680}',jet:1,mana:8,col:'#7fe7ff',note:'burns mana'}
 };
 
-function resize(){dpr=Math.min(devicePixelRatio||1,2);cw=innerWidth;ch=innerHeight;cv.width=cw*dpr;cv.height=ch*dpr}
-addEventListener('resize',resize);resize();
+function resize(){dpr=Math.min(devicePixelRatio||1,2);const v=window.visualViewport;cw=Math.round(v?v.width:innerWidth);ch=Math.round(v?v.height:innerHeight);cv.width=cw*dpr;cv.height=ch*dpr}
+addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,250));if(window.visualViewport)visualViewport.addEventListener('resize',resize);resize();
 
 /* ---------- Terrain ---------- */
 const solid=(x,y)=>{x=x|0;y=y|0;return x>=0&&x<W&&y>=0&&y<H&&mask[y*W+x]===1};
@@ -715,6 +720,8 @@ function zoom(f){cam.auto=false;cam.z*=f}
 cv.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.001))},{passive:false});
 /* Android: entering a game goes fullscreen and locks landscape (both need the tap on a Play button) */
 const isAndroid=/Android/i.test(navigator.userAgent);
+const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+if(isIOS&&!navigator.standalone&&!matchMedia('(display-mode: standalone)').matches)$('iosHint').classList.remove('hide');
 function enterGameScreen(){
   if(!isAndroid)return;
   const el=document.documentElement,rq=el.requestFullscreen||el.webkitRequestFullscreen;
