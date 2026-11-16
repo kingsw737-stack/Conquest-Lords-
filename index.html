@@ -26,22 +26,38 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 #wb:before{content:"";position:absolute;left:50%;top:-2px;width:2px;height:10px;background:#fff8}
 #wf{position:absolute;top:0;height:100%;background:#7fd8ff;border-radius:3px}
 #side{position:fixed;right:8px;top:calc(env(safe-area-inset-top) + 96px);display:flex;flex-direction:column;gap:6px}
-#side button,.b{background:var(--ui);border:1px solid #ffffff40;border-radius:12px;width:40px;height:40px;font-size:18px;cursor:pointer}
-#ctrl{position:fixed;left:0;right:0;bottom:0;padding:6px 8px calc(env(safe-area-inset-bottom) + 8px);display:flex;gap:8px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;pointer-events:none}
+.gb,#side button,#snd button{background:linear-gradient(#4f4096,#2a1f62 55%,#1c1445);border:2px solid #0b0620;border-radius:14px;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;box-shadow:inset 0 2px 0 #ffffff45,inset 0 -3px 0 #0006,0 0 0 1px #ffffff2a,0 4px 8px #0008;-webkit-touch-callout:none}
+.gb.dn,.gb:active,#side button:active,#snd button:active{transform:translateY(2px);background:linear-gradient(#ffc45a,#d9692a);box-shadow:inset 0 2px 0 #fff7,0 0 0 1px #ffd86b,0 2px 4px #0008}
+#side button,#snd button{width:42px;height:42px;font-size:18px}
+.ic{width:22px;height:22px;fill:#fff;filter:drop-shadow(0 1px 0 #0008);pointer-events:none}
+#ctrl{position:fixed;left:0;right:0;bottom:0;padding:6px 10px calc(env(safe-area-inset-bottom) + 8px);display:flex;gap:8px;align-items:flex-end;justify-content:space-between;pointer-events:none}
 #ctrl>*{pointer-events:auto}
 #ctrl.off>*{pointer-events:none;opacity:.35}
-.pad{display:flex;gap:6px;order:1}
-.pad .b{width:52px;height:52px;font-size:22px;touch-action:none}
-.panel{background:var(--ui);border:1px solid #ffffff30;border-radius:14px;padding:8px 10px;order:0;width:100%}
-#sp{display:flex;gap:6px;margin-bottom:4px}
-#sp button{flex:1;background:#ffffff14;border:1px solid #ffffff30;border-radius:10px;padding:5px 4px;font-size:13px;cursor:pointer}
-#sp button.sel{border-color:var(--gold);background:#ffd86b33}
+.gb{touch-action:none;user-select:none}
+#mv{display:flex;flex-direction:column;gap:6px;align-items:center}
+.r3,.r2{display:flex;gap:6px}
+.r3 .gb{width:48px;height:44px}.r2 .gb{width:75px;height:54px}.r2 .ic{width:28px;height:28px}
+#aim{display:flex;gap:8px;align-items:flex-end}
+.grp{display:flex;flex-direction:column;gap:5px;align-items:center}
+.grp small{font-size:9px;font-weight:800;letter-spacing:1.5px;color:#cdbdff;text-shadow:0 1px 2px #000}
+.grp .gb{width:46px;height:42px;font-size:24px;font-weight:800;line-height:1}
+#bf{width:86px;height:86px;border-radius:50%;border:3px solid #ffffffaa;background:radial-gradient(circle at 50% 28%,#ffe08a,#ff8a2a 42%,#d6204f);box-shadow:inset 0 3px 0 #fff7,inset 0 -7px 0 #0004,0 0 20px #ff7a2a99,0 6px 10px #000a;color:#fff;font-weight:900;font-size:20px;letter-spacing:1px;text-shadow:0 2px 0 #0008;cursor:pointer;touch-action:manipulation}
+#bf:active{transform:scale(.93);filter:brightness(1.15)}
+#wpn{display:flex;align-items:center;gap:8px;padding:6px 9px;margin:0 auto;min-width:0;background:linear-gradient(#2a1f62f0,#150d38f0);border:2px solid #0b0620;border-radius:18px;box-shadow:inset 0 2px 0 #ffffff30,0 0 0 1px #ffd86b55,0 6px 14px #000a}
+#sp{display:flex;gap:6px}
+#sp button{position:relative;width:44px;height:44px;border-radius:13px;font-size:24px;line-height:1;cursor:pointer;background:linear-gradient(#3d3180,#1f1650);border:2px solid #0b0620;box-shadow:inset 0 2px 0 #ffffff35,0 0 0 1px #ffffff25;display:grid;place-items:center;padding:0}
+#sp button.sel{border-color:var(--gold);box-shadow:inset 0 2px 0 #fff5,0 0 0 1px var(--gold),0 0 12px #ffd86b99;background:linear-gradient(#6a4fc0,#33227a)}
 #sp button:disabled{opacity:.35}
-.panel label{display:flex;align-items:center;gap:8px;font-size:12px}
-.panel label span{width:44px;flex:none}
-.panel input{flex:1;min-width:0;accent-color:#ffb84a;height:26px}
-#bf{order:2;width:92px;height:52px;border-radius:26px;font-weight:800;letter-spacing:1px;font-size:17px;background:linear-gradient(#ff9a3c,#e0408a);border:2px solid #fff6;cursor:pointer}
-@media(min-width:720px){.panel{order:1;width:auto;flex:1;max-width:460px}.pad{order:0}#bf{order:2}}
+#sp em{position:absolute;right:-4px;bottom:-5px;font:800 10px/1 system-ui;font-style:normal;background:#3a63e8;border:1.5px solid #0b0620;border-radius:8px;padding:2px 4px}
+.sep{width:1px;align-self:stretch;background:#ffffff25}
+#dial{display:flex;align-items:center;gap:4px}
+#dial svg{display:block}.arc{fill:none;stroke:#ffffff55;stroke-width:3;stroke-linecap:round}#needle{stroke:var(--gold);stroke-width:3;stroke-linecap:round}
+#dial b,#pw b{font-size:15px;font-weight:800;min-width:34px;text-shadow:0 1px 2px #000}
+#pw{display:flex;align-items:center;gap:6px}
+#pbar{position:relative;width:84px;height:20px;border-radius:10px;background:#0009;border:2px solid #0b0620;overflow:hidden;touch-action:none;cursor:pointer;box-shadow:inset 0 2px 4px #000a}
+#pfill{position:absolute;inset:0;background:linear-gradient(90deg,#4de06a,#ffd23f 60%,#ff4a3a);pointer-events:none}
+#pbar:after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 2px),#0009 calc(10% - 2px) 10%)}
+@media(max-width:720px){#wpn{position:absolute;left:50%;transform:translateX(-50%);margin:0;bottom:calc(env(safe-area-inset-bottom) + 126px)}}
 .ov{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;background:radial-gradient(circle at 50% 35%,#3b2490cc,#0b0620f0)}
 .ov.hide,.hide{display:none!important}
 .ov h1{margin:0 0 12px;font-size:clamp(38px,10vw,78px);line-height:1;letter-spacing:3px;background:linear-gradient(#fff3a8,#ff9a3c 55%,#e0408a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 10px #0008)}
@@ -56,7 +72,6 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .row .big{margin:0;width:auto;padding:12px 18px;font-size:16px}
 #ost{min-height:44px;margin:10px 0 0;color:#ffd86b;font-weight:600}
 #snd{position:fixed;left:8px;top:calc(env(safe-area-inset-top) + 96px);z-index:12;display:flex;flex-direction:column;gap:6px}
-#snd button{background:var(--ui);border:1px solid #ffffff40;border-radius:12px;width:40px;height:40px;font-size:18px;cursor:pointer}
 #net{position:fixed;top:calc(env(safe-area-inset-top) + 70px);left:50%;transform:translateX(-50%);z-index:20;background:#b3261eee;border-radius:10px;padding:6px 14px;font-size:13px;font-weight:600;pointer-events:none}
 </style>
 </head>
@@ -70,14 +85,30 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 </div>
 <div id="side"><button id="zi" aria-label="Zoom in">+</button><button id="zo" aria-label="Zoom out">&minus;</button><button id="fs" aria-label="Fullscreen">&#9974;</button></div>
 
+<svg width="0" height="0" style="position:absolute"><symbol id="arw" viewBox="0 0 24 24"><path d="M12 3l9 10h-5.5v8h-7v-8H3z"/></symbol></svg>
 <div id="ctrl" class="off">
-  <div class="pad"><button class="b" id="bl">&#9664;</button><button class="b" id="br">&#9654;</button><button class="b" id="bj">&#10514;</button></div>
-  <div class="panel">
-    <div id="sp"></div>
-    <label>Angle <span id="av"></span><input type="range" id="ar" min="0" max="180"></label>
-    <label>Power <span id="pv"></span><input type="range" id="pr" min="10" max="100"></label>
+  <div id="mv">
+    <div class="r3">
+      <button class="gb" id="jl" aria-label="Jump left"><svg class="ic" style="transform:rotate(-45deg)"><use href="#arw"/></svg></button>
+      <button class="gb" id="jh" aria-label="Hop"><svg class="ic"><use href="#arw"/></svg></button>
+      <button class="gb" id="jr" aria-label="Jump right"><svg class="ic" style="transform:rotate(45deg)"><use href="#arw"/></svg></button>
+    </div>
+    <div class="r2">
+      <button class="gb" id="bl" aria-label="Walk left"><svg class="ic" style="transform:rotate(-90deg)"><use href="#arw"/></svg></button>
+      <button class="gb" id="br" aria-label="Walk right"><svg class="ic" style="transform:rotate(90deg)"><use href="#arw"/></svg></button>
+    </div>
   </div>
-  <button id="bf">FIRE</button>
+  <div id="wpn">
+    <div id="sp"></div><div class="sep"></div>
+    <div id="dial"><svg viewBox="0 0 40 24" width="46" height="28"><path class="arc" d="M4 21A16 16 0 0 1 36 21"/><line id="needle" x1="20" y1="21" x2="34" y2="21"/><circle cx="20" cy="21" r="2.6" fill="#fff"/></svg><b id="av">45&deg;</b></div>
+    <div class="sep"></div>
+    <div id="pw"><div id="pbar"><i id="pfill"></i></div><b id="pv">60</b></div>
+  </div>
+  <div id="aim">
+    <div class="grp"><small>ANGLE</small><button class="gb" id="au" aria-label="Angle up"><svg class="ic"><use href="#arw"/></svg></button><button class="gb" id="ad" aria-label="Angle down"><svg class="ic" style="transform:rotate(180deg)"><use href="#arw"/></svg></button></div>
+    <div class="grp"><small>POWER</small><button class="gb" id="pu" aria-label="More power">+</button><button class="gb" id="pd" aria-label="Less power">&minus;</button></div>
+    <button id="bf">FIRE</button>
+  </div>
 </div>
 
 <div class="ov" id="menu">
@@ -86,7 +117,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <button class="big" id="p1">Play vs AI</button>
   <button class="big on" id="p3">Play Online</button>
   <button class="big alt" id="p2">Local 2-Player</button>
-  <small>Move: &larr; &rarr; / A D &middot; Jump: W &middot; Aim: &uarr; &darr; or drag on the battlefield &middot; Power: Q E &middot; Fire: Space &middot; Spells: 1 2 &middot; Zoom: wheel or + &minus;<br>On phones use the on-screen buttons and sliders.</small>
+  <small>Move: &larr; &rarr; / A D &middot; Jump: W (hold &larr; &rarr; for a side jump) &middot; Enter / Backspace: jump forward / back &middot; Aim: &uarr; &darr; or drag on the battlefield &middot; Power: Q E &middot; Fire: Space &middot; Spells: 1 2 &middot; Zoom: wheel or + &minus;<br>On phones use the on-screen buttons and sliders.</small>
 </div>
 <div class="ov hide" id="online">
   <h1 style="font-size:clamp(30px,8vw,54px)">ONLINE</h1>
@@ -295,7 +326,19 @@ function showOver(win){
   else{t=win.name+' wins!';s='Last mage standing.'}
   sfx(t==='Defeat'?'lose':'win');$('ot').textContent=t;$('os').textContent=s;$('over').classList.remove('hide');
 }
-function jump(){const w=cur();if(state!=='aim'||!ctl(w))return;if(mode==='online'){sendAct({t:'jump'});sfx('jump')}else if(w.grounded){w.vy=-330;w.grounded=false;sfx('jump')}}
+function jump(d){const w=cur();if(state!=='aim'||!ctl(w))return;d=d>0?1:d<0?-1:0;
+  if(mode==='online'){sendAct({t:'jump',v:d});sfx('jump')}
+  else if(w.grounded){w.vy=-330;w.vx=d*170;w.grounded=false;if(d&&d!==(Math.cos(w.angle*Math.PI/180)>=0?1:-1))w.angle=180-w.angle;sfx('jump')}}
+const facing=w=>Math.cos(w.angle*Math.PI/180)>=0?1:-1;
+const hT={au:0,ad:0,pu:0,pd:0};
+/* all held controls (keyboard + on-screen); angle/power buttons start slow for fine tuning, then speed up */
+function inputs(dt){
+  for(const k in hT)hT[k]=ui[k]?hT[k]+dt:0;
+  const ramp=k=>.25+.75*Math.min(1,hT[k]/.8);
+  return{dir:((keys.ArrowRight||keys.KeyD||ui.r)?1:0)-((keys.ArrowLeft||keys.KeyA||ui.l)?1:0),
+    u:(keys.ArrowUp?1:0)-(keys.ArrowDown?1:0)+(ui.au?ramp('au'):0)-(ui.ad?ramp('ad'):0),
+    pw:(keys.KeyE?1:0)-(keys.KeyQ?1:0)+(ui.pu?ramp('pu'):0)-(ui.pd?ramp('pd'):0)}
+}
 function pick(k){const w=cur();if(state!=='aim'||!ctl(w)||w.mana<SPELLS[k].mana)return;w.spell=k;if(mode==='online'){pickT=performance.now();sendAct({t:'spell',k})}}
 function doFire(){const c=cur();if(state!=='aim'||!ctl(c))return;if(mode==='online')sendAct({t:'fire',angle:c.angle,power:c.power,spell:c.spell});else fire(c)}
 
@@ -305,8 +348,7 @@ function update(dt){
   const c=cur();
   let dir=0;
   if(state==='aim'&&c&&!c.ai){
-    dir=((keys.ArrowRight||keys.KeyD||ui.r)?1:0)-((keys.ArrowLeft||keys.KeyA||ui.l)?1:0);
-    const u=(keys.ArrowUp?1:0)-(keys.ArrowDown?1:0),pw=(keys.KeyE?1:0)-(keys.KeyQ?1:0);
+    const I=inputs(dt);dir=I.dir;const u=I.u,pw=I.pw;
     const flip=Math.cos(c.angle*Math.PI/180)>=0?1:-1;
     c.angle=clamp(c.angle+u*flip*60*dt,0,180);c.power=clamp(c.power+pw*35*dt,10,100);
     if(dir&&dir!==flip)c.angle=180-c.angle;
@@ -436,6 +478,10 @@ function draw(){
     const sp=SPELLS[c.spell],a=c.angle*Math.PI/180,h=1/120;let[x,y]=muzzle(c,c.angle),vx=Math.cos(a)*c.power*sp.k,vy=-Math.sin(a)*c.power*sp.k;
     ctx.fillStyle='rgba(255,255,255,.75)';
     for(let i=0;i<10;i++){for(let j=0;j<7;j++){vy+=sp.g*h;vx+=wind*14*sp.wf*h;x+=vx*h;y+=vy*h}ctx.beginPath();ctx.arc(x,y,2.6-i*.2,0,7);ctx.fill()}
+    const an=c.angle*Math.PI/180,ca=Math.cos(an),sa=-Math.sin(an),gx=c.x,gy=c.y-22,pn=Math.round(c.power/10);
+    for(let i=0;i<10;i++){const d=30+i*6.5,on=i<pn;ctx.globalAlpha=on?1:.2;ctx.fillStyle=on?'hsl('+(125-125*i/9)+',95%,56%)':'#fff';ctx.beginPath();ctx.arc(gx+ca*d,gy+sa*d,2+i*.28,0,7);ctx.fill()}
+    ctx.globalAlpha=1;const rx=gx+ca*112,ry=gy+sa*112,rp=1+Math.sin(time*5)*.08;
+    for(const[lw,col]of[[5,'#000a'],[2,'#ffd86b']]){ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.beginPath();ctx.arc(rx,ry,8*rp,0,7);ctx.stroke();for(let k=0;k<4;k++){const q=k*Math.PI/2;ctx.beginPath();ctx.moveTo(rx+Math.cos(q)*5,ry+Math.sin(q)*5);ctx.lineTo(rx+Math.cos(q)*14*rp,ry+Math.sin(q)*14*rp);ctx.stroke()}}
   }
   for(const w of wiz)if(w.alive)drawWiz(w,w===c&&state==='aim');
   for(const p of projs)drawProj(p);
@@ -461,7 +507,7 @@ function draw(){
 
 /* ---------- HUD & input ---------- */
 const spBox=$('sp');
-for(const k in SPELLS){const b=document.createElement('button');b.dataset.k=k;b.innerHTML=SPELLS[k].icon+' '+SPELLS[k].name+(SPELLS[k].mana?' <small>('+SPELLS[k].mana+')</small>':'');b.onclick=()=>pick(k);spBox.appendChild(b)}
+for(const k in SPELLS){const b=document.createElement('button');b.dataset.k=k;b.title=SPELLS[k].name;b.innerHTML=SPELLS[k].icon+(SPELLS[k].mana?'<em>'+SPELLS[k].mana+'</em>':'');b.onclick=()=>pick(k);spBox.appendChild(b)}
 function hud(){
   if(!wiz.length)return;
   for(const w of wiz){$('h'+w.i).style.width=w.hp+'%';$('m'+w.i).style.width=w.mana+'%';$('c'+w.i).classList.toggle('active',w===cur()&&state==='aim')}
@@ -470,21 +516,27 @@ function hud(){
   const f=$('wf').style;f.width=Math.abs(wind)/8*50+'%';f.left=wind>=0?'50%':(50-Math.abs(wind)/8*50)+'%';
   const c=cur(),on=state==='aim'&&ctl(c);
   if(t!==AU.lastTick){AU.lastTick=t;if(on&&t>0&&t<=5)sfx('tick')}$('ctrl').classList.toggle('off',!on);
-  $('ar').value=Math.round(c.angle);$('pr').value=Math.round(c.power);$('av').textContent=Math.round(c.angle)+'\u00B0';$('pv').textContent=Math.round(c.power);
+  const ra=c.angle*Math.PI/180;$('needle').setAttribute('x2',20+14*Math.cos(ra));$('needle').setAttribute('y2',21-14*Math.sin(ra));
+  $('av').textContent=Math.round(c.angle)+'\u00B0';$('pv').textContent=Math.round(c.power);$('pfill').style.clipPath='inset(0 '+(100-(c.power-10)/90*100)+'% 0 0)';
   for(const b of spBox.children){b.classList.toggle('sel',b.dataset.k===c.spell);b.disabled=SPELLS[b.dataset.k].mana>c.mana}
 }
-$('ar').oninput=e=>{if(ctl(cur())){cur().angle=+e.target.value;aimChanged()}};
-$('pr').oninput=e=>{if(ctl(cur())){cur().power=+e.target.value;aimChanged()}};
 $('bf').onclick=doFire;
-const hold=(id,k)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();ui[k]=1;b.setPointerCapture(e.pointerId)});for(const ev of['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>ui[k]=0)};
-hold('bl','l');hold('br','r');
-$('bj').addEventListener('pointerdown',e=>{e.preventDefault();jump()});
+const hold=(id,k)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();ui[k]=1;b.classList.add('dn');b.setPointerCapture(e.pointerId)});for(const ev of['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{ui[k]=0;b.classList.remove('dn')})};
+hold('bl','l');hold('br','r');hold('au','au');hold('ad','ad');hold('pu','pu');hold('pd','pd');
+const tapJ=(id,d)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();b.classList.add('dn');jump(d)});for(const ev of['pointerup','pointercancel','pointerleave'])b.addEventListener(ev,()=>b.classList.remove('dn'))};
+tapJ('jl',-1);tapJ('jh',0);tapJ('jr',1);
+/* drag/tap the power bar to set power */
+const pb=$('pbar');let pdrag=false;
+function setPw(e){if(state!=='aim'||!ctl(cur()))return;const r=pb.getBoundingClientRect();cur().power=clamp(Math.round(10+(e.clientX-r.left)/r.width*90),10,100);aimChanged()}
+pb.addEventListener('pointerdown',e=>{e.preventDefault();pdrag=true;pb.setPointerCapture(e.pointerId);setPw(e)});pb.addEventListener('pointermove',e=>{if(pdrag)setPw(e)});for(const ev of['pointerup','pointercancel'])pb.addEventListener(ev,()=>pdrag=false);
 addEventListener('keydown',e=>{
   keys[e.code]=true;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   if(state==='aim'&&ctl(cur())){
     if(e.code==='Space')doFire();
-    if(e.code==='KeyW'||e.code==='KeyJ')jump();
+    const c=cur(),hd=((keys.ArrowRight||keys.KeyD||ui.r)?1:0)-((keys.ArrowLeft||keys.KeyA||ui.l)?1:0);
+    if(e.code==='KeyW'||e.code==='KeyJ')jump(hd);
+    if(e.code==='Enter')jump(facing(c));if(e.code==='Backspace'){e.preventDefault();jump(-facing(c))}
     if(e.code==='Digit1')pick('fire');if(e.code==='Digit2')pick('bolt');
   }
 });
@@ -722,8 +774,7 @@ function onUpdate(dt){
   const c=cur();
   if(state==='aim')timer-=dt;
   if(c&&state==='aim'&&ctl(c)){
-    const d=((keys.ArrowRight||keys.KeyD||ui.r)?1:0)-((keys.ArrowLeft||keys.KeyA||ui.l)?1:0);
-    const u=(keys.ArrowUp?1:0)-(keys.ArrowDown?1:0),pw=(keys.KeyE?1:0)-(keys.KeyQ?1:0);
+    const I=inputs(dt),d=I.dir,u=I.u,pw=I.pw;
     if(u||pw){const f=Math.cos(c.angle*Math.PI/180)>=0?1:-1;c.angle=clamp(c.angle+u*f*60*dt,0,180);c.power=clamp(c.power+pw*35*dt,10,100);aimChanged()}
     if(d!==lastDir){lastDir=d;sendAct({t:'dir',v:d})}
   }else if(lastDir){lastDir=0;sendAct({t:'dir',v:0})}

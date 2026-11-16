@@ -91,7 +91,7 @@ class Game {
     if (m.t === 'dir') { w.dir = m.v > 0 ? 1 : m.v < 0 ? -1 : 0; return; }
     if (this.state !== 'aim' || this.turn !== i) return;
     const n = v => typeof v === 'number' && isFinite(v);
-    if (m.t === 'jump') { if (w.grounded) { w.vy = -330; w.grounded = false; } }
+    if (m.t === 'jump') { if (w.grounded) { const d = m.v > 0 ? 1 : m.v < 0 ? -1 : 0; w.vy = -330; w.vx = d * 170; w.grounded = false; if (d && d !== (Math.cos(w.angle * Math.PI / 180) >= 0 ? 1 : -1)) w.angle = 180 - w.angle; } }
     else if (m.t === 'aim') { if (n(m.angle)) w.angle = clamp(m.angle, 0, 180); if (n(m.power)) w.power = clamp(m.power, 10, 100); }
     else if (m.t === 'spell') { if (SPELLS[m.k] && w.mana >= SPELLS[m.k].mana) w.spell = m.k; }
     else if (m.t === 'fire') {
