@@ -9,6 +9,7 @@ const SPELLS = {
 };
 const SKEYS = Object.keys(SPELLS);
 const COLS = [['#3d6fe0', '#23449e'], ['#d4365a', '#8a1f3c'], ['#2fae5a', '#1b6b38'], ['#e0a020', '#9a6a10'], ['#9a4fd0', '#5e2a8a'], ['#20b8b8', '#12797b']];
+const MAPS = (typeof module !== 'undefined' && module.exports) ? require('./maps.js') : root.MAPS;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 function rng(s) { return function () { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
@@ -19,27 +20,32 @@ function carveMask(mask, cx, cy, r) {
       const dx = x - cx, dy = y - cy; if (dx * dx + dy * dy <= r2) mask[y * W + x] = 0;
     }
 }
+/* ---------- Maps (island art lives in maps.js; same seed -> same map on server and clients) ---------- */
+const mapFor = seed => MAPS[(seed >>> 0) % MAPS.length];
+function b64bytes(str) {
+  if (typeof atob === 'function') { const b = atob(str), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+  return Uint8Array.from(Buffer.from(str, 'base64'));
+}
 function genMask(seed) {
-  const r = rng(seed), R = (a, b) => a + r() * (b - a), mask = new Uint8Array(W * H), hs = new Float32Array(W), p = [R(0, 6), R(0, 6), R(0, 6)];
-  for (let x = 0; x < W; x++) {
-    const h = 400 + 50 * Math.sin(x * .0048 + p[0]) + 32 * Math.sin(x * .013 + p[1]) + 13 * Math.sin(x * .036 + p[2]);
-    const e = Math.max(0, (160 - x) / 160, (x - (W - 160)) / 160); hs[x] = h + e * e * 360;
-    for (let y = Math.ceil(hs[x]); y < H; y++) mask[y * W + x] = 1;
-  }
-  const isl = [[R(480, 620), R(170, 230), R(90, 130)], [R(780, 920), R(190, 250), R(80, 120)]];
-  for (const [cx, y0, hw] of isl) for (let x = Math.floor(cx - hw); x <= cx + hw; x++) {
-    const u = (x - cx) / hw, top = Math.round(y0 + 4 * Math.sin(x * .05)), bot = Math.round(y0 + 22 + 70 * Math.pow(1 - u * u, .7));
-    for (let y = top; y < bot; y++) mask[y * W + x] = 1;
-  }
-  for (let i = 0; i < 4; i++) {
-    let x = R(420, 980), y = hs[x | 0] + R(55, 100); const lw = R(24, 38) / 2;
-    for (let j = 0; j < 5; j++) {
-      const nx = x + R(-55, 55), ny = y + R(-22, 22), n = Math.ceil(Math.hypot(nx - x, ny - y) / 3);
-      for (let k = 0; k <= n; k++) carveMask(mask, x + (nx - x) * k / n, y + (ny - y) * k / n, lw);
-      x = nx; y = ny;
-    }
+  const map = typeof seed === 'object' ? seed : mapFor(seed), bytes = b64bytes(map.rle), mask = new Uint8Array(W * H);
+  let pos = 0, v = 0, i = 0;
+  while (i < bytes.length) {
+    let n = 0, sh = 0, b;
+    do { b = bytes[i++]; n += (b & 127) * Math.pow(2, sh); sh += 7; } while (b & 128);
+    if (v) mask.fill(1, pos, pos + n);
+    pos += n; v ^= 1;
   }
   return mask;
+}
+/* pick n spread-out standing spots from the map's precomputed list; r = random function (0..1) */
+function pickSpawns(map, n, r) {
+  const sp = []; for (let i = 0; i < map.spawns.length; i += 2) sp.push([map.spawns[i], map.spawns[i + 1]]);
+  const out = [sp[Math.floor(r() * sp.length)]];
+  while (out.length < n) {
+    const sc = sp.map(c => [Math.min(...out.map(o => Math.hypot(o[0] - c[0], (o[1] - c[1]) * .5))) * (.85 + .3 * r()), c]).sort((a, b) => b[0] - a[0]);
+    out.push(sc[0][1]);
+  }
+  return out.map(c => ({ x: c[0], y: c[1] }));
 }
 /* wizard hitbox: a vertical capsule from feet to hat (the old check only covered the belly, so head/hat shots passed through) */
 function hitW(w, x, y) { const cy = Math.max(w.y - 50, Math.min(w.y - 6, y)); return Math.hypot(x - w.x, y - cy) < 14; }
@@ -54,12 +60,10 @@ class Game {
     this.seed = o.seed >>> 0; this.mask = genMask(this.seed);
     const r = this.rnd = rng(this.seed ^ 0x9e3779b9); this.R = (a, b) => a + r() * (b - a);
     this.wiz = []; this.projs = []; this.ev = []; this.carves = []; this.pid = 1; this.over = null;
-    const n = o.players.length, ax = [];
-    for (let i = 0; i < n; i++) ax.push(n > 1 ? 130 + i * (W - 260) / (n - 1) : W / 2);
-    for (let i = n - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [ax[i], ax[j]] = [ax[j], ax[i]]; }
+    const n = o.players.length, spawns = pickSpawns(mapFor(this.seed), n, r);
     o.players.forEach((p, i) => {
-      const x = ax[i] + this.R(-25, 25);
-      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x, y: 0, vx: 0, vy: 0, hp: 100, mana: 60, angle: x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0 });
+      const sp = spawns[i];
+      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x: sp.x, y: sp.y, vx: 0, vy: 0, hp: 100, mana: 60, angle: sp.x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0 });
     });
     const groups = {}; this.wiz.forEach(w => (groups[w.team] = groups[w.team] || []).push(w.i));
     const gs = Object.keys(groups).sort().map(k => groups[k]); this.order = [];
@@ -220,6 +224,6 @@ class Game {
   drain() { const e = this.ev; this.ev = []; return e; }
 }
 
-const api = { W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, carveMask, muzzle, hitW };
+const api = { W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW };
 if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Core = api;
 })(this);

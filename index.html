@@ -106,6 +106,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <button class="big alt" id="tomenu">Main menu</button>
 </div>
 
+<script src="maps.js"></script>
 <script src="core.js"></script>
 <script>
 'use strict';
@@ -126,36 +127,33 @@ addEventListener('resize',resize);resize();
 
 /* ---------- Terrain ---------- */
 const solid=(x,y)=>{x=x|0;y=y|0;return x>=0&&x<W&&y>=0&&y<H&&mask[y*W+x]===1};
-function genTerrain(){
-  tc=document.createElement('canvas');tc.width=W;tc.height=H;tg=tc.getContext('2d');
-  const p=[R(0,6),R(0,6),R(0,6)],hs=new Float32Array(W);
-  for(let x=0;x<W;x++){
-    let h=400+50*Math.sin(x*.0048+p[0])+32*Math.sin(x*.013+p[1])+13*Math.sin(x*.036+p[2]);
-    const e=Math.max(0,(160-x)/160,(x-(W-160))/160);hs[x]=h+e*e*360;
-  }
-  const g=tg.createLinearGradient(0,230,0,H);g.addColorStop(0,'#a06a34');g.addColorStop(.5,'#6b4220');g.addColorStop(1,'#2e1a10');
-  tg.fillStyle=g;
-  for(let x=0;x<W;x++)tg.fillRect(x,hs[x],1,H-hs[x]);
-  const isl=[[R(480,620),R(170,230),R(90,130)],[R(780,920),R(190,250),R(80,120)]];
-  for(const[cx,y0,hw]of isl)for(let x=Math.floor(cx-hw);x<=cx+hw;x++){const u=(x-cx)/hw,top=y0+4*Math.sin(x*.05),bot=y0+22+70*Math.pow(1-u*u,.7);tg.fillRect(x,top,1,bot-top)}
-  tg.globalCompositeOperation='destination-out';tg.lineCap='round';tg.strokeStyle='#000';
-  for(let i=0;i<4;i++){let x=R(420,980),y=hs[x|0]+R(55,100);tg.lineWidth=R(24,38);tg.beginPath();tg.moveTo(x,y);for(let j=0;j<5;j++){x+=R(-55,55);y+=R(-22,22);tg.lineTo(x,y)}tg.stroke()}
-  tg.globalCompositeOperation='source-atop';
-  for(let i=0;i<6000;i++){tg.fillStyle=Math.random()<.5?'rgba(0,0,0,.15)':'rgba(255,220,160,.10)';tg.fillRect(R(0,W),R(0,H),R(2,6),R(2,4))}
-  tg.globalCompositeOperation='source-over';
-  const d=tg.getImageData(0,0,W,H).data;mask=new Uint8Array(W*H);
-  for(let i=0;i<W*H;i++)mask[i]=d[i*4+3]>128?1:0;
-  for(let x=0;x<W;x++)for(let y=1;y<H;y++)if(mask[y*W+x]&&!mask[(y-1)*W+x]){
-    tg.fillStyle='#46b845';tg.fillRect(x,y,1,5+(x*7)%3);tg.fillStyle='#93f063';tg.fillRect(x,y,1,2);
-  }
-}
-function carve(cx,cy,r){
+/* Island art comes from maps.js (art = maps/*.webp, collision = Core.genMask). Explosions carve both. */
+let curMap=null,lastMapId='',carveLog=[];const mapImgs={};
+function pickMap(){let m;do{m=MAPS[Math.floor(Math.random()*MAPS.length)]}while(MAPS.length>1&&m.id===lastMapId);lastMapId=m.id;return m}
+function carvePaint(cx,cy,r){
   tg.globalCompositeOperation='destination-out';tg.beginPath();tg.arc(cx,cy,r,0,7);tg.fill();
   tg.globalCompositeOperation='source-atop';tg.strokeStyle='rgba(30,12,4,.55)';tg.lineWidth=7;tg.beginPath();tg.arc(cx,cy,r+3,0,7);tg.stroke();
   tg.globalCompositeOperation='source-over';
+}
+function useMap(map){
+  curMap=map;mask=Core.genMask(map);carveLog=[];
+  tc=document.createElement('canvas');tc.width=W;tc.height=H;tg=tc.getContext('2d');
+  const paint=im=>{if(curMap!==map)return;tg.globalCompositeOperation='source-over';tg.clearRect(0,0,W,H);tg.drawImage(im,0,0,W,H);for(const c of carveLog)carvePaint(c[0],c[1],c[2])};
+  const fallback=()=>{if(curMap!==map)return;const d=tg.createImageData(W,H);for(let i=0;i<W*H;i++)if(mask[i]){d.data[i*4]=140;d.data[i*4+1]=90;d.data[i*4+2]=45;d.data[i*4+3]=255}tg.putImageData(d,0,0)};
+  let im=mapImgs[map.id];
+  if(im&&im.complete&&im.naturalWidth)paint(im);
+  else{
+    if(!im){im=mapImgs[map.id]=new Image();im.src=map.img}
+    im.addEventListener('load',()=>paint(im));im.addEventListener('error',fallback);
+  }
+}
+function carve(cx,cy,r){
+  carveLog.push([cx,cy,r]);carvePaint(cx,cy,r);
   const r2=r*r;
   for(let y=Math.max(0,(cy-r)|0);y<=Math.min(H-1,cy+r);y++)for(let x=Math.max(0,(cx-r)|0);x<=Math.min(W-1,cx+r);x++){const dx=x-cx,dy=y-cy;if(dx*dx+dy*dy<=r2)mask[y*W+x]=0}
 }
+/* put the two wizards on spread-out standing spots of the current map */
+function placePair(a,b){const sp=Core.pickSpawns(curMap,2,Math.random);[a,b].forEach((w,i)=>{w.x=sp[i].x;w.y=sp[i].y;w.angle=w.x<W/2?45:135});return[a,b]}
 
 /* ---------- Wizards ---------- */
 const mk=(i,name,x,col,col2,isAI)=>({i,name,x,y:0,vx:0,vy:0,hp:100,mana:60,angle:i?135:45,power:60,spell:'fire',col,col2,ai:isAI,alive:true,hurt:0,cast:0,ph:0,grounded:false,walking:false});
@@ -272,8 +270,8 @@ function aiThink(w){
 
 /* ---------- Game flow ---------- */
 function start(m){
-  mode=m;genTerrain();
-  wiz=[mk(0,'Aldric',R(190,360),'#3d6fe0','#23449e',false),mk(1,m==='ai'?'Morgana (AI)':'Morgana',R(1040,1210),'#d4365a','#8a1f3c',m==='ai')];
+  mode=m;useMap(pickMap());
+  wiz=placePair(mk(0,'Aldric',0,'#3d6fe0','#23449e',false),mk(1,m==='ai'?'Morgana (AI)':'Morgana',0,'#d4365a','#8a1f3c',m==='ai'));
   $('n0').textContent=wiz[0].name;$('n1').textContent=wiz[1].name;
   projs=[];parts=[];fx=[];txts=[];turn=0;newTurn(true);
   $('menu').classList.add('hide');$('over').classList.add('hide');
@@ -449,6 +447,7 @@ function draw(){
   ctx.globalAlpha=1;
   for(const p of parts){const k=p.life/p.max;ctx.globalAlpha=k;ctx.globalCompositeOperation=p.add?'lighter':'source-over';ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.size*(p.add?k*.8+.2:1.2-k*.4),0,7);ctx.fill()}
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  ctx.beginPath();ctx.moveTo(-300,H+500);for(let x=-300;x<=W+300;x+=20)ctx.lineTo(x,WATER+10+Math.sin(x*.02+time*1.5)*4);ctx.lineTo(W+300,H+500);ctx.closePath();ctx.fillStyle='rgba(14,52,120,.85)';ctx.fill();
   for(let l=0;l<2;l++){
     ctx.beginPath();ctx.moveTo(-300,H+500);
     for(let x=-300;x<=W+300;x+=20)ctx.lineTo(x,WATER+l*8+Math.sin(x*.02+time*(1.5+l)+l*2)*4);
@@ -666,27 +665,9 @@ function onNet(m){
       break;
   }
 }
-/* terrain rebuilt from the server's seed (same algorithm as core.js) */
-function buildTerrain(){
-  tc=document.createElement('canvas');tc.width=W;tc.height=H;tg=tc.getContext('2d');
-  const img=tg.createImageData(W,H),d=img.data;
-  for(let y=0;y<H;y++){
-    const t=y<230?0:(y-230)/(H-230);let r,g,b;
-    if(t<.5){const u=t/.5;r=160-53*u;g=106-40*u;b=52-20*u}else{const u=(t-.5)/.5;r=107-61*u;g=66-40*u;b=32-16*u}
-    for(let x=0;x<W;x++){
-      const i=y*W+x;if(!mask[i])continue;
-      const n=((((x>>1)*73856093)^((y>>1)*19349663))>>>0)%100,k=n<12?.75:n>90?1.12:1,o=i*4;
-      d[o]=Math.min(255,r*k);d[o+1]=Math.min(255,g*k);d[o+2]=Math.min(255,b*k);d[o+3]=255;
-    }
-  }
-  tg.putImageData(img,0,0);
-  for(let x=0;x<W;x++)for(let y=1;y<H;y++)if(mask[y*W+x]&&!mask[(y-1)*W+x]){
-    tg.fillStyle='#46b845';tg.fillRect(x,y,1,5+(x*7)%3);tg.fillStyle='#93f063';tg.fillRect(x,y,1,2);
-  }
-}
 function startOnline(m){
   mode='online';me=m.idx;gotSnap=false;overShown=false;lastDir=0;
-  mask=Core.genMask(m.seed);buildTerrain();
+  useMap(Core.mapFor(m.seed));
   for(const c of m.carves)carve(c[0],c[1],c[2]);
   wiz=m.names.map((n,i)=>mk(i,n+(i===me?' (you)':''),0,PCOL[i][0],PCOL[i][1],false));
   projs=[];parts=[];fx=[];txts=[];turn=0;state='aim';timer=30;wind=0;cam.auto=true;
@@ -785,7 +766,7 @@ function initOnlineUI(){
   if(rp&&typeof Core!=='undefined'){$('jc').value=rp.toUpperCase().slice(0,4);$('p3').onclick()}
 }
 
-function demo(){mode='ai';genTerrain();wiz=[mk(0,'Aldric',R(190,360),'#3d6fe0','#23449e',false),mk(1,'Morgana (AI)',R(1040,1210),'#d4365a','#8a1f3c',true)];projs=[];parts=[];fx=[];txts=[];turn=0;state='menu';timer=30;wind=0;$('n0').textContent='Aldric';$('n1').textContent='Morgana (AI)'}
+function demo(){mode='ai';useMap(pickMap());wiz=placePair(mk(0,'Aldric',0,'#3d6fe0','#23449e',false),mk(1,'Morgana (AI)',0,'#d4365a','#8a1f3c',true));projs=[];parts=[];fx=[];txts=[];turn=0;state='menu';timer=30;wind=0;$('n0').textContent='Aldric';$('n1').textContent='Morgana (AI)'}
 demo();
 initOnlineUI();
 
