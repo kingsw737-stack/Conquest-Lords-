@@ -5,7 +5,10 @@ const W = 1400, H = 700, WATER = H - 45, G = 600;
 /* ---------- Spell registry (add new spells here) ---------- */
 const SPELLS = {
   fire: { name: 'Fireball', icon: '\u{1F525}', k: 9.5, g: G, wf: 1, r: 48, dmg: 40, mana: 0, col: '#ffa030' },
-  bolt: { name: 'Lightning', icon: '\u26A1', k: 15, g: 60, wf: .15, r: 28, dmg: 30, mana: 25, col: '#8fe0ff' }
+  bolt: { name: 'Lightning', icon: '\u26A1', k: 15, g: 60, wf: .15, r: 28, dmg: 30, mana: 25, col: '#8fe0ff' },
+  /* r = terrain crater radius, dr = damage radius base. KEEP THIS ORDER: the client indexes spells by position (fire, bolt, magma, jet) */
+  magma: { name: 'Magma Bomb', icon: '\u{1F30B}', k: 8.8, g: G * 1.15, wf: .8, r: 86, dr: 50, dmg: 38, mana: 35, col: '#ff6a1a', lava: 1 },
+  jet: { name: 'Jetpack', icon: '\u{1F680}', jet: 1, mana: 8, col: '#7fe7ff' }
 };
 const SKEYS = Object.keys(SPELLS);
 const COLS = [['#3d6fe0', '#23449e'], ['#d4365a', '#8a1f3c'], ['#2fae5a', '#1b6b38'], ['#e0a020', '#9a6a10'], ['#9a4fd0', '#5e2a8a'], ['#20b8b8', '#12797b']];
@@ -59,11 +62,11 @@ class Game {
   constructor(o) {
     this.seed = o.seed >>> 0; this.mask = genMask(this.seed);
     const r = this.rnd = rng(this.seed ^ 0x9e3779b9); this.R = (a, b) => a + r() * (b - a);
-    this.wiz = []; this.projs = []; this.ev = []; this.carves = []; this.pid = 1; this.over = null;
+    this.wiz = []; this.projs = []; this.lava = []; this.ev = []; this.carves = []; this.pid = 1; this.over = null;
     const n = o.players.length, spawns = pickSpawns(mapFor(this.seed), n, r);
     o.players.forEach((p, i) => {
       const sp = spawns[i];
-      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x: sp.x, y: sp.y, vx: 0, vy: 0, hp: 100, mana: 60, angle: sp.x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0 });
+      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x: sp.x, y: sp.y, vx: 0, vy: 0, hp: 100, mana: 60, angle: sp.x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0, thr: 0, lavaT: 0 });
     });
     const groups = {}; this.wiz.forEach(w => (groups[w.team] = groups[w.team] || []).push(w.i));
     const gs = Object.keys(groups).sort().map(k => groups[k]); this.order = [];
@@ -76,10 +79,10 @@ class Game {
     this.wind = Math.round(this.R(-8, 8)); this.timer = 30; this.state = 'aim'; this.ai = { t: 0, plan: null, hold: 0 };
     if (!first) w.mana = Math.min(100, w.mana + 20);
     if (SPELLS[w.spell].mana > w.mana) w.spell = 'fire';
-    for (const q of this.wiz) q.dir = 0;
+    for (const q of this.wiz) { q.dir = 0; q.thr = 0; }
   }
   endTurn() {
-    for (const w of this.wiz) w.dir = 0;
+    for (const w of this.wiz) { w.dir = 0; w.thr = 0; }
     const al = this.wiz.filter(w => w.alive), teams = new Set(al.map(w => w.team));
     if (teams.size < 2) { this.state = 'over'; this.over = { team: al.length ? al[0].team : -1, names: al.map(w => w.name) }; return; }
     do { this.pos = (this.pos + 1) % this.order.length; } while (!this.wiz[this.order[this.pos]].alive);
@@ -89,6 +92,7 @@ class Game {
   act(i, m) {
     const w = this.wiz[i]; if (!w || !w.alive || w.ai || !m) return;
     if (m.t === 'dir') { w.dir = m.v > 0 ? 1 : m.v < 0 ? -1 : 0; return; }
+    if (m.t === 'thr') { w.thr = m.v ? 1 : 0; return; }
     if (this.state !== 'aim' || this.turn !== i) return;
     const n = v => typeof v === 'number' && isFinite(v);
     if (m.t === 'jump') { if (w.grounded) { const d = m.v > 0 ? 1 : m.v < 0 ? -1 : 0; w.vy = -330; w.vx = d * 170; w.grounded = false; if (d && d !== (Math.cos(w.angle * Math.PI / 180) >= 0 ? 1 : -1)) w.angle = 180 - w.angle; } }
@@ -101,7 +105,7 @@ class Game {
     }
   }
   fire(w) {
-    const sp = SPELLS[w.spell]; if (this.state !== 'aim' || w.mana < sp.mana) return;
+    const sp = SPELLS[w.spell]; if (this.state !== 'aim' || sp.jet || w.mana < sp.mana) return;
     w.mana -= sp.mana;
     const a = w.angle * Math.PI / 180, [mx, my] = muzzle(w, w.angle);
     this.projs.push({ id: this.pid++, sp: w.spell, x: mx, y: my, vx: Math.cos(a) * w.power * sp.k, vy: -Math.sin(a) * w.power * sp.k, age: 0, owner: w });
@@ -112,11 +116,18 @@ class Game {
     const c = this.wiz[this.turn], aim = this.state === 'aim';
     for (const w of this.wiz) {
       let walk = 0;
-      if (aim && w === c && !w.ai && w.alive && w.dir) {
-        const f = Math.cos(w.angle * Math.PI / 180) >= 0 ? 1 : -1; if (w.dir !== f) w.angle = 180 - w.angle; walk = w.dir * 75;
+      /* Jetpack: hold thrust while it's selected; fuel is mana */
+      const mine = aim && w === c && !w.ai && w.alive, jet = mine && SPELLS[w.spell].jet, thr = !!(jet && w.thr && w.mana > .05);
+      if (thr) w.mana = Math.max(0, w.mana - 20 * dt);
+      if (jet && w.mana <= .05) { w.spell = 'fire'; w.thr = 0; }
+      w.lavaT = Math.max(0, w.lavaT - dt);
+      if (mine && w.dir) {
+        const f = Math.cos(w.angle * Math.PI / 180) >= 0 ? 1 : -1; if (w.dir !== f) w.angle = 180 - w.angle; walk = w.dir * (jet && !w.grounded ? 115 : 75);
       }
-      this.phys(w, dt, walk);
+      w.flying = thr ? 1 : 0;
+      this.phys(w, dt, walk, thr);
     }
+    this.lavaStep(dt);
     for (const p of this.projs) this.stepProj(p, dt);
     this.projs = this.projs.filter(p => !p.dead);
     if (aim) {
@@ -125,13 +136,14 @@ class Game {
       if (this.timer <= 0 && this.state === 'aim') this.endTurn();
     } else if (this.state === 'resolve') {
       this.resolveT += dt;
-      const calm = !this.projs.length && this.wiz.every(w => !w.alive || (w.grounded && Math.abs(w.vx) < 8));
+      const calm = !this.projs.length && !this.lava.length && this.wiz.every(w => !w.alive || (w.grounded && Math.abs(w.vx) < 8));
       this.settle = calm ? this.settle + dt : 0;
       if (this.settle > .9 || this.resolveT > 20) this.endTurn();
     }
   }
-  phys(w, dt, walk) {
+  phys(w, dt, walk, thr) {
     if (!w.alive) return;
+    if (thr) w.vy = Math.max(w.vy - 1100 * dt, -240);
     w.grounded = w.vy >= 0 && (this.solid(w.x, w.y + 1) || this.solid(w.x - 4, w.y + 1) || this.solid(w.x + 4, w.y + 1));
     if (w.grounded) w.vy = 0; else w.vy += G * dt;
     const dx = (w.vx + walk) * dt;
@@ -161,12 +173,43 @@ class Game {
     if (w.hp <= 0) { w.hp = 0; this.kill(w); }
   }
   kill(w) { if (!w.alive) return; w.alive = false; this.ev.push({ e: 'kill', i: w.i, x: w.x, y: w.y }); }
+  /* terrain bite from lava (explosions carve through explode(); their 'boom' event carries the carve) */
+  carve(x, y, r) {
+    x = Math.round(x); y = Math.round(y); carveMask(this.mask, x, y, r); this.carves.push([x, y, r]);
+    this.ev.push({ e: 'carve', x, y, r });
+  }
+  spawnLava(x, y) {
+    for (let i = 0; i < 13; i++) {
+      const a = -this.R(.15, .85) * Math.PI, s = this.R(70, 290);
+      this.lava.push({ x: x + this.R(-12, 12), y: y - this.R(0, 12), vx: Math.cos(a) * s, vy: Math.sin(a) * s, r: this.R(5, 8), life: this.R(3.2, 4.4), melt: 0 });
+    }
+  }
+  lavaStep(dt) {
+    for (const b of this.lava) {
+      b.life -= dt;
+      if (this.solid(b.x, b.y + 2)) {
+        b.vx = 0; b.vy = 0; b.melt += dt;
+        if (b.melt > .17) { b.melt = 0; this.carve(b.x, b.y + 4, b.r); b.y += 3; }
+      } else {
+        b.vy += G * dt; b.x += b.vx * dt; b.y += b.vy * dt; b.vx *= Math.pow(.6, dt);
+        if (b.x < -100 || b.x > W + 100) b.life = 0;
+      }
+      if (b.y > WATER) b.life = 0;
+      for (const w of this.wiz) {
+        if (!w.alive || w.lavaT > 0) continue;
+        const cy = clamp(b.y, w.y - 50, w.y - 6);
+        if (Math.hypot(b.x - w.x, b.y - cy) < b.r + 9) { this.hurt(w, 4, 0, 0); w.lavaT = .5; }
+      }
+    }
+    this.lava = this.lava.filter(b => b.life > 0);
+  }
   explode(x, y, key) {
     const sp = SPELLS[key]; carveMask(this.mask, x, y, sp.r); this.carves.push([Math.round(x), Math.round(y), sp.r]);
     this.ev.push({ e: 'boom', x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, k: key });
+    if (sp.lava) this.spawnLava(x, y);
     for (const w of this.wiz) {
       if (!w.alive) continue;
-      const RR = sp.r * 1.7, cy = Math.max(w.y - 50, Math.min(w.y - 6, y)), d = Math.hypot(w.x - x, cy - y);
+      const RR = (sp.dr || sp.r) * 1.7, cy = Math.max(w.y - 50, Math.min(w.y - 6, y)), d = Math.hypot(w.x - x, cy - y);
       const ux = w.x - x, uy = (w.y - 26) - y, ud = Math.hypot(ux, uy) || 1;
       if (d < RR) { const f = 1 - d / RR; this.hurt(w, sp.dmg * f * 1.15, ux / ud * 280 * f, (uy / ud) * 280 * f - 90 * f); }
     }
@@ -190,7 +233,7 @@ class Game {
       if (hitW(t, x, y)) return 0;
     }
     let d = Math.hypot(x - t.x, y - (t.y - 14));
-    if (Math.hypot(x - w.x, y - w.y) < sp.r * 1.8) d += 300;
+    if (Math.hypot(x - w.x, y - w.y) < (sp.dr || sp.r) * 1.8) d += 300;
     for (const o of this.wiz) if (o !== w && o.alive && o.team === w.team && Math.hypot(x - o.x, y - o.y) < sp.r * 1.6) d += 200;
     return d;
   }
@@ -198,8 +241,8 @@ class Game {
     const es = this.wiz.filter(t => t.alive && t.team !== w.team); if (!es.length) return { a: w.angle, p: w.power, k: 'fire' };
     es.sort((a, b) => Math.abs(a.x - w.x) - Math.abs(b.x - w.x)); const t = es[0]; let best = null;
     for (const k of SKEYS) {
-      const sp = SPELLS[k]; if (sp.mana > w.mana) continue;
-      for (let a = -84; a <= 264; a += 4) for (let p = 25; p <= 100; p += 5) { const s = this.sim(w, a, p, sp, t) - sp.r * .6; if (!best || s < best.s) best = { a, p, k, s }; }
+      const sp = SPELLS[k]; if (sp.jet || sp.mana > w.mana) continue;
+      for (let a = -84; a <= 264; a += 4) for (let p = 25; p <= 100; p += 5) { const s = this.sim(w, a, p, sp, t) - (sp.dr || sp.r) * .6; if (!best || s < best.s) best = { a, p, k, s }; }
     }
     if (!best) return { a: w.angle, p: w.power, k: 'fire' };
     return { a: clamp(best.a + this.R(-2.5, 2.5), -90, 270), p: clamp(best.p + this.R(-4, 4), 10, 100), k: best.k };
@@ -216,8 +259,9 @@ class Game {
     const r = v => Math.round(v * 10) / 10;
     return {
       turn: this.turn, state: this.state, timer: r(this.timer), wind: this.wind,
-      w: this.wiz.map(w => [r(w.x), r(w.y), w.hp, Math.round(w.mana), r(w.angle), r(w.power), (this.state === 'aim' && w.i === this.turn) ? w.dir : 0, w.grounded ? 1 : 0, w.alive ? 1 : 0, SKEYS.indexOf(w.spell)]),
+      w: this.wiz.map(w => [r(w.x), r(w.y), w.hp, Math.round(w.mana), r(w.angle), r(w.power), (this.state === 'aim' && w.i === this.turn) ? w.dir : 0, w.grounded ? 1 : 0, w.alive ? 1 : 0, SKEYS.indexOf(w.spell), w.flying ? 1 : 0]),
       p: this.projs.map(p => [p.id, SKEYS.indexOf(p.sp), r(p.x), r(p.y), Math.round(p.vx), Math.round(p.vy)]),
+      l: this.lava.map(b => [r(b.x), r(b.y), r(b.r), r(b.life)]),
       over: this.over
     };
   }
