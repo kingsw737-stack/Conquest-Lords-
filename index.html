@@ -49,6 +49,13 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .big{display:block;width:min(300px,80vw);margin:6px auto;padding:14px;font-size:18px;font-weight:700;border-radius:14px;border:2px solid #fff5;background:linear-gradient(#ff9a3c,#e0408a);cursor:pointer}
 .big.alt{background:linear-gradient(#5f8bff,#7a3fd0)}
 .ov small{margin-top:16px;max-width:460px;color:#b9a8f0;line-height:1.5}
+.big.on{background:linear-gradient(#35d07f,#1a8f5a)}
+.fld{width:min(300px,80vw);margin:6px auto;padding:12px;font-size:17px;text-align:center;border-radius:12px;border:2px solid #fff5;background:#0b0620cc;color:#fff;user-select:text;-webkit-user-select:text}
+.row{display:flex;gap:8px;justify-content:center;align-items:center;width:min(300px,80vw);margin:6px auto}
+.row .fld{margin:0;flex:1;min-width:0;text-transform:uppercase;letter-spacing:4px}
+.row .big{margin:0;width:auto;padding:12px 18px;font-size:16px}
+#ost{min-height:44px;margin:10px 0 0;color:#ffd86b;font-weight:600}
+#net{position:fixed;top:calc(env(safe-area-inset-top) + 70px);left:50%;transform:translateX(-50%);z-index:20;background:#b3261eee;border-radius:10px;padding:6px 14px;font-size:13px;font-weight:600;pointer-events:none}
 </style>
 </head>
 <body>
@@ -75,15 +82,28 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <h1>ARCANE<br>WARFARE</h1>
   <p>Turn-based wizard artillery. Blast the terrain, read the wind, be the last mage standing.</p>
   <button class="big" id="p1">Play vs AI</button>
+  <button class="big on" id="p3">Play Online</button>
   <button class="big alt" id="p2">Local 2-Player</button>
   <small>Move: &larr; &rarr; / A D &middot; Jump: W &middot; Aim: &uarr; &darr; or drag on the battlefield &middot; Power: Q E &middot; Fire: Space &middot; Spells: 1 2 &middot; Zoom: wheel or + &minus;<br>On phones use the on-screen buttons and sliders.</small>
 </div>
+<div class="ov hide" id="online">
+  <h1 style="font-size:clamp(30px,8vw,54px)">ONLINE</h1>
+  <input class="fld" id="nm" maxlength="14" placeholder="Your wizard name" autocomplete="off">
+  <button class="big on" id="qm">Quick Match</button>
+  <button class="big alt" id="cr">Create Private Room</button>
+  <div class="row"><input class="fld" id="jc" maxlength="4" placeholder="CODE" autocomplete="off"><button class="big alt" id="jn">Join</button></div>
+  <button class="big hide" id="sh" style="background:#ffffff22">Share invite link</button>
+  <p id="ost"></p>
+  <button class="big" id="oback" style="background:#ffffff22">Back</button>
+</div>
+<div id="net" class="hide"></div>
 <div class="ov hide" id="over">
   <h1 id="ot">Victory!</h1><p id="os"></p>
   <button class="big" id="again">Play again</button>
   <button class="big alt" id="tomenu">Main menu</button>
 </div>
 
+<script src="core.js"></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id),R=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -137,6 +157,8 @@ function carve(cx,cy,r){
 /* ---------- Wizards ---------- */
 const mk=(i,name,x,col,col2,isAI)=>({i,name,x,y:0,vx:0,vy:0,hp:100,mana:60,angle:i?135:45,power:60,spell:'fire',col,col2,ai:isAI,alive:true,hurt:0,cast:0,ph:0,grounded:false,walking:false});
 const cur=()=>wiz[turn];
+let me=0;
+const ctl=w=>!!w&&!w.ai&&(mode!=='online'||w.i===me);
 function muzzle(w,ang){const a=ang*Math.PI/180,f=Math.cos(a)>=0?1:-1,lx=Math.abs(Math.cos(a)),ly=-Math.sin(a);return[w.x+f*1.2*(3+lx*27),w.y+1.2*(-22+ly*27)]}
 function physW(w,dt,walk){
   if(!w.alive)return;
@@ -271,11 +293,13 @@ function showOver(win){
   else{t=win.name+' wins!';s='Last mage standing.'}
   $('ot').textContent=t;$('os').textContent=s;$('over').classList.remove('hide');
 }
-function jump(){const w=cur();if(state==='aim'&&!w.ai&&w.grounded){w.vy=-330;w.grounded=false}}
-function pick(k){const w=cur();if(state==='aim'&&!w.ai&&w.mana>=SPELLS[k].mana)w.spell=k}
+function jump(){const w=cur();if(state!=='aim'||!ctl(w))return;if(mode==='online')sendAct({t:'jump'});else if(w.grounded){w.vy=-330;w.grounded=false}}
+function pick(k){const w=cur();if(state!=='aim'||!ctl(w)||w.mana<SPELLS[k].mana)return;w.spell=k;if(mode==='online'){pickT=performance.now();sendAct({t:'spell',k})}}
+function doFire(){const c=cur();if(state!=='aim'||!ctl(c))return;if(mode==='online')sendAct({t:'fire',angle:c.angle,power:c.power,spell:c.spell});else fire(c)}
 
 function update(dt){
   time+=dt;shake=Math.max(0,shake-dt*30);flash=Math.max(0,flash-dt);
+  if(mode==='online'){onUpdate(dt);return}
   const c=cur();
   let dir=0;
   if(state==='aim'&&c&&!c.ai){
@@ -292,9 +316,7 @@ function update(dt){
     physW(w,dt,mine?dir*75:0);
   }
   for(const p of projs)stepProj(p,dt);projs=projs.filter(p=>!p.dead);
-  for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=p.g*dt;p.vx*=.99;p.life-=dt}parts=parts.filter(p=>p.life>0);
-  for(const f of fx)f.life-=dt;fx=fx.filter(f=>f.life>0);
-  for(const t of txts){t.y-=32*dt;t.life-=dt}txts=txts.filter(t=>t.life>0);
+  fxUpdate(dt);
   if(state==='aim'){
     timer-=dt;
     if(c.ai){
@@ -314,6 +336,11 @@ function update(dt){
     if(settle>.9||resolveT>20)endTurn();
   }
   camUpdate(dt);
+}
+function fxUpdate(dt){
+  for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=p.g*dt;p.vx*=.99;p.life-=dt}parts=parts.filter(p=>p.life>0);
+  for(const f of fx)f.life-=dt;fx=fx.filter(f=>f.life>0);
+  for(const t of txts){t.y-=32*dt;t.life-=dt}txts=txts.filter(t=>t.life>0);
 }
 function camUpdate(dt){
   if(!wiz.length)return;
@@ -403,7 +430,7 @@ function draw(){
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
   ctx.drawImage(tc,0,0);
   const c=cur();
-  if(state==='aim'&&c&&!c.ai){
+  if(state==='aim'&&ctl(c)){
     const sp=SPELLS[c.spell],a=c.angle*Math.PI/180,h=1/120;let[x,y]=muzzle(c,c.angle),vx=Math.cos(a)*c.power*sp.k,vy=-Math.sin(a)*c.power*sp.k;
     ctx.fillStyle='rgba(255,255,255,.75)';
     for(let i=0;i<10;i++){for(let j=0;j<7;j++){vy+=sp.g*h;vx+=wind*14*sp.wf*h;x+=vx*h;y+=vy*h}ctx.beginPath();ctx.arc(x,y,2.6-i*.2,0,7);ctx.fill()}
@@ -438,21 +465,21 @@ function hud(){
   const t=Math.ceil(Math.max(0,timer));$('timer').textContent=t;$('timer').classList.toggle('low',t<=5);
   $('wt').textContent='Wind '+(wind>0?'\u25B6 ':wind<0?'\u25C0 ':'')+Math.abs(wind);
   const f=$('wf').style;f.width=Math.abs(wind)/8*50+'%';f.left=wind>=0?'50%':(50-Math.abs(wind)/8*50)+'%';
-  const c=cur(),on=state==='aim'&&!c.ai;$('ctrl').classList.toggle('off',!on);
+  const c=cur(),on=state==='aim'&&ctl(c);$('ctrl').classList.toggle('off',!on);
   $('ar').value=Math.round(c.angle);$('pr').value=Math.round(c.power);$('av').textContent=Math.round(c.angle)+'\u00B0';$('pv').textContent=Math.round(c.power);
   for(const b of spBox.children){b.classList.toggle('sel',b.dataset.k===c.spell);b.disabled=SPELLS[b.dataset.k].mana>c.mana}
 }
-$('ar').oninput=e=>{if(!cur().ai)cur().angle=+e.target.value};
-$('pr').oninput=e=>{if(!cur().ai)cur().power=+e.target.value};
-$('bf').onclick=()=>{if(!cur().ai)fire(cur())};
+$('ar').oninput=e=>{if(ctl(cur())){cur().angle=+e.target.value;aimChanged()}};
+$('pr').oninput=e=>{if(ctl(cur())){cur().power=+e.target.value;aimChanged()}};
+$('bf').onclick=doFire;
 const hold=(id,k)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();ui[k]=1;b.setPointerCapture(e.pointerId)});for(const ev of['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>ui[k]=0)};
 hold('bl','l');hold('br','r');
 $('bj').addEventListener('pointerdown',e=>{e.preventDefault();jump()});
 addEventListener('keydown',e=>{
   keys[e.code]=true;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
-  if(state==='aim'&&!cur().ai){
-    if(e.code==='Space')fire(cur());
+  if(state==='aim'&&ctl(cur())){
+    if(e.code==='Space')doFire();
     if(e.code==='KeyW'||e.code==='KeyJ')jump();
     if(e.code==='Digit1')pick('fire');if(e.code==='Digit2')pick('bolt');
   }
@@ -460,10 +487,10 @@ addEventListener('keydown',e=>{
 addEventListener('keyup',e=>keys[e.code]=false);
 let drag=false;
 function aimTo(e){
-  if(state!=='aim'||cur().ai)return;const w=cur();
+  if(state!=='aim'||!ctl(cur()))return;const w=cur();
   const wx=cam.x+(e.clientX-cw/2)/sc,wy=cam.y+(e.clientY-ch/2)/sc,dx=wx-w.x,dy=(w.y-22)-wy;
   let ang=Math.atan2(dy,dx)*180/Math.PI;if(ang<0)ang=dx>=0?0:180;
-  w.angle=clamp(ang,0,180);w.power=clamp(Math.hypot(dx,dy)*.35,10,100);
+  w.angle=clamp(ang,0,180);w.power=clamp(Math.hypot(dx,dy)*.35,10,100);aimChanged();
 }
 cv.addEventListener('pointerdown',e=>{drag=true;aimTo(e)});
 cv.addEventListener('pointermove',e=>{if(drag)aimTo(e)});
@@ -473,11 +500,194 @@ cv.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.001)
 $('zi').onclick=()=>zoom(1.25);$('zo').onclick=()=>zoom(.8);
 $('fs').onclick=()=>{const d=document,el=d.documentElement;d.fullscreenElement?d.exitFullscreen():(el.requestFullscreen||el.webkitRequestFullscreen||(()=>{})).call(el)};
 $('p1').onclick=()=>start('ai');$('p2').onclick=()=>start('pvp');
-$('again').onclick=()=>start(mode);
-$('tomenu').onclick=()=>{$('over').classList.add('hide');$('menu').classList.remove('hide');demo()};
+$('again').onclick=()=>{if(mode==='online'){netSend({t:'rematch'});$('os').textContent='Waiting for your opponent\u2026';return}start(mode)};
+$('tomenu').onclick=()=>{leaveOnline();$('again').textContent='Play again';$('over').classList.add('hide');$('menu').classList.remove('hide');demo()};
+
+/* ---------- Online multiplayer ---------- */
+const SK=Object.keys(SPELLS),PCOL=[['#3d6fe0','#23449e'],['#d4365a','#8a1f3c']];
+let ws=null,sess=null,lastDir=0,aimT=0,pickT=0,aimTimer=0,wantClose=false,retryT=0,rj=0,gotSnap=false,overShown=false;
+const netSend=o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))};
+const sendAct=m=>netSend({t:'act',m});
+function setStatus(t){$('ost').textContent=t||''}
+function netBanner(t){const b=$('net');b.textContent=t||'';b.classList.toggle('hide',!t)}
+function aimChanged(){
+  if(mode!=='online')return;aimT=performance.now();
+  if(!aimTimer)aimTimer=setTimeout(()=>{aimTimer=0;const c=wiz[me];if(c)sendAct({t:'aim',angle:c.angle,power:c.power})},70);
+}
+function connect(cb){
+  wantClose=false;
+  if(ws&&ws.readyState===1){cb&&cb();return}
+  if(ws&&ws.readyState===0)return;
+  let sock;
+  try{sock=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host)}catch(e){setStatus('Could not connect.');return}
+  ws=sock;
+  sock.onopen=()=>{netBanner('');cb&&cb()};
+  sock.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(x){return}onNet(m)};
+  sock.onclose=()=>{if(ws===sock){ws=null;onClosed()}};
+  sock.onerror=()=>{};
+}
+function onClosed(){
+  if(wantClose)return;
+  if(sess&&mode==='online'&&state!=='over'){
+    if(rj++>=20){netBanner('Could not reconnect');setTimeout(toMenu,2500);return}
+    netBanner('Connection lost, reconnecting\u2026');
+    retryT=setTimeout(()=>connect(()=>netSend({t:'rejoin',code:sess.code,token:sess.token})),1500);return;
+  }
+  sess=null;$('sh').classList.add('hide');
+  if(!$('online').classList.contains('hide'))setStatus('Disconnected. Please try again.');
+}
+function leaveOnline(){
+  wantClose=true;clearTimeout(retryT);clearTimeout(aimTimer);aimTimer=0;
+  if(ws){netSend({t:'leave'});try{ws.close()}catch(e){}ws=null}
+  sess=null;rj=0;lastDir=0;overShown=false;netBanner('');
+  if(mode==='online')mode='ai';
+}
+function toMenu(){
+  leaveOnline();$('online').classList.add('hide');$('over').classList.add('hide');$('menu').classList.remove('hide');$('again').textContent='Play again';demo();
+}
+function onNet(m){
+  switch(m.t){
+    case 'lobby':
+      sess={code:m.code,token:m.token};
+      if(m.quick){setStatus('Searching for an opponent\u2026')}
+      else{setStatus('Room code: '+m.code+'\nWaiting for a friend to join\u2026');$('sh').classList.remove('hide')}
+      break;
+    case 'start':sess={code:m.code,token:m.token};rj=0;startOnline(m);break;
+    case 'ev':onEv(m.e);break;
+    case 's':applySnap(m);break;
+    case 'opp':netBanner(m.away?'Opponent disconnected\u2026 waiting for them to return':'');break;
+    case 'left':
+      netBanner('');sess=null;state='over';
+      if(!overShown){overShown=true;showOnlineOver(null,'Your opponent left the match.')}
+      break;
+    case 'rematch':if(!$('over').classList.contains('hide'))$('os').textContent='Your opponent wants a rematch!';break;
+    case 'err':
+      setStatus(m.msg);
+      if(m.fatal){netBanner(m.msg);sess=null;setTimeout(toMenu,2000)}
+      break;
+  }
+}
+/* terrain rebuilt from the server's seed (same algorithm as core.js) */
+function buildTerrain(){
+  tc=document.createElement('canvas');tc.width=W;tc.height=H;tg=tc.getContext('2d');
+  const img=tg.createImageData(W,H),d=img.data;
+  for(let y=0;y<H;y++){
+    const t=y<230?0:(y-230)/(H-230);let r,g,b;
+    if(t<.5){const u=t/.5;r=160-53*u;g=106-40*u;b=52-20*u}else{const u=(t-.5)/.5;r=107-61*u;g=66-40*u;b=32-16*u}
+    for(let x=0;x<W;x++){
+      const i=y*W+x;if(!mask[i])continue;
+      const n=((((x>>1)*73856093)^((y>>1)*19349663))>>>0)%100,k=n<12?.75:n>90?1.12:1,o=i*4;
+      d[o]=Math.min(255,r*k);d[o+1]=Math.min(255,g*k);d[o+2]=Math.min(255,b*k);d[o+3]=255;
+    }
+  }
+  tg.putImageData(img,0,0);
+  for(let x=0;x<W;x++)for(let y=1;y<H;y++)if(mask[y*W+x]&&!mask[(y-1)*W+x]){
+    tg.fillStyle='#46b845';tg.fillRect(x,y,1,5+(x*7)%3);tg.fillStyle='#93f063';tg.fillRect(x,y,1,2);
+  }
+}
+function startOnline(m){
+  mode='online';me=m.idx;gotSnap=false;overShown=false;lastDir=0;
+  mask=Core.genMask(m.seed);buildTerrain();
+  for(const c of m.carves)carve(c[0],c[1],c[2]);
+  wiz=m.names.map((n,i)=>mk(i,n+(i===me?' (you)':''),0,PCOL[i][0],PCOL[i][1],false));
+  projs=[];parts=[];fx=[];txts=[];turn=0;state='aim';timer=30;wind=0;cam.auto=true;
+  $('n0').textContent=wiz[0].name;$('n1').textContent=wiz[1].name;
+  $('menu').classList.add('hide');$('online').classList.add('hide');$('over').classList.add('hide');
+  $('again').textContent='Rematch';netBanner('');
+}
+function applySnap(s){
+  if(mode!=='online'||!wiz.length)return;
+  const now=performance.now();
+  turn=s.turn;state=s.state;timer=s.timer;wind=s.wind;
+  s.w.forEach((a,i)=>{
+    const w=wiz[i];if(!w)return;
+    w.tx=a[0];w.ty=a[1];
+    if(!gotSnap||Math.hypot(w.tx-w.x,w.ty-w.y)>90){w.x=w.tx;w.y=w.ty}
+    w.hp=a[2];w.mana=a[3];
+    if(!(i===me&&now-aimT<300)){w.angle=a[4];w.power=a[5]}
+    w.dir=a[6];w.grounded=!!a[7];w.alive=!!a[8];
+    if(!(i===me&&now-pickT<300))w.spell=SK[a[9]]||'fire';
+  });
+  const old=new Map(projs.map(p=>[p.id,p]));
+  projs=s.p.map(a=>{const p=old.get(a[0])||{id:a[0],trail:[],age:0};p.sp=SK[a[1]];p.x=a[2];p.y=a[3];p.vx=a[4];p.vy=a[5];p.frozen=false;return p});
+  gotSnap=true;
+  if(s.over&&!overShown){overShown=true;setTimeout(()=>showOnlineOver(s.over),1200)}
+}
+function onEv(list){
+  for(const e of list){
+    const w=wiz[e.i];
+    if(e.e==='cast'){if(w)w.cast=.5}
+    else if(e.e==='hurt'){if(w){w.hurt=.5;txts.push({x:w.x,y:w.y-55,t:'-'+e.d,life:1.2})}}
+    else if(e.e==='kill'){if(w){shake=Math.max(shake,8);for(let i=0;i<40;i++)P(e.x,e.y-18,R(-160,160),R(-260,60),R(.5,1.2),R(2,5),i%2?'#ffe9a8':w.col,200)}}
+    else if(e.e==='splash')splash(e.x);
+    else if(e.e==='boom'){
+      const sp=SPELLS[e.k];if(!sp)continue;
+      carve(e.x,e.y,sp.r);shake=Math.max(shake,sp.r/5);boom(e.x,e.y,sp,e.k==='bolt');
+      projs=projs.filter(p=>p.sp!==e.k||Math.hypot(p.x-e.x,p.y-e.y)>40);
+    }
+  }
+}
+function drProj(p,dt){
+  const sp=SPELLS[p.sp];if(!sp||p.frozen)return;
+  const n=Math.max(1,Math.ceil(Math.hypot(p.vx,p.vy)*dt/4)),h=dt/n;
+  for(let i=0;i<n;i++){
+    p.vy+=sp.g*h;p.vx+=wind*14*sp.wf*h;p.x+=p.vx*h;p.y+=p.vy*h;p.age+=h;
+    if(p.y>WATER||solid(p.x,p.y)){p.frozen=true;return}
+  }
+  if(p.sp==='fire'){P(p.x,p.y,R(-25,25),R(-25,25),.5,7,'#ff8a1f',-30);if(Math.random()<.4)P(p.x,p.y,R(-15,15),R(-30,-5),.9,8,'#443',-40,false)}
+  else{p.trail.push([p.x,p.y]);if(p.trail.length>10)p.trail.shift()}
+}
+function onUpdate(dt){
+  const c=cur();
+  if(state==='aim')timer-=dt;
+  if(c&&state==='aim'&&ctl(c)){
+    const d=((keys.ArrowRight||keys.KeyD||ui.r)?1:0)-((keys.ArrowLeft||keys.KeyA||ui.l)?1:0);
+    const u=(keys.ArrowUp?1:0)-(keys.ArrowDown?1:0),pw=(keys.KeyE?1:0)-(keys.KeyQ?1:0);
+    if(u||pw){const f=Math.cos(c.angle*Math.PI/180)>=0?1:-1;c.angle=clamp(c.angle+u*f*60*dt,0,180);c.power=clamp(c.power+pw*35*dt,10,100);aimChanged()}
+    if(d!==lastDir){lastDir=d;sendAct({t:'dir',v:d})}
+  }else if(lastDir){lastDir=0;sendAct({t:'dir',v:0})}
+  for(const w of wiz){
+    w.hurt=Math.max(0,w.hurt-dt);w.cast=Math.max(0,w.cast-dt);
+    w.walking=state==='aim'&&w.i===turn&&!!w.dir&&w.grounded;if(w.walking)w.ph+=dt*11;
+    if(w.tx!==undefined){const k=Math.min(1,dt*16);w.x+=(w.tx-w.x)*k;w.y+=(w.ty-w.y)*k}
+  }
+  for(const p of projs)drProj(p,dt);
+  fxUpdate(dt);camUpdate(dt);
+}
+function showOnlineOver(o,msg){
+  let t,s;
+  if(!o){t='You win!';s=msg||''}
+  else if(o.team<0){t='Draw!';s='Both wizards fell.'}
+  else if(o.team===me){t='Victory!';s='You outwitted '+(o.names[0]||'your opponent').replace(' (you)','')+'.'}
+  else{t='Defeat';s=(o.names[0]||'Your opponent')+' wins this round.'}
+  $('ot').textContent=t;$('os').textContent=s;$('over').classList.remove('hide');
+}
+function initOnlineUI(){
+  if(typeof Core==='undefined')$('p3').classList.add('hide');
+  try{$('nm').value=localStorage.getItem('aw_name')||''}catch(e){}
+  const nm=()=>{const n=$('nm').value.trim()||'Wizard';try{localStorage.setItem('aw_name',n)}catch(e){}return n};
+  $('p3').onclick=()=>{$('menu').classList.add('hide');$('online').classList.remove('hide');setStatus('');$('sh').classList.add('hide')};
+  $('oback').onclick=()=>{leaveOnline();$('online').classList.add('hide');$('menu').classList.remove('hide')};
+  $('qm').onclick=()=>{setStatus('Connecting\u2026');connect(()=>netSend({t:'quick',name:nm()}))};
+  $('cr').onclick=()=>{setStatus('Connecting\u2026');connect(()=>netSend({t:'create',name:nm()}))};
+  $('jn').onclick=()=>{
+    const code=$('jc').value.trim().toUpperCase();
+    if(code.length!==4){setStatus('Enter the 4-letter room code.');return}
+    setStatus('Joining\u2026');connect(()=>netSend({t:'join',code,name:nm()}));
+  };
+  $('sh').onclick=()=>{
+    const url=location.origin+'/?room='+sess.code;
+    if(navigator.share)navigator.share({title:'Arcane Warfare',text:'Join my wizard duel!',url}).catch(()=>{});
+    else if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>setStatus('Invite link copied! Room code: '+sess.code));
+  };
+  $('ost').style.whiteSpace='pre-line';
+  const rp=new URLSearchParams(location.search).get('room');
+  if(rp&&typeof Core!=='undefined'){$('jc').value=rp.toUpperCase().slice(0,4);$('p3').onclick()}
+}
 
 function demo(){mode='ai';genTerrain();wiz=[mk(0,'Aldric',R(190,360),'#3d6fe0','#23449e',false),mk(1,'Morgana (AI)',R(1040,1210),'#d4365a','#8a1f3c',true)];projs=[];parts=[];fx=[];txts=[];turn=0;state='menu';timer=30;wind=0;$('n0').textContent='Aldric';$('n1').textContent='Morgana (AI)'}
 demo();
+initOnlineUI();
 
 let last=0,acc=0;
 function loop(ts){
