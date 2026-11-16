@@ -44,20 +44,21 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .grp .gb{width:46px;height:42px;font-size:24px;font-weight:800;line-height:1}
 #bf{width:86px;height:86px;border-radius:50%;border:3px solid #ffffffaa;background:radial-gradient(circle at 50% 28%,#ffe08a,#ff8a2a 42%,#d6204f);box-shadow:inset 0 3px 0 #fff7,inset 0 -7px 0 #0004,0 0 20px #ff7a2a99,0 6px 10px #000a;color:#fff;font-weight:900;font-size:20px;letter-spacing:1px;text-shadow:0 2px 0 #0008;cursor:pointer;touch-action:manipulation}
 #bf:active{transform:scale(.93);filter:brightness(1.15)}
-#wpn{display:flex;align-items:center;gap:8px;padding:6px 9px;margin:0 auto;min-width:0;background:linear-gradient(#2a1f62f0,#150d38f0);border:2px solid #0b0620;border-radius:18px;box-shadow:inset 0 2px 0 #ffffff30,0 0 0 1px #ffd86b55,0 6px 14px #000a}
+#wpn{position:relative;display:flex;align-items:center;gap:8px;padding:5px 8px;margin:0 auto;min-width:0;background:linear-gradient(#2a1f62f0,#150d38f0);border:2px solid #0b0620;border-radius:18px;box-shadow:inset 0 2px 0 #ffffff30,0 0 0 1px #ffd86b55,0 6px 14px #000a}
 #wcol{display:flex;flex-direction:column;gap:6px}
 #mn{height:6px;border-radius:3px;background:#0009;overflow:hidden;border:1px solid #0b0620}#mn i{display:block;height:100%;width:100%;background:linear-gradient(#9cc4ff,#3a63e8);transition:width .3s}
-#sp{display:flex;gap:6px}
-#sp button{position:relative;width:44px;height:44px;border-radius:13px;font-size:24px;line-height:1;cursor:pointer;background:linear-gradient(#3d3180,#1f1650);border:2px solid #0b0620;box-shadow:inset 0 2px 0 #ffffff35,0 0 0 1px #ffffff25;display:grid;place-items:center;padding:0}
+#sp{display:grid;grid-template-columns:repeat(3,76px);gap:6px}
+#sp button{position:relative;width:76px;height:72px;border-radius:13px;font-size:24px;line-height:1;color:#fff;cursor:pointer;background:linear-gradient(#3d3180,#1f1650);border:2px solid #0b0620;box-shadow:inset 0 2px 0 #ffffff35,0 0 0 1px #ffffff25;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0}
+#sp .sn{font:800 10px/1 system-ui}
 #sp button.sel{border-color:var(--gold);box-shadow:inset 0 2px 0 #fff5,0 0 0 1px var(--gold),0 0 12px #ffd86b99;background:linear-gradient(#6a4fc0,#33227a)}
 #sp button:disabled{opacity:.35}
-#sp em{position:absolute;right:-4px;bottom:-5px;font:800 10px/1 system-ui;font-style:normal;background:#3a63e8;border:1.5px solid #0b0620;border-radius:8px;padding:2px 4px}
+#sp em{font:700 9px/1 system-ui;font-style:normal;color:#9cc4ff}
 .sep{width:1px;align-self:stretch;background:#ffffff25}
 #dial{display:flex;align-items:center;gap:4px}
 #dial svg{display:block}.arc{fill:none;stroke:#ffffff55;stroke-width:3;stroke-linecap:round}#needle{stroke:var(--gold);stroke-width:3;stroke-linecap:round}
 #dial b,#pw b{font-size:15px;font-weight:800;min-width:34px;text-shadow:0 1px 2px #000}
 #pw{display:flex;align-items:center;gap:6px}
-#pbar{position:relative;width:84px;height:20px;border-radius:10px;background:#0009;border:2px solid #0b0620;overflow:hidden;touch-action:none;cursor:pointer;box-shadow:inset 0 2px 4px #000a}
+#pbar{position:relative;width:96px;height:14px;border-radius:10px;background:#0009;border:2px solid #0b0620;overflow:hidden;touch-action:none;cursor:pointer;box-shadow:inset 0 2px 4px #000a}
 #pfill{position:absolute;inset:0;background:linear-gradient(90deg,#4de06a,#ffd23f 60%,#ff4a3a);pointer-events:none}
 #pbar:after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 2px),#0009 calc(10% - 2px) 10%)}
 @media(max-width:720px){#wpn{position:absolute;left:50%;transform:translateX(-50%);margin:0;bottom:calc(env(safe-area-inset-bottom) + 126px)}}
@@ -79,6 +80,13 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 #net{position:fixed;top:calc(env(safe-area-inset-top) + 70px);left:50%;transform:translateX(-50%);z-index:20;background:#b3261eee;border-radius:10px;padding:6px 14px;font-size:13px;font-weight:600;pointer-events:none}
 .ov{overflow-y:auto;justify-content:safe center}
 @media(max-height:480px){.ov h1{font-size:36px;margin-bottom:6px}.ov p{margin-bottom:8px;font-size:13px}.big{padding:9px;margin:4px auto;font-size:16px}.ov small{display:none}#snd{margin-top:6px}#snd button{height:38px!important}}
+#bag{touch-action:manipulation;position:relative;width:42px;height:38px;border-radius:12px;border:2px solid #0b0620;background:linear-gradient(#6a4fc0,#33227a);box-shadow:inset 0 2px 0 #fff4,0 0 0 1px #ffd86b88;display:grid;place-items:center;padding:0;cursor:pointer}
+#bag:active{transform:translateY(2px)}
+#bagsel{position:absolute;right:-5px;top:-7px;font-size:13px;line-height:1;filter:drop-shadow(0 1px 1px #000)}
+#bagpop{position:absolute;right:0;bottom:calc(100% + 10px);padding:8px;border-radius:16px;background:linear-gradient(#2a1f62f8,#150d38f8);border:2px solid #0b0620;box-shadow:0 0 0 1px #ffd86b88,0 8px 18px #000b;display:none}
+#bagpop.on{display:block}
+#bagpop .bh{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:10px;letter-spacing:1.5px;color:#cdbdff}
+#bagpop .bh #mn{flex:1}
 </style>
 </head>
 <body>
@@ -86,7 +94,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 
 <div id="top">
   <div class="card" id="c0"><b id="n0"></b><div class="bar hp"><i id="h0"></i></div><div class="bar mp"><i id="m0"></i></div></div>
-  <div id="mid"><div id="timer">30</div><div id="wind"><span id="wt">Wind 0</span><div id="wb"><i id="wf"></i></div></div></div>
+  <div id="mid"><div id="timer">30</div></div>
   <div class="card" id="c1"><b id="n1"></b><div class="bar hp"><i id="h1"></i></div><div class="bar mp"><i id="m1"></i></div></div>
 </div>
 
@@ -104,10 +112,9 @@ button{font:inherit;color:inherit;touch-action:manipulation}
     </div>
   </div>
   <div id="wpn">
-    <div id="wcol"><div id="sp"></div><div id="mn"><i id="mnf"></i></div></div><div class="sep"></div>
-    <div id="dial"><svg viewBox="0 0 40 24" width="46" height="28"><path class="arc" d="M4 21A16 16 0 0 1 36 21"/><line id="needle" x1="20" y1="21" x2="34" y2="21"/><circle cx="20" cy="21" r="2.6" fill="#fff"/></svg><b id="av">45&deg;</b></div>
-    <div class="sep"></div>
     <div id="pw"><div id="pbar"><i id="pfill"></i></div><b id="pv">60</b></div>
+    <button id="bag" aria-label="Spell bag" aria-expanded="false"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5a3 3 0 0 1 6 0"/><path d="M7 8h10a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z"/><path d="M8 14h8"/><path d="M12 12v4"/></svg><span id="bagsel"></span></button>
+    <div id="bagpop"><div class="bh"><b>SPELL BAG</b><div id="mn"><i id="mnf"></i></div></div><div id="sp"></div></div>
   </div>
   <div id="aim">
     <div class="grp"><small>ANGLE</small><button class="gb" id="au" aria-label="Angle up"><svg class="ic"><use href="#arw"/></svg></button><button class="gb" id="ad" aria-label="Angle down"><svg class="ic" style="transform:rotate(180deg)"><use href="#arw"/></svg></button></div>
@@ -511,18 +518,20 @@ function draw(){
 }
 
 /* ---------- HUD & input ---------- */
-const spBox=$('sp');
-for(const k in SPELLS){const b=document.createElement('button');b.dataset.k=k;b.title=SPELLS[k].name;b.innerHTML=SPELLS[k].icon+(SPELLS[k].mana?'<em>'+SPELLS[k].mana+'</em>':'');b.onclick=()=>pick(k);spBox.appendChild(b)}
+const spBox=$('sp'),bagPop=$('bagpop');
+function setBag(o){bagPop.classList.toggle('on',o);$('bag').setAttribute('aria-expanded',o)}
+$('bag').addEventListener('click',e=>{e.stopPropagation();setBag(!bagPop.classList.contains('on'))});
+bagPop.addEventListener('pointerdown',e=>e.stopPropagation());
+addEventListener('pointerdown',()=>setBag(false));
+for(const k in SPELLS){const b=document.createElement('button');b.dataset.k=k;b.title=SPELLS[k].name;b.innerHTML='<span class="si">'+SPELLS[k].icon+'</span><span class="sn">'+SPELLS[k].name+'</span><em>'+(SPELLS[k].mana?SPELLS[k].mana+' mana':'free')+'</em>';b.onclick=()=>{pick(k);setBag(false)};spBox.appendChild(b)}
 function hud(){
   if(!wiz.length)return;
   for(const w of wiz){$('h'+w.i).style.width=w.hp+'%';$('m'+w.i).style.width=w.mana+'%';$('c'+w.i).classList.toggle('active',w===cur()&&state==='aim')}
   const t=Math.ceil(Math.max(0,timer));$('timer').textContent=t;$('timer').classList.toggle('low',t<=5);
-  $('wt').textContent='Wind '+(wind>0?'\u25B6 ':wind<0?'\u25C0 ':'')+Math.abs(wind);
-  const f=$('wf').style;f.width=Math.abs(wind)/8*50+'%';f.left=wind>=0?'50%':(50-Math.abs(wind)/8*50)+'%';
   const c=cur(),on=state==='aim'&&ctl(c);
   if(t!==AU.lastTick){AU.lastTick=t;if(on&&t>0&&t<=5)sfx('tick')}$('ctrl').classList.toggle('off',!on);
-  $('mnf').style.width=c.mana+'%';const ra=c.angle*Math.PI/180;$('needle').setAttribute('x2',20+14*Math.cos(ra));$('needle').setAttribute('y2',21-14*Math.sin(ra));
-  $('av').textContent=Math.round(c.angle)+'\u00B0';$('pv').textContent=Math.round(c.power);$('pfill').style.clipPath='inset(0 '+(100-(c.power-10)/90*100)+'% 0 0)';
+  $('mnf').style.width=c.mana+'%';$('bagsel').textContent=SPELLS[c.spell].icon;
+  $('pv').textContent=Math.round(c.power);$('pfill').style.clipPath='inset(0 '+(100-(c.power-10)/90*100)+'% 0 0)';
   for(const b of spBox.children){b.classList.toggle('sel',b.dataset.k===c.spell);b.disabled=SPELLS[b.dataset.k].mana>c.mana}
 }
 $('bf').onclick=doFire;
