@@ -27,129 +27,199 @@ const server = http.createServer((req, res) => {
 });
 const wss = new WebSocketServer({ server, maxPayload: 4096 });
 
-const rooms = new Map();
-let quickRoom = null;
+const rooms = new Map(), names = new Map();
 const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 const newCode = () => { for (; ;) { let c = ''; for (let i = 0; i < 4; i++) c += ALPHA[Math.floor(Math.random() * ALPHA.length)]; if (!rooms.has(c)) return c; } };
-const clean = n => String(n || '').replace(/[^\w \-.]/g, '').trim().slice(0, 14) || 'Wizard';
+const clean = n => String(n || '').replace(/[^\w \-.]/g, '').trim().slice(0, 14);
 const send = (ws, o) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); };
-const GRACE = 30000;
+const GRACE = 30000, MAXN = 5;
+let lobbyDirty = true; const dirty = () => { lobbyDirty = true; };
+const roomsMsg = () => ({
+  t: 'rooms', list: [...rooms.values()].slice(0, 60).map(r => ({
+    code: r.code, host: (r.players.find(p => p.id === r.hostId) || {}).name || '', n: r.n, locked: r.locked, phase: r.phase, a: r.team(0).length, b: r.team(1).length
+  }))
+});
 
+/* A room holds two teams of up to n players (1v1 .. 5v5). Lobby phase -> game phase -> back to lobby phase. */
 class Room {
-  constructor() {
-    this.code = newCode(); this.slots = [null, null]; this.game = null; this.loop = null; this.rematch = [false, false];
-    rooms.set(this.code, this);
+  constructor(n, locked) {
+    this.code = newCode(); this.n = n; this.locked = locked; this.players = []; this.hostId = 0; this.nid = 1;
+    this.phase = 'lobby'; this.game = null; this.loop = null; this.order = [];
+    rooms.set(this.code, this); dirty();
   }
-  count() { return this.slots.filter(Boolean).length; }
-  add(ws, name) {
-    const idx = this.slots[0] ? 1 : 0;
-    this.slots[idx] = { ws, name: clean(name), token: crypto.randomBytes(8).toString('hex'), dc: null };
-    ws.room = this; ws.idx = idx; return idx;
+  team(t) { return this.players.filter(p => p.team === t); }
+  pickTeam(pref) {
+    const c = [0, 1].sort((x, y) => this.team(x).length - this.team(y).length);
+    if (pref === 0 || pref === 1) c.unshift(pref);
+    return c.find(t => this.team(t).length < this.n);
   }
-  start() {
-    this.rematch = [false, false];
-    this.seed = (Math.random() * 0xffffffff) >>> 0;
-    this.game = new Core.Game({ seed: this.seed, players: this.slots.map((s, i) => ({ name: s.name, team: i })) });
+  by(ws) { return this.players.find(p => p.id === ws.pid); }
+  add(ws, team) {
+    const p = { id: this.nid++, ws, name: ws.name, token: crypto.randomBytes(8).toString('hex'), team, dc: null, idx: -1, out: false, gone: false };
+    this.players.push(p); if (!this.hostId) this.hostId = p.id;
+    ws.room = this; ws.pid = p.id; return p;
+  }
+  info(id) {
+    return {
+      t: 'room', code: this.code, n: this.n, locked: this.locked, host: this.hostId, phase: this.phase, you: id,
+      teams: [0, 1].map(t => this.team(t).map(p => ({ id: p.id, name: p.name, away: !p.ws })))
+    };
+  }
+  sync() { for (const p of this.players) send(p.ws, this.info(p.id)); dirty(); }
+  destroy() { clearInterval(this.loop); for (const p of this.players) clearTimeout(p.dc); rooms.delete(this.code); dirty(); }
+  /* lobby phase only: take a player out of the room */
+  remove(p) {
+    clearTimeout(p.dc); this.players = this.players.filter(x => x !== p);
+    if (p.ws && p.ws.pid === p.id) p.ws.room = null;
+    if (!this.players.length) return this.destroy();
+    if (this.hostId === p.id) this.hostId = (this.players.find(x => x.ws) || this.players[0]).id;
+    this.sync();
+  }
+  bcast(o) { const s = JSON.stringify(o); for (const p of this.players) if (p.ws && p.ws.readyState === 1) p.ws.send(s); }
+  start(ws) {
+    const p = this.by(ws), A = this.team(0), B = this.team(1);
+    if (!p || p.id !== this.hostId || this.phase !== 'lobby') return;
+    if (!A.length || A.length !== B.length) return send(ws, { t: 'err', msg: 'Both teams need the same number of players.' });
+    /* alternate the teams in turn order: A1, B1, A2, B2 ... */
+    this.order = []; for (let i = 0; i < A.length; i++) this.order.push(A[i], B[i]);
+    this.order.forEach((q, i) => { q.idx = i; q.out = false; q.gone = false; });
+    this.phase = 'game'; this.seed = (Math.random() * 0xffffffff) >>> 0;
+    this.game = new Core.Game({ seed: this.seed, players: this.order.map(q => ({ name: q.name, team: q.team })) });
     for (const w of this.game.wiz) w.grounded = true;
-    this.evBuf = [];
-    this.slots.forEach((s, i) => this.sendStart(i));
-    clearInterval(this.loop);
-    this.last = Date.now(); this.acc = 0; this.snapT = 0;
-    this.loop = setInterval(() => this.tick(), 16);
+    this.evBuf = []; this.order.forEach(q => this.sendStart(q));
+    clearInterval(this.loop); this.last = Date.now(); this.acc = 0; this.snapT = 0;
+    this.loop = setInterval(() => this.tick(), 16); this.sync();
   }
-  sendStart(i) {
-    const s = this.slots[i], g = this.game;
-    send(s.ws, { t: 'start', code: this.code, token: s.token, idx: i, seed: this.seed, names: this.slots.map(x => x.name), carves: g.carves });
+  sendStart(p) {
+    send(p.ws, { t: 'start', code: this.code, token: p.token, idx: p.idx, seed: this.seed, names: this.order.map(x => x.name), teams: this.order.map(x => x.team), carves: this.game.carves });
   }
   tick() {
-    const g = this.game, now = Date.now(); let dt = Math.min(.1, (now - this.last) / 1000); this.last = now;
+    const g = this.game, now = Date.now(); const dt = Math.min(.1, (now - this.last) / 1000); this.last = now;
     this.acc += dt; this.snapT += dt;
     while (this.acc >= 1 / 60) { g.step(1 / 60); this.acc -= 1 / 60; const ev = g.drain(); if (ev.length) this.evBuf.push(...ev); }
     if (this.evBuf.length) { this.bcast({ t: 'ev', e: this.evBuf }); this.evBuf = []; }
     if (this.snapT >= .05 || g.state === 'over') {
       this.snapT = 0; this.bcast(Object.assign({ t: 's' }, g.snap()));
-      if (g.state === 'over') { clearInterval(this.loop); this.loop = null; }
+      if (g.state === 'over') { clearInterval(this.loop); this.loop = null; this.finish(); }
     }
   }
-  bcast(o) { const s = JSON.stringify(o); for (const p of this.slots) if (p && p.ws && p.ws.readyState === 1) p.ws.send(s); }
-  other(idx) { return this.slots[1 - idx]; }
+  /* match is over: everybody who is still connected goes back to the room lobby */
+  finish() {
+    clearInterval(this.loop); this.loop = null; this.phase = 'lobby'; this.game = null;
+    const stay = this.players.filter(p => p.ws && !p.gone);
+    for (const p of this.players) { clearTimeout(p.dc); p.idx = -1; p.out = false; }
+    this.players = stay;
+    if (!stay.length) return this.destroy();
+    if (!stay.some(p => p.id === this.hostId)) this.hostId = stay[0].id;
+    this.sync();
+  }
   /* socket closed */
   drop(ws) {
-    const idx = ws.idx, s = this.slots[idx];
-    if (!s || s.ws !== ws) return;
-    s.ws = null;
-    if (!this.game || this.game.state === 'over') return this.close(idx);
-    s.dc = setTimeout(() => this.close(idx), GRACE);
-    const o = this.other(idx); if (o) send(o.ws, { t: 'opp', away: true });
+    const p = this.by(ws); if (!p || p.ws !== ws) return;
+    if (this.phase === 'lobby') return this.remove(p);
+    p.ws = null; clearTimeout(p.dc); p.dc = setTimeout(() => this.forfeit(p, false), GRACE);
+    this.bcast({ t: 'away', i: p.idx, away: true });
   }
   rejoin(ws, token) {
-    const idx = this.slots.findIndex(s => s && s.token === token);
-    if (idx < 0 || !this.game) return false;
-    const s = this.slots[idx]; clearTimeout(s.dc); s.dc = null;
-    if (s.ws && s.ws !== ws) { s.ws.room = null; try { s.ws.terminate(); } catch (e) { } }
-    s.ws = ws; ws.room = this; ws.idx = idx;
-    this.sendStart(idx); send(ws, Object.assign({ t: 's' }, this.game.snap()));
-    const o = this.other(idx); if (o) send(o.ws, { t: 'opp', away: false });
-    return true;
+    const p = this.players.find(x => x.token === token && !x.out);
+    if (!p || this.phase !== 'game' || !this.game) return false;
+    clearTimeout(p.dc); p.dc = null;
+    if (p.ws && p.ws !== ws) { p.ws.room = null; try { p.ws.terminate(); } catch (e) { } }
+    p.ws = ws; ws.room = this; ws.pid = p.id; ws.name = p.name;
+    if (!names.has(p.name.toLowerCase())) names.set(p.name.toLowerCase(), ws);
+    this.sendStart(p); send(ws, Object.assign({ t: 's' }, this.game.snap()));
+    this.bcast({ t: 'away', i: p.idx, away: false }); return true;
   }
-  /* idx leaves or is gone: end the room, tell the other player */
-  close(idx) {
-    const o = idx === undefined ? null : this.other(idx); if (o) send(o.ws, { t: 'left' });
-    clearInterval(this.loop);
-    for (const p of this.slots) if (p) { clearTimeout(p.dc); if (p.ws) p.ws.room = null; }
-    rooms.delete(this.code); if (quickRoom === this) quickRoom = null;
+  /* a player left (gone) or stayed away too long: their wizard falls, and a team with nobody left loses */
+  forfeit(p, gone) {
+    clearTimeout(p.dc); if (this.phase !== 'game' || !this.game) return;
+    p.out = true; p.gone = p.gone || gone;
+    const w = this.game.wiz[p.idx];
+    if (w && w.alive) { w.hp = 0; w.alive = false; this.bcast({ t: 'ev', e: [{ e: 'kill', i: p.idx, x: w.x, y: w.y }] }); }
+    this.bcast({ t: 'away', i: p.idx, away: false });
+    const act = t => this.order.some(q => q.team === t && !q.out);
+    if (act(0) && act(1)) return;
+    this.bcast({ t: 'forfeit', win: act(0) ? 0 : act(1) ? 1 : -1 }); this.finish();
   }
 }
 
-function leave(ws) { const r = ws.room; if (r) { ws.room = null; r.close(ws.idx); } }
+function leave(ws) {
+  const r = ws.room; if (!r) return; const p = r.by(ws); ws.room = null; if (!p) return;
+  if (r.phase === 'lobby') r.remove(p); else r.forfeit(p, true);
+}
 
 wss.on('connection', ws => {
-  ws.isAlive = true; ws.cnt = 0; ws.room = null;
+  ws.isAlive = true; ws.cnt = 0; ws.room = null; ws.name = ''; ws.pid = 0;
   ws.on('pong', () => ws.isAlive = true);
   ws.on('message', raw => {
     if (++ws.cnt > 150) return;
     let m; try { m = JSON.parse(raw); } catch (e) { return; }
     if (!m || typeof m.t !== 'string') return;
     const r = ws.room;
+    if (m.t === 'rejoin') {
+      const room = rooms.get(String(m.code || '').toUpperCase());
+      if (!room || !room.rejoin(ws, String(m.token || ''))) send(ws, { t: 'err', msg: 'That match has ended.', fatal: true });
+      return;
+    }
+    if (m.t === 'hello') {
+      if (r) return;
+      const n = clean(m.name); if (!n) return send(ws, { t: 'err', msg: 'Pick a name first.' });
+      const k = n.toLowerCase(), o = names.get(k);
+      if (o && o !== ws) return send(ws, { t: 'err', msg: 'That name is taken, try another.' });
+      if (ws.name) names.delete(ws.name.toLowerCase());
+      ws.name = n; names.set(k, ws); send(ws, { t: 'hello', name: n }); send(ws, roomsMsg()); return;
+    }
+    if (!ws.name) return;
+    const me = r && r.by(ws), host = !!me && me.id === r.hostId;
     switch (m.t) {
       case 'create': {
-        leave(ws); const room = new Room(); room.add(ws, m.name);
-        send(ws, { t: 'lobby', code: room.code, token: room.slots[0].token, quick: false }); break;
+        if (r) return;
+        const n = Math.max(1, Math.min(MAXN, m.n | 0 || 1)), room = new Room(n, !!m.locked);
+        room.add(ws, 0); room.sync(); break;
       }
       case 'join': {
-        leave(ws); const room = rooms.get(String(m.code || '').toUpperCase());
-        if (!room || room.game || room.count() !== 1) return send(ws, { t: 'err', msg: 'Room not found or already full.' });
-        room.add(ws, m.name); room.start(); break;
-      }
-      case 'quick': {
-        leave(ws);
-        if (quickRoom && rooms.has(quickRoom.code) && !quickRoom.game && quickRoom.count() === 1) {
-          const room = quickRoom; quickRoom = null; room.add(ws, m.name); room.start();
-        } else {
-          const room = new Room(); room.add(ws, m.name); quickRoom = room;
-          send(ws, { t: 'lobby', code: room.code, token: room.slots[0].token, quick: true });
-        }
-        break;
-      }
-      case 'rejoin': {
+        if (r) return;
         const room = rooms.get(String(m.code || '').toUpperCase());
-        if (!room || !room.rejoin(ws, String(m.token || ''))) send(ws, { t: 'err', msg: 'That match has ended.', fatal: true });
+        if (!room) return send(ws, { t: 'err', msg: 'Room not found.' });
+        if (room.phase !== 'lobby') return send(ws, { t: 'err', msg: 'That match already started.' });
+        if (room.locked) return send(ws, { t: 'err', msg: 'That room is locked.' });
+        const t = room.pickTeam(m.team); if (t === undefined) return send(ws, { t: 'err', msg: 'That room is full.' });
+        room.add(ws, t); room.sync(); break;
+      }
+      case 'team': {
+        if (!r || r.phase !== 'lobby' || (m.team !== 0 && m.team !== 1)) break;
+        if (me.team !== m.team && r.team(m.team).length < r.n) { me.team = m.team; r.sync(); }
         break;
       }
-      case 'act': if (r && r.game && r.game.state !== 'over' && m.m && typeof m.m === 'object') r.game.act(ws.idx, m.m); break;
-      case 'rematch': {
-        if (!r || !r.game || r.game.state !== 'over' || r.count() !== 2) break;
-        r.rematch[ws.idx] = true;
-        if (r.rematch[0] && r.rematch[1]) r.start(); else { const o = r.other(ws.idx); if (o) send(o.ws, { t: 'rematch' }); }
+      case 'mode': {
+        if (!host || r.phase !== 'lobby') break;
+        const n = Math.max(1, Math.min(MAXN, m.n | 0 || 1));
+        if (n >= Math.max(r.team(0).length, r.team(1).length)) { r.n = n; r.sync(); }
         break;
       }
-      case 'leave': leave(ws); break;
+      case 'lock': if (host) { r.locked = !!m.locked; r.sync(); } break;
+      case 'kick': {
+        if (!host || r.phase !== 'lobby') break;
+        const t = r.players.find(p => p.id === m.id);
+        if (t && t !== me) { send(t.ws, { t: 'left', msg: 'The host removed you from the room.' }); const tw = t.ws; r.remove(t); send(tw, roomsMsg()); }
+        break;
+      }
+      case 'start': if (host) r.start(ws); break;
+      case 'act': if (r && r.phase === 'game' && r.game && r.game.state !== 'over' && me && !me.out && m.m && typeof m.m === 'object') r.game.act(me.idx, m.m); break;
+      case 'leave': leave(ws); send(ws, roomsMsg()); break;
     }
   });
-  ws.on('close', () => { if (ws.room) ws.room.drop(ws); });
+  ws.on('close', () => {
+    if (ws.name && names.get(ws.name.toLowerCase()) === ws) names.delete(ws.name.toLowerCase());
+    if (ws.room) ws.room.drop(ws);
+  });
   ws.on('error', () => { });
 });
 setInterval(() => { for (const ws of wss.clients) ws.cnt = 0; }, 1000);
+setInterval(() => {
+  if (!lobbyDirty) return; lobbyDirty = false; const s = JSON.stringify(roomsMsg());
+  for (const ws of wss.clients) if (ws.name && !ws.room && ws.readyState === 1) ws.send(s);
+}, 400);
 setInterval(() => { for (const ws of wss.clients) { if (!ws.isAlive) { ws.terminate(); continue; } ws.isAlive = false; try { ws.ping(); } catch (e) { } } }, 20000);
 
 server.listen(PORT, () => console.log('Arcane Warfare server on port ' + PORT));

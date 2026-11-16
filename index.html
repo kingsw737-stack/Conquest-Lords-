@@ -95,6 +95,22 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 #bag .spk2{animation-delay:.8s}
 @keyframes twk{0%,100%{opacity:.25;transform:scale(.6) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(25deg)}}
 #bag:active .bagart{transform:scale(.94)}
+.seg{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin:6px auto}
+.seg button,.tog{padding:8px 11px;border-radius:10px;border:2px solid #fff4;background:#0b0620cc;font-weight:700;font-size:14px;cursor:pointer}
+.seg button.sel,.tog.on{border-color:var(--gold);background:#4f4096;box-shadow:0 0 10px #ffd86b66}
+.st{min-height:22px;margin:6px 0 0;color:#ffd86b;font-weight:600;font-size:14px}
+#rl{width:min(440px,92vw);max-height:32vh;overflow-y:auto;margin:6px auto}
+.ri{display:flex;align-items:center;gap:8px;padding:8px 12px;margin:4px 0;border-radius:10px;background:#ffffff14;text-align:left}
+.ri b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ri span{color:#d9ccff;font-size:13px}
+.ri button,.pl button{padding:6px 12px;border-radius:8px;border:0;background:#35d07f;font-weight:700;font-size:13px;cursor:pointer}
+.ri button:disabled{background:#ffffff22;color:#fff8;cursor:default}
+#teams{display:flex;gap:10px;width:min(580px,94vw);margin:8px auto}
+.tm{flex:1;min-width:0;border-radius:12px;padding:8px;background:#ffffff12;border:2px solid #fff3}
+.tm.a{border-color:#3d6fe0}.tm.b{border-color:#d4365a}.tm h3{margin:0 0 6px;font-size:14px}
+.pl{display:flex;align-items:center;gap:6px;padding:5px 8px;margin:3px 0;border-radius:8px;background:#0b0620aa;font-size:14px;text-align:left;min-height:32px}
+.pl span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl.me{outline:2px solid var(--gold)}.pl.empty{opacity:.6;justify-content:center}.pl button.x{background:#b3261e;padding:4px 9px}
+#hc{margin:4px auto}
 </style>
 </head>
 <body>
@@ -159,13 +175,30 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 </div>
 <div class="ov hide" id="online">
   <h1 style="font-size:clamp(30px,8vw,54px)">ONLINE</h1>
-  <input class="fld" id="nm" maxlength="14" placeholder="Your wizard name" autocomplete="off">
-  <button class="big on" id="qm">Quick Match</button>
-  <button class="big alt" id="cr">Create Private Room</button>
-  <div class="row"><input class="fld" id="jc" maxlength="4" placeholder="CODE" autocomplete="off"><button class="big alt" id="jn">Join</button></div>
-  <button class="big hide" id="sh" style="background:#ffffff22">Share invite link</button>
-  <p id="ost"></p>
+  <input class="fld" id="nm" maxlength="14" placeholder="Choose your name" autocomplete="off">
+  <button class="big on" id="enter">Enter Lobby</button>
+  <p class="st"></p>
   <button class="big" id="oback" style="background:#ffffff22">Back</button>
+</div>
+<div class="ov hide" id="lobby">
+  <h1 style="font-size:clamp(28px,7vw,48px)">LOBBY</h1>
+  <p id="who" style="margin:0 0 6px"></p>
+  <div class="seg" id="cmodes"></div>
+  <div class="row" style="width:auto;gap:8px"><button class="tog" id="clk">&#128275; Open</button><button class="big on" id="cr" style="width:auto;padding:10px 18px;font-size:16px">Create room</button></div>
+  <div class="row"><input class="fld" id="jc" maxlength="4" placeholder="CODE" autocomplete="off"><button class="big alt" id="jn">Join</button></div>
+  <div id="rl"></div>
+  <p class="st"></p>
+  <button class="big" id="lback" style="background:#ffffff22">Leave lobby</button>
+</div>
+<div class="ov hide" id="room">
+  <h1 id="rt" style="font-size:clamp(26px,6vw,44px)">ROOM</h1>
+  <p id="rinfo" style="margin:0"></p>
+  <div id="teams"><div class="tm a" id="ta"></div><div class="tm b" id="tb"></div></div>
+  <div id="hc" class="hide"><div class="seg" id="rmodes"></div><button class="tog" id="rlk">&#128275; Open</button></div>
+  <button class="big on" id="rstart">Start match</button>
+  <button class="big alt hide" id="sh">Share invite link</button>
+  <p class="st"></p>
+  <button class="big" id="rleave" style="background:#ffffff22">Leave room</button>
 </div>
 <div id="net" class="hide"></div>
 <div class="ov hide" id="over">
@@ -426,7 +459,7 @@ function fxUpdate(dt){
 function camUpdate(dt){
   if(!wiz.length)return;
   const base=Math.max(cw/W,ch/H),minZ=Math.min(1,(cw/W)/base),c=cur();let tx=c.x,ty=c.y-30;
-  const o=wiz.find(w=>w!==c&&w.alive)||c;
+  const o=(c.team!==undefined?wiz.filter(w=>w.alive&&w.team!==c.team).sort((p,q)=>Math.abs(p.x-c.x)-Math.abs(q.x-c.x))[0]:wiz.find(w=>w!==c&&w.alive))||c;
   if(state!=='resolve'&&cam.auto||state==='menu'){
     tx=(c.x+o.x)/2;ty=(c.y+o.y)/2-40;
     const zt=clamp(cw/(Math.abs(c.x-o.x)+700)/base,minZ,1.1);cam.z+=(zt-cam.z)*Math.min(1,dt*3);
@@ -507,7 +540,7 @@ function drawWiz(w,active){
   if(w.hurt>0){c.globalAlpha=Math.min(.5,w.hurt);c.fillStyle='#f22';c.beginPath();c.ellipse(0,-20,9,18,0,0,7);c.fill()}
   c.restore();
   const y=w.y-64;ctx.fillStyle='#000a';ctx.fillRect(w.x-18,y,36,5);ctx.fillStyle=w.hp>40?'#4de06a':'#ff6a4a';ctx.fillRect(w.x-17,y+1,34*w.hp/100,3);
-  ctx.font='bold 10px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.fillText(w.name,w.x,y-4);
+  ctx.font='bold 10px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle=w.team===undefined?'#fff':w.team?'#ff9fb4':'#9fc4ff';ctx.fillText(w.name,w.x,y-4);
   if(active){const ay=y-18+Math.sin(time*6)*3;ctx.fillStyle='#ffd86b';ctx.beginPath();ctx.moveTo(w.x-6,ay-8);ctx.lineTo(w.x+6,ay-8);ctx.lineTo(w.x,ay);ctx.fill()}
 }
 function drawProj(p){
@@ -575,7 +608,7 @@ addEventListener('pointerdown',()=>setBag(false));
 for(const k in SPELLS){const b=document.createElement('button');b.dataset.k=k;b.title=SPELLS[k].name;b.innerHTML='<span class="si">'+SPELLS[k].icon+'</span><span class="sn">'+SPELLS[k].name+'</span><em>'+(SPELLS[k].mana?SPELLS[k].mana+' mana':'free')+'</em>';b.onclick=()=>{pick(k);setBag(false)};spBox.appendChild(b)}
 function hud(){
   if(!wiz.length)return;
-  for(const w of wiz){$('h'+w.i).style.width=w.hp+'%';$('m'+w.i).style.width=w.mana+'%';$('c'+w.i).classList.toggle('active',w===cur()&&state==='aim')}
+  for(const w of wiz){const h=$('h'+w.i);if(!h)continue;h.style.width=w.hp+'%';$('m'+w.i).style.width=w.mana+'%';$('c'+w.i).classList.toggle('active',w===cur()&&state==='aim')}
   const t=Math.ceil(Math.max(0,timer));$('timer').textContent=t;$('timer').classList.toggle('low',t<=5);
   const c=cur(),on=state==='aim'&&ctl(c);
   if(t!==AU.lastTick){AU.lastTick=t;if(on&&t>0&&t<=5)sfx('tick')}$('ctrl').classList.toggle('off',!on);
@@ -626,7 +659,7 @@ function enterGameScreen(){
 }
 function leaveGameScreen(){if(!isAndroid)return;try{screen.orientation.unlock()}catch(e){}try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
 $('p1').onclick=()=>{enterGameScreen();start('ai')};$('p2').onclick=()=>{enterGameScreen();start('pvp')};
-$('again').onclick=()=>{if(mode==='online'){netSend({t:'rematch'});$('os').textContent='Waiting for your opponent\u2026';return}start(mode)};
+$('again').onclick=()=>{if(mode==='online'){backToRoom();return}start(mode)};
 $('tomenu').onclick=()=>{leaveGameScreen();leaveOnline();$('again').textContent='Play again';$('over').classList.add('hide');$('menu').classList.remove('hide');demo()};
 
 
@@ -723,12 +756,17 @@ document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('but
 $('mu').onclick=()=>setSfx(!AU.on);$('mm').onclick=()=>setMus(!AU.mus);
 setSfx(AU.on);setMus(AU.mus);
 
-/* ---------- Online multiplayer ---------- */
-const SK=Object.keys(SPELLS),PCOL=[['#3d6fe0','#23449e'],['#d4365a','#8a1f3c']];
+/* ---------- Online multiplayer: name -> lobby (room list) -> room (teams) -> match ---------- */
+const SK=Object.keys(SPELLS);
+const TCOL=[[['#3d6fe0','#23449e'],['#2fb6e8','#1b6f94'],['#6a5ae0','#3d2f9e'],['#35c9b0','#1b7c6b'],['#7a9bff','#4663c4']],
+            [['#d4365a','#8a1f3c'],['#e8742f','#9a4410'],['#c23ad0','#772083'],['#e0b02f','#946e0c'],['#ff6f8e','#b83a58']]];
 let ws=null,sess=null,lastDir=0,aimT=0,pickT=0,aimTimer=0,wantClose=false,retryT=0,rj=0,gotSnap=false,overShown=false;
+let roomS=null,inMatch=false,myTeam=0,pendingJoin='',cn=1,cLock=false;
 const netSend=o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))};
 const sendAct=m=>netSend({t:'act',m});
-function setStatus(t){$('ost').textContent=t||''}
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
+function setStatus(t){for(const p of document.querySelectorAll('.st'))p.textContent=t||''}
+function show(id){for(const x of['online','lobby','room'])$(x).classList.toggle('hide',x!==id)}
 function netBanner(t){const b=$('net');b.textContent=t||'';b.classList.toggle('hide',!t)}
 function aimChanged(){
   if(mode!=='online')return;aimT=performance.now();
@@ -748,39 +786,47 @@ function connect(cb){
 }
 function onClosed(){
   if(wantClose)return;
-  if(sess&&mode==='online'&&state!=='over'){
+  if(sess&&inMatch&&state!=='over'){
     if(rj++>=20){netBanner('Could not reconnect');setTimeout(toMenu,2500);return}
     netBanner('Connection lost, reconnecting\u2026');
     retryT=setTimeout(()=>connect(()=>netSend({t:'rejoin',code:sess.code,token:sess.token})),1500);return;
   }
-  sess=null;$('sh').classList.add('hide');
-  if(!$('online').classList.contains('hide'))setStatus('Disconnected. Please try again.');
+  sess=null;roomS=null;
+  if(!inMatch&&$('menu').classList.contains('hide')){show('online');setStatus('Disconnected. Please try again.')}
 }
 function leaveOnline(){
   wantClose=true;clearTimeout(retryT);clearTimeout(aimTimer);aimTimer=0;
   if(ws){netSend({t:'leave'});try{ws.close()}catch(e){}ws=null}
-  sess=null;rj=0;lastDir=0;overShown=false;netBanner('');
+  sess=null;roomS=null;inMatch=false;rj=0;lastDir=0;overShown=false;pendingJoin='';netBanner('');
   if(mode==='online')mode='ai';
 }
 function toMenu(){
-  leaveOnline();$('online').classList.add('hide');$('over').classList.add('hide');$('menu').classList.remove('hide');$('again').textContent='Play again';demo();
+  leaveOnline();show(null);$('over').classList.add('hide');$('menu').classList.remove('hide');$('again').textContent='Play again';demo();
+}
+function backToRoom(){
+  inMatch=false;overShown=false;$('over').classList.add('hide');netBanner('');demo();$('again').textContent='Play again';
+  if(ws&&roomS){show('room');renderRoom()}else{show(ws?'lobby':'online');if(!ws)setStatus('Disconnected. Please try again.')}
 }
 function onNet(m){
   switch(m.t){
-    case 'lobby':
-      sess={code:m.code,token:m.token};
-      if(m.quick){setStatus('Searching for an opponent\u2026')}
-      else{setStatus('Room code: '+m.code+'\nWaiting for a friend to join\u2026');$('sh').classList.remove('hide')}
+    case 'hello':
+      $('who').textContent='Playing as '+m.name;show('lobby');setStatus('');
+      if(pendingJoin){netSend({t:'join',code:pendingJoin});pendingJoin=''}
+      break;
+    case 'rooms':renderRooms(m.list);break;
+    case 'room':
+      roomS=m;if(!inMatch){show('room');renderRoom()}
       break;
     case 'start':sess={code:m.code,token:m.token};rj=0;startOnline(m);break;
     case 'ev':onEv(m.e);break;
     case 's':applySnap(m);break;
-    case 'opp':netBanner(m.away?'Opponent disconnected\u2026 waiting for them to return':'');break;
-    case 'left':
-      netBanner('');sess=null;state='over';
-      if(!overShown){overShown=true;showOnlineOver(null,'Your opponent left the match.')}
+    case 'away':{const w=wiz[m.i];netBanner(m.away?(w?w.name.replace(' (you)',''):'A player')+' disconnected\u2026 waiting for them to return':'');break}
+    case 'forfeit':
+      netBanner('');state='over';
+      if(!overShown){overShown=true;showOnlineOver(m.win<0?{team:-1}:{team:m.win},'The other team left the match.')}
       break;
-    case 'rematch':if(!$('over').classList.contains('hide'))$('os').textContent='Your opponent wants a rematch!';break;
+    case 'left':
+      netBanner('');roomS=null;sess=null;inMatch=false;show('lobby');setStatus(m.msg||'');break;
     case 'err':
       setStatus(m.msg);
       if(m.fatal){netBanner(m.msg);sess=null;setTimeout(toMenu,2000)}
@@ -788,14 +834,15 @@ function onNet(m){
   }
 }
 function startOnline(m){
-  mode='online';me=m.idx;gotSnap=false;overShown=false;lastDir=0;
+  mode='online';inMatch=true;me=m.idx;myTeam=m.teams[me];gotSnap=false;overShown=false;lastDir=0;
   useMap(Core.mapFor(m.seed));
   for(const c of m.carves)carve(c[0],c[1],c[2]);
-  wiz=m.names.map((n,i)=>mk(i,n+(i===me?' (you)':''),0,PCOL[i][0],PCOL[i][1],false));
+  const rank=[0,0];
+  wiz=m.names.map((n,i)=>{const t=m.teams[i],c=TCOL[t][rank[t]++%5],w=mk(i,n+(i===me?' (you)':''),0,c[0],c[1],false);w.team=t;return w});
   projs=[];parts=[];fx=[];txts=[];turn=0;state='aim';timer=30;wind=0;cam.auto=true;
-  $('n0').textContent=wiz[0].name;$('n1').textContent=wiz[1].name;
-  $('menu').classList.add('hide');$('online').classList.add('hide');$('over').classList.add('hide');
-  $('again').textContent='Rematch';netBanner('');
+  if($('n0')){$('n0').textContent=wiz[0].name;$('n1').textContent=wiz[1].name}
+  show(null);$('menu').classList.add('hide');$('over').classList.add('hide');
+  $('again').textContent='Back to room';netBanner('');
 }
 function applySnap(s){
   if(mode!=='online'||!wiz.length)return;
@@ -857,34 +904,87 @@ function onUpdate(dt){
   fxUpdate(dt);camUpdate(dt);
 }
 function showOnlineOver(o,msg){
+  const names=t=>wiz.filter(w=>w.team===t).map(w=>w.name.replace(' (you)','')).join(', ');
   let t,s;
-  if(!o){t='You win!';s=msg||''}
-  else if(o.team<0){t='Draw!';s='Both wizards fell.'}
-  else if(o.team===me){t='Victory!';s='You outwitted '+(o.names[0]||'your opponent').replace(' (you)','')+'.'}
-  else{t='Defeat';s=(o.names[0]||'Your opponent')+' wins this round.'}
+  if(o.team<0){t='Draw!';s='Nobody is left standing.'}
+  else if(o.team===myTeam){t='Victory!';s=msg||('Your team outwitted '+names(1-myTeam)+'.')}
+  else{t='Defeat';s=msg?'You lost by forfeit.':names(o.team)+' win this round.'}
   sfx(t==='Defeat'?'lose':'win');$('ot').textContent=t;$('os').textContent=s;$('over').classList.remove('hide');
+}
+/* ----- lobby / room UI ----- */
+function mkSeg(box,pick){
+  for(let n=1;n<=5;n++){const b=el('button','',n+'v'+n);b.dataset.n=n;b.onclick=()=>pick(n);box.appendChild(b)}
+}
+function setSeg(box,n){for(const b of box.children)b.classList.toggle('sel',+b.dataset.n===n)}
+const lockTxt=(b,l)=>{b.textContent=l?'\u{1F512} Locked':'\u{1F513} Open';b.classList.toggle('on',l)};
+function renderRooms(list){
+  const box=$('rl');box.textContent='';
+  if(!list.length){box.appendChild(el('p','','No rooms yet. Create the first one!'));return}
+  for(const r of list){
+    const row=el('div','ri'),tot=r.a+r.b,full=tot>=r.n*2,st=r.phase!=='lobby'?'In match':full?'Full':r.locked?'Locked':'';
+    row.appendChild(el('b','',(r.locked?'\u{1F512} ':'')+r.host+'\u2019s room'));
+    row.appendChild(el('span','',r.n+'v'+r.n+' \u00B7 '+tot+'/'+r.n*2));
+    const j=el('button','',st||'Join');j.disabled=!!st;j.onclick=()=>{setStatus('Joining\u2026');netSend({t:'join',code:r.code})};
+    row.appendChild(j);box.appendChild(row);
+  }
+}
+function renderRoom(){
+  const r=roomS;if(!r)return;
+  const host=r.host===r.you;
+  $('rt').textContent='ROOM '+r.code;
+  $('rinfo').textContent=r.n+'v'+r.n+' \u00B7 '+(r.locked?'\u{1F512} Locked, nobody new can join':'Open to everyone');
+  const mine=r.teams[0].some(p=>p.id===r.you)?0:1;
+  [0,1].forEach(t=>{
+    const box=$(t?'tb':'ta');box.textContent='';box.appendChild(el('h3','',(t?'Team Red':'Team Blue')+' ('+r.teams[t].length+'/'+r.n+')'));
+    for(const p of r.teams[t]){
+      const row=el('div','pl'+(p.id===r.you?' me':''));
+      row.appendChild(el('span','',(p.id===r.host?'\u{1F451} ':'')+p.name+(p.away?' (away)':'')));
+      if(host&&p.id!==r.you){const x=el('button','x','\u2715');x.onclick=()=>netSend({t:'kick',id:p.id});row.appendChild(x)}
+      box.appendChild(row);
+    }
+    for(let i=r.teams[t].length;i<r.n;i++){
+      const row=el('div','pl empty');
+      if(t!==mine&&i===r.teams[t].length){const b=el('button','','Switch here');b.onclick=()=>netSend({t:'team',team:t});row.appendChild(b)}else row.appendChild(el('span','','Open slot'));
+      box.appendChild(row);
+    }
+  });
+  $('hc').classList.toggle('hide',!host);setSeg($('rmodes'),r.n);lockTxt($('rlk'),r.locked);
+  const a=r.teams[0].length,b=r.teams[1].length,ok=a>0&&a===b;
+  $('rstart').classList.toggle('hide',!host);$('rstart').disabled=!ok;$('rstart').style.opacity=ok?1:.5;
+  $('sh').classList.toggle('hide',r.locked);
+  setStatus(!host?'Waiting for the host to start\u2026':ok?'Ready when you are!':'Teams need the same number of players to start.');
 }
 function initOnlineUI(){
   if(typeof Core==='undefined')$('p3').classList.add('hide');
   try{$('nm').value=localStorage.getItem('aw_name')||''}catch(e){}
-  const nm=()=>{const n=$('nm').value.trim()||'Wizard';try{localStorage.setItem('aw_name',n)}catch(e){}return n};
-  $('p3').onclick=()=>{enterGameScreen();$('menu').classList.add('hide');$('online').classList.remove('hide');setStatus('');$('sh').classList.add('hide')};
-  $('oback').onclick=()=>{leaveOnline();$('online').classList.add('hide');$('menu').classList.remove('hide')};
-  $('qm').onclick=()=>{setStatus('Connecting\u2026');connect(()=>netSend({t:'quick',name:nm()}))};
-  $('cr').onclick=()=>{setStatus('Connecting\u2026');connect(()=>netSend({t:'create',name:nm()}))};
+  mkSeg($('cmodes'),n=>{cn=n;setSeg($('cmodes'),n)});setSeg($('cmodes'),cn);
+  mkSeg($('rmodes'),n=>netSend({t:'mode',n}));
+  $('p3').onclick=()=>{enterGameScreen();$('menu').classList.add('hide');show('online');setStatus('')};
+  $('oback').onclick=()=>{leaveOnline();show(null);$('menu').classList.remove('hide')};
+  $('enter').onclick=()=>{
+    const n=$('nm').value.trim();if(!n){setStatus('Choose a name first.');return}
+    try{localStorage.setItem('aw_name',n)}catch(e){}
+    setStatus('Connecting\u2026');connect(()=>netSend({t:'hello',name:n}));
+  };
+  $('nm').onkeydown=e=>{if(e.key==='Enter')$('enter').onclick()};
+  $('clk').onclick=()=>{cLock=!cLock;lockTxt($('clk'),cLock)};
+  $('cr').onclick=()=>netSend({t:'create',n:cn,locked:cLock});
   $('jn').onclick=()=>{
     const code=$('jc').value.trim().toUpperCase();
     if(code.length!==4){setStatus('Enter the 4-letter room code.');return}
-    setStatus('Joining\u2026');connect(()=>netSend({t:'join',code,name:nm()}));
+    setStatus('Joining\u2026');netSend({t:'join',code});
   };
+  $('lback').onclick=()=>{leaveOnline();show(null);$('menu').classList.remove('hide')};
+  $('rleave').onclick=()=>{netSend({t:'leave'});roomS=null;show('lobby');setStatus('')};
+  $('rlk').onclick=()=>{if(roomS)netSend({t:'lock',locked:!roomS.locked})};
+  $('rstart').onclick=()=>netSend({t:'start'});
   $('sh').onclick=()=>{
-    const url=location.origin+'/?room='+sess.code;
-    if(navigator.share)navigator.share({title:'Arcane Warfare',text:'Join my wizard duel!',url}).catch(()=>{});
-    else if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>setStatus('Invite link copied! Room code: '+sess.code));
+    if(!roomS)return;const url=location.origin+'/?room='+roomS.code;
+    if(navigator.share)navigator.share({title:'Arcane Warfare',text:'Join my wizard battle!',url}).catch(()=>{});
+    else if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>setStatus('Invite link copied! Room code: '+roomS.code));
   };
-  $('ost').style.whiteSpace='pre-line';
   const rp=new URLSearchParams(location.search).get('room');
-  if(rp&&typeof Core!=='undefined'){$('jc').value=rp.toUpperCase().slice(0,4);$('p3').onclick()}
+  if(rp&&typeof Core!=='undefined'){pendingJoin=rp.toUpperCase().slice(0,4);$('p3').onclick();setStatus('Choose a name to join room '+pendingJoin)}
 }
 
 function demo(){mode='ai';useMap(pickMap());wiz=placePair(mk(0,'Aldric',0,'#3d6fe0','#23449e',false),mk(1,'Morgana (AI)',0,'#d4365a','#8a1f3c',true));projs=[];parts=[];fx=[];txts=[];turn=0;state='menu';timer=30;wind=0;$('n0').textContent='Aldric';$('n1').textContent='Morgana (AI)'}
