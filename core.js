@@ -7,7 +7,7 @@ const SPELLS = {
   fire: { name: 'Fireball', icon: '\u{1F525}', k: 9.5, g: G, wf: 1, r: 48, dmg: 40, mana: 0, col: '#ffa030' },
   bolt: { name: 'Lightning', icon: '\u26A1', k: 15, g: 60, wf: .15, r: 28, dmg: 30, mana: 25, col: '#8fe0ff' },
   /* r = terrain crater radius, dr = damage radius base. KEEP THIS ORDER: the client indexes spells by position (fire, bolt, magma, jet) */
-  magma: { name: 'Magma Bomb', icon: '\u{1F30B}', k: 8.8, g: G * 1.15, wf: .8, r: 86, dr: 50, dmg: 38, mana: 35, col: '#ff6a1a', lava: 1 },
+  magma: { name: 'Magma Bomb', icon: '\u{1F30B}', k: 8.8, g: G * 1.15, wf: .8, r: 86, dr: 50, dmg: 38, mana: 35, col: '#ff6a1a', lava: 1, bounce: 1, fuse: 3.5 },
   jet: { name: 'Jetpack', icon: '\u{1F680}', jet: 1, mana: 8, col: '#7fe7ff' }
 };
 const SKEYS = Object.keys(SPELLS);
@@ -49,6 +49,39 @@ function pickSpawns(map, n, r) {
     out.push(sc[0][1]);
   }
   return out.map(c => ({ x: c[0], y: c[1] }));
+}
+/* ---------- Bouncing bombs (Magma Bomb): bounce, roll, then explode when settled or when the fuse runs out ---------- */
+function normalAt(solid, x, y) {
+  let sx = 0, sy = 0;
+  for (let dy = -6; dy <= 6; dy += 2) for (let dx = -6; dx <= 6; dx += 2) if (solid(x + dx, y + dy)) { sx -= dx; sy -= dy; }
+  const l = Math.hypot(sx, sy); return l ? [sx / l, sy / l] : [0, -1];
+}
+/* advance one substep h; returns true if it touched the ground */
+function ballStep(p, h, wind, sp, solid) {
+  p.vy += sp.g * h; p.vx += wind * 14 * sp.wf * h;
+  const nx = p.x + p.vx * h, ny = p.y + p.vy * h;
+  if (!solid(nx, ny)) { p.x = nx; p.y = ny; return false; }
+  const n = normalAt(solid, nx, ny), vn = p.vx * n[0] + p.vy * n[1];
+  if (vn < 0) {
+    const e = vn < -90 ? .5 : 0, k = e ? .8 : Math.max(0, 1 - 2.5 * h);
+    const bx = p.vx - vn * n[0], by = p.vy - vn * n[1];            /* tangential part */
+    const vn2 = -vn * e;
+    p.vx = bx * k + n[0] * vn2; p.vy = by * k + n[1] * vn2;
+  }
+  const mx = p.x + p.vx * h, my = p.y + p.vy * h;
+  if (!solid(mx, my)) { p.x = mx; p.y = my; }
+  return true;
+}
+/* shared per-substep bomb logic; returns true when it should detonate */
+function bombStep(p, h, wind, sp, solid) {
+  const c = ballStep(p, h, wind, sp, solid);
+  if (c && !p.hit) { p.hit = 1; p.fuse = sp.fuse; }
+  if (p.hit) {
+    p.fuse -= h;
+    if (Math.hypot(p.vx, p.vy) < 35) { if (c) p.rest = (p.rest || 0) + h; } else p.rest = 0;
+    return p.fuse <= 0 || p.rest > .45;
+  }
+  return false;
 }
 /* wizard hitbox: a vertical capsule from feet to hat (the old check only covered the belly, so head/hat shots passed through) */
 function hitW(w, x, y) { const cy = Math.max(w.y - 50, Math.min(w.y - 6, y)); return Math.hypot(x - w.x, y - cy) < 14; }
@@ -217,10 +250,12 @@ class Game {
   stepProj(p, dt) {
     const sp = SPELLS[p.sp], n = Math.max(1, Math.ceil(Math.hypot(p.vx, p.vy) * dt / 4)), h = dt / n;
     for (let i = 0; i < n; i++) {
-      p.vy += sp.g * h; p.vx += this.wind * 14 * sp.wf * h; p.x += p.vx * h; p.y += p.vy * h; p.age += h;
+      p.age += h; let det = false;
+      if (sp.bounce) det = bombStep(p, h, this.wind, sp, (x, y) => this.solid(x, y));
+      else { p.vy += sp.g * h; p.vx += this.wind * 14 * sp.wf * h; p.x += p.vx * h; p.y += p.vy * h; }
       if (p.y > WATER) { this.ev.push({ e: 'splash', x: p.x }); p.dead = true; return; }
       if (p.x < -150 || p.x > W + 150 || p.y > H + 100 || p.age > 12) { p.dead = true; return; }
-      if (this.solid(p.x, p.y)) { this.explode(p.x, p.y, p.sp); p.dead = true; return; }
+      if (det || (!sp.bounce && this.solid(p.x, p.y))) { this.explode(p.x, p.y, p.sp); p.dead = true; return; }
       for (const w of this.wiz) if (w.alive && (p.age > .25 || w !== p.owner) && hitW(w, p.x, p.y)) { this.explode(p.x, p.y, p.sp); p.dead = true; return; }
     }
   }
@@ -268,6 +303,6 @@ class Game {
   drain() { const e = this.ev; this.ev = []; return e; }
 }
 
-const api = { W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW };
+const api = { W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW, ballStep, bombStep };
 if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Core = api;
 })(this);

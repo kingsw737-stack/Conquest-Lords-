@@ -227,7 +227,7 @@ const SPELLS={
   fire:{name:'Fireball',icon:'\u{1F525}',k:9.5,g:G,wf:1,r:48,dmg:40,mana:0,col:'#ffa030'},
   bolt:{name:'Lightning',icon:'\u26A1',k:15,g:60,wf:.15,r:28,dmg:30,mana:25,col:'#8fe0ff'},
   /* r = terrain crater radius, dr = damage radius base (defaults to r). Keep in sync with core.js (same order!) */
-  magma:{name:'Magma Bomb',icon:'\u{1F30B}',k:8.8,g:G*1.15,wf:.8,r:86,dr:50,dmg:38,mana:35,col:'#ff6a1a',ring:'#ff7a2a',cols:['#ffe27a','#ff8a1a','#e0360c','#7a1408'],lava:1},
+  magma:{name:'Magma Bomb',icon:'\u{1F30B}',k:8.8,g:G*1.15,wf:.8,r:86,dr:50,dmg:38,mana:35,col:'#ff6a1a',ring:'#ff7a2a',cols:['#ffe27a','#ff8a1a','#e0360c','#7a1408'],lava:1,bounce:1,fuse:3.5},
   jet:{name:'Jetpack',icon:'\u{1F680}',jet:1,mana:8,col:'#7fe7ff',note:'burns mana'}
 };
 
@@ -382,10 +382,12 @@ function fire(w){
 function stepProj(p,dt){
   const sp=SPELLS[p.sp],n=Math.max(1,Math.ceil(Math.hypot(p.vx,p.vy)*dt/4)),h=dt/n;
   for(let i=0;i<n;i++){
-    p.vy+=sp.g*h;p.vx+=wind*14*sp.wf*h;p.x+=p.vx*h;p.y+=p.vy*h;p.age+=h;
+    p.age+=h;let det=false;
+    if(sp.bounce)det=Core.bombStep(p,h,wind,sp,solid);
+    else{p.vy+=sp.g*h;p.vx+=wind*14*sp.wf*h;p.x+=p.vx*h;p.y+=p.vy*h}
     if(p.y>WATER){splash(p.x);p.dead=true;return}
     if(p.x<-150||p.x>W+150||p.y>H+100||p.age>12){p.dead=true;return}
-    if(solid(p.x,p.y)){explode(p.x,p.y,sp,p.sp);p.dead=true;return}
+    if(det||(!sp.bounce&&solid(p.x,p.y))){explode(p.x,p.y,sp,p.sp);p.dead=true;return}
     for(const w of wiz)if(w.alive&&(p.age>.25||w!==p.owner)&&hitW(w,p.x,p.y)){explode(p.x,p.y,sp,p.sp);p.dead=true;return}
   }
   if(p.sp==='fire'){P(p.x,p.y,R(-25,25),R(-25,25),.5,7,'#ff8a1f',-30);if(Math.random()<.4)P(p.x,p.y,R(-15,15),R(-30,-5),.9,8,'#443',-40,false)}
@@ -613,6 +615,7 @@ function drawProj(p){
     ctx.globalCompositeOperation='lighter';ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,28,0,7);ctx.fill();ctx.globalCompositeOperation='source-over';
     ctx.fillStyle='#2b1510';ctx.beginPath();ctx.arc(p.x,p.y,10,0,7);ctx.fill();
     ctx.strokeStyle='#ff7a1a';ctx.lineWidth=2.4;ctx.stroke();
+    if(p.fuse!==undefined&&p.fuse<2&&Math.sin(p.fuse*40/(p.fuse+.4))>0){ctx.globalCompositeOperation='lighter';ctx.fillStyle='rgba(255,230,140,.8)';ctx.beginPath();ctx.arc(p.x,p.y,10,0,7);ctx.fill();ctx.globalCompositeOperation='source-over'}
     ctx.strokeStyle='#ffc060';ctx.lineWidth=1.6;const ra=p.age*7;
     for(let k=0;k<3;k++){const q=ra+k*2.1;ctx.beginPath();ctx.moveTo(p.x+Math.cos(q)*2.5,p.y+Math.sin(q)*2.5);ctx.lineTo(p.x+Math.cos(q)*8,p.y+Math.sin(q)*8);ctx.stroke()}
   }else{
@@ -956,8 +959,10 @@ function drProj(p,dt){
   const sp=SPELLS[p.sp];if(!sp||p.frozen)return;
   const n=Math.max(1,Math.ceil(Math.hypot(p.vx,p.vy)*dt/4)),h=dt/n;
   for(let i=0;i<n;i++){
-    p.vy+=sp.g*h;p.vx+=wind*14*sp.wf*h;p.x+=p.vx*h;p.y+=p.vy*h;p.age+=h;
-    if(p.y>WATER||solid(p.x,p.y)){p.frozen=true;return}
+    p.age+=h;
+    if(sp.bounce)Core.ballStep(p,h,wind,sp,solid);
+    else{p.vy+=sp.g*h;p.vx+=wind*14*sp.wf*h;p.x+=p.vx*h;p.y+=p.vy*h}
+    if(p.y>WATER||(!sp.bounce&&solid(p.x,p.y))){p.frozen=true;return}
   }
   if(p.sp==='fire'){P(p.x,p.y,R(-25,25),R(-25,25),.5,7,'#ff8a1f',-30);if(Math.random()<.4)P(p.x,p.y,R(-15,15),R(-30,-5),.9,8,'#443',-40,false)}
   else if(p.sp==='magma'){P(p.x,p.y,R(-30,30),R(-30,30),.6,R(5,8),'#ff6a1a',-30);if(Math.random()<.5)P(p.x,p.y,R(-15,15),R(-20,10),1,R(6,10),'#3a2a2a',-40,false)}
