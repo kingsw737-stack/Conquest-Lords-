@@ -12,7 +12,7 @@ const SPELLS = {
   /* Castle: the mage turns into a castle (can't walk/jump/fly, can still cast). Own HP pool; overflow damage spills onto the mage. Using it again while a castle cancels it for free. Keep LAST in this list. */
   castle: { name: 'Castle', icon: '\u{1F3F0}', castle: 1, mana: 30, col: '#ffd86b', note: '3 turns \u00B7 300 HP' }
 };
-const CASTLE_HP = 300, CASTLE_TURNS = 3;
+const CASTLE_HP = 300, CASTLE_TURNS = 3, CASTLE_CD = 1; /* CASTLE_CD = how many of the mage's own turns it stays locked after the castle ends */
 const SKEYS = Object.keys(SPELLS);
 const COLS = [['#3d6fe0', '#23449e'], ['#d4365a', '#8a1f3c'], ['#2fae5a', '#1b6b38'], ['#e0a020', '#9a6a10'], ['#9a4fd0', '#5e2a8a'], ['#20b8b8', '#12797b']];
 const MAPS = (typeof module !== 'undefined' && module.exports) ? require('./maps.js') : root.MAPS;
@@ -103,7 +103,7 @@ class Game {
     const n = o.players.length, spawns = pickSpawns(mapFor(this.seed), n, r);
     o.players.forEach((p, i) => {
       const sp = spawns[i];
-      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x: sp.x, y: sp.y, vx: 0, vy: 0, hp: 100, mana: 60, angle: sp.x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0, thr: 0, lavaT: 0, castle: 0, chp: 0, castleT: 0, castleNew: 0 });
+      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x: sp.x, y: sp.y, vx: 0, vy: 0, hp: 100, mana: 60, angle: sp.x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0, thr: 0, lavaT: 0, castle: 0, chp: 0, castleT: 0, castleNew: 0, castleCD: 0 });
     });
     const groups = {}; this.wiz.forEach(w => (groups[w.team] = groups[w.team] || []).push(w.i));
     const gs = Object.keys(groups).sort().map(k => groups[k]); this.order = [];
@@ -119,13 +119,14 @@ class Game {
     for (const q of this.wiz) { q.dir = 0; q.thr = 0; }
   }
   /* castle form: lasts CASTLE_TURNS of the mage's own turns after the one it was cast on */
-  uncastle(w, broken) {
-    if (!w.castle) return; w.castle = 0; w.chp = 0; w.castleT = 0; w.castleNew = 0; w.vx = 0;
+  uncastle(w, broken, own) {
+    if (!w.castle) return; w.castleCD = CASTLE_CD + (own ? 1 : 0); w.castle = 0; w.chp = 0; w.castleT = 0; w.castleNew = 0; w.vx = 0;
     this.ev.push({ e: 'castle', i: w.i, on: 0, broken: broken ? 1 : 0, x: Math.round(w.x), y: Math.round(w.y) });
   }
   endTurn() {
     const o = this.wiz[this.turn];
     if (o && o.castle) { if (o.castleNew) o.castleNew = 0; else if (--o.castleT <= 0) this.uncastle(o, 0); }
+    else if (o && o.castleCD > 0) o.castleCD--;
     for (const w of this.wiz) { w.dir = 0; w.thr = 0; }
     const al = this.wiz.filter(w => w.alive), teams = new Set(al.map(w => w.team));
     if (teams.size < 2) { this.state = 'over'; this.over = { team: al.length ? al[0].team : -1, names: al.map(w => w.name) }; return; }
@@ -145,6 +146,7 @@ class Game {
       const q = SPELLS[m.k]; if (!q) return;
       if (q.castle && w.castle) { w.spell = 'castle'; this.fire(w); return; } /* picking Castle while a castle = cancel */
       if (q.jet && w.castle) return;
+      if (q.castle && w.castleCD > 0) return;
       if (w.mana >= q.mana) w.spell = m.k;
     }
     else if (m.t === 'fire') {
@@ -156,8 +158,8 @@ class Game {
   fire(w) {
     const sp = SPELLS[w.spell]; if (this.state !== 'aim' || sp.jet) return;
     if (sp.castle) {
-      if (w.castle) { this.uncastle(w, 0); w.spell = 'fire'; return; } /* cancel: free, doesn't end the turn */
-      if (!w.grounded || w.mana < sp.mana) return;
+      if (w.castle) { this.uncastle(w, 0, 1); w.spell = 'fire'; return; } /* cancel: free, doesn't end the turn */
+      if (!w.grounded || w.mana < sp.mana || w.castleCD > 0) return;
       w.mana -= sp.mana; w.castle = 1; w.chp = CASTLE_HP; w.castleT = CASTLE_TURNS; w.castleNew = 1; w.vx = 0; w.vy = 0; w.spell = 'fire';
       this.ev.push({ e: 'castle', i: w.i, on: 1, x: Math.round(w.x), y: Math.round(w.y) });
       this.state = 'resolve'; this.resolveT = 0; this.settle = 0; return;
@@ -323,7 +325,7 @@ class Game {
     const r = v => Math.round(v * 10) / 10;
     return {
       turn: this.turn, state: this.state, timer: r(this.timer), wind: this.wind,
-      w: this.wiz.map(w => [r(w.x), r(w.y), w.hp, Math.round(w.mana), r(w.angle), r(w.power), (this.state === 'aim' && w.i === this.turn && !w.castle) ? w.dir : 0, w.grounded ? 1 : 0, w.alive ? 1 : 0, SKEYS.indexOf(w.spell), w.flying ? 1 : 0, w.castle ? 1 : 0, Math.round(w.chp), w.castleT]),
+      w: this.wiz.map(w => [r(w.x), r(w.y), w.hp, Math.round(w.mana), r(w.angle), r(w.power), (this.state === 'aim' && w.i === this.turn && !w.castle) ? w.dir : 0, w.grounded ? 1 : 0, w.alive ? 1 : 0, SKEYS.indexOf(w.spell), w.flying ? 1 : 0, w.castle ? 1 : 0, Math.round(w.chp), w.castleT, w.castleCD]),
       p: this.projs.map(p => [p.id, SKEYS.indexOf(p.sp), r(p.x), r(p.y), Math.round(p.vx), Math.round(p.vy)]),
       l: this.lava.map(b => [r(b.x), r(b.y), r(b.r), r(b.life)]),
       over: this.over
@@ -332,6 +334,6 @@ class Game {
   drain() { const e = this.ev; this.ev = []; return e; }
 }
 
-const api = { CASTLE_HP, CASTLE_TURNS, W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW, ballStep, bombStep };
+const api = { CASTLE_HP, CASTLE_TURNS, CASTLE_CD, W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW, ballStep, bombStep };
 if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Core = api;
 })(this);
