@@ -429,7 +429,7 @@ function camUpdate(dt){
   const o=wiz.find(w=>w!==c&&w.alive)||c;
   if(state!=='resolve'&&cam.auto||state==='menu'){
     tx=(c.x+o.x)/2;ty=(c.y+o.y)/2-40;
-    const zt=clamp(cw/(Math.abs(c.x-o.x)+420)/base,minZ,1.7);cam.z+=(zt-cam.z)*Math.min(1,dt*3);
+    const zt=clamp(cw/(Math.abs(c.x-o.x)+700)/base,minZ,1.1);cam.z+=(zt-cam.z)*Math.min(1,dt*3);
   }
   if(projs.length){tx=projs[0].x;ty=projs[0].y}else if(time-boomT<1.3){tx=boomX;ty=boomY}
   cam.z=clamp(cam.z,minZ,3);sc=base*cam.z;
@@ -570,6 +570,7 @@ const spBox=$('sp'),bagPop=$('bagpop');
 function setBag(o){bagPop.classList.toggle('on',o);$('bag').setAttribute('aria-expanded',o)}
 $('bag').addEventListener('click',e=>{e.stopPropagation();setBag(!bagPop.classList.contains('on'))});
 bagPop.addEventListener('pointerdown',e=>e.stopPropagation());
+$('bag').addEventListener('pointerdown',e=>e.stopPropagation());
 addEventListener('pointerdown',()=>setBag(false));
 for(const k in SPELLS){const b=document.createElement('button');b.dataset.k=k;b.title=SPELLS[k].name;b.innerHTML='<span class="si">'+SPELLS[k].icon+'</span><span class="sn">'+SPELLS[k].name+'</span><em>'+(SPELLS[k].mana?SPELLS[k].mana+' mana':'free')+'</em>';b.onclick=()=>{pick(k);setBag(false)};spBox.appendChild(b)}
 function hud(){
