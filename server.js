@@ -8,16 +8,21 @@ const PORT = process.env.PORT || 3000;
 const STATIC = {
   '/': ['index.html', 'text/html; charset=utf-8'],
   '/index.html': ['index.html', 'text/html; charset=utf-8'],
-  '/core.js': ['core.js', 'text/javascript; charset=utf-8']
+  '/core.js': ['core.js', 'text/javascript; charset=utf-8'],
+  '/maps.js': ['maps.js', 'text/javascript; charset=utf-8']
 };
+const MAPDIR = path.join(__dirname, 'maps');
 const server = http.createServer((req, res) => {
   const u = req.url.split('?')[0];
   if (u === '/health') { res.writeHead(200); return res.end('ok'); }
-  const f = STATIC[u];
-  if (!f) { res.writeHead(404); return res.end('Not found'); }
-  fs.readFile(path.join(__dirname, f[0]), (e, d) => {
-    if (e) { res.writeHead(500); return res.end('Error'); }
-    res.writeHead(200, { 'Content-Type': f[1], 'Cache-Control': 'no-cache' }); res.end(d);
+  let file, type;
+  const m = /^\/maps\/([\w-]+\.webp)$/.exec(u);
+  if (m) { file = path.join(MAPDIR, m[1]); type = 'image/webp'; }
+  else { const f = STATIC[u]; if (f) { file = path.join(__dirname, f[0]); type = f[1]; } }
+  if (!file) { res.writeHead(404); return res.end('Not found'); }
+  fs.readFile(file, (e, d) => {
+    if (e) { res.writeHead(e.code === 'ENOENT' ? 404 : 500); return res.end(e.code === 'ENOENT' ? 'Not found' : 'Error'); }
+    res.writeHead(200, { 'Content-Type': type, 'Cache-Control': m ? 'public, max-age=3600' : 'no-cache' }); res.end(d);
   });
 });
 const wss = new WebSocketServer({ server, maxPayload: 4096 });
@@ -45,8 +50,7 @@ class Room {
     this.rematch = [false, false];
     this.seed = (Math.random() * 0xffffffff) >>> 0;
     this.game = new Core.Game({ seed: this.seed, players: this.slots.map((s, i) => ({ name: s.name, team: i })) });
-    /* core spawns wizards at y=0; drop them onto the ground first so they don't take fall damage */
-    for (const w of this.game.wiz) { let y = 0; while (y < Core.H - 1 && !this.game.solid(w.x, y)) y++; w.y = y - 1; w.vy = 0; w.grounded = true; }
+    for (const w of this.game.wiz) w.grounded = true;
     this.evBuf = [];
     this.slots.forEach((s, i) => this.sendStart(i));
     clearInterval(this.loop);
