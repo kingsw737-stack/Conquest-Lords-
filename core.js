@@ -8,8 +8,11 @@ const SPELLS = {
   bolt: { name: 'Lightning', icon: '\u26A1', k: 15, g: 60, wf: .15, r: 28, dmg: 30, mana: 25, col: '#8fe0ff' },
   /* r = terrain crater radius, dr = damage radius base. KEEP THIS ORDER: the client indexes spells by position (fire, bolt, magma, jet) */
   magma: { name: 'Magma Bomb', icon: '\u{1F30B}', k: 8.8, g: G * 1.15, wf: .8, r: 86, dr: 50, dmg: 38, mana: 35, col: '#ff6a1a', lava: 1, bounce: 1, fuse: 3.5 },
-  jet: { name: 'Jetpack', icon: '\u{1F680}', jet: 1, mana: 8, col: '#7fe7ff' }
+  jet: { name: 'Jetpack', icon: '\u{1F680}', jet: 1, mana: 8, col: '#7fe7ff' },
+  /* Castle: the mage turns into a castle (can't walk/jump/fly, can still cast). Own HP pool; overflow damage spills onto the mage. Using it again while a castle cancels it for free. Keep LAST in this list. */
+  castle: { name: 'Castle', icon: '\u{1F3F0}', castle: 1, mana: 30, col: '#ffd86b', note: '3 turns \u00B7 300 HP' }
 };
+const CASTLE_HP = 300, CASTLE_TURNS = 3;
 const SKEYS = Object.keys(SPELLS);
 const COLS = [['#3d6fe0', '#23449e'], ['#d4365a', '#8a1f3c'], ['#2fae5a', '#1b6b38'], ['#e0a020', '#9a6a10'], ['#9a4fd0', '#5e2a8a'], ['#20b8b8', '#12797b']];
 const MAPS = (typeof module !== 'undefined' && module.exports) ? require('./maps.js') : root.MAPS;
@@ -84,8 +87,9 @@ function bombStep(p, h, wind, sp, solid) {
   return false;
 }
 /* wizard hitbox: a vertical capsule from feet to hat (the old check only covered the belly, so head/hat shots passed through) */
-function hitW(w, x, y) { const cy = Math.max(w.y - 50, Math.min(w.y - 6, y)); return Math.hypot(x - w.x, y - cy) < 14; }
+function hitW(w, x, y) { if (w.castle) return Math.abs(x - w.x) < 40 && y > w.y - 104 && y < w.y; const cy = Math.max(w.y - 50, Math.min(w.y - 6, y)); return Math.hypot(x - w.x, y - cy) < 14; }
 function muzzle(w, ang) {
+  if (w.castle) { const a = ang * Math.PI / 180; return [w.x + Math.cos(a) * 62, w.y - 60 - Math.sin(a) * 62]; }
   const a = ang * Math.PI / 180, f = Math.cos(a) >= 0 ? 1 : -1, lx = Math.abs(Math.cos(a)), ly = -Math.sin(a);
   return [w.x + f * 1.2 * (3 + lx * 27), w.y + 1.2 * (-22 + ly * 27)];
 }
@@ -99,7 +103,7 @@ class Game {
     const n = o.players.length, spawns = pickSpawns(mapFor(this.seed), n, r);
     o.players.forEach((p, i) => {
       const sp = spawns[i];
-      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x: sp.x, y: sp.y, vx: 0, vy: 0, hp: 100, mana: 60, angle: sp.x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0, thr: 0, lavaT: 0 });
+      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x: sp.x, y: sp.y, vx: 0, vy: 0, hp: 100, mana: 60, angle: sp.x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0, thr: 0, lavaT: 0, castle: 0, chp: 0, castleT: 0, castleNew: 0 });
     });
     const groups = {}; this.wiz.forEach(w => (groups[w.team] = groups[w.team] || []).push(w.i));
     const gs = Object.keys(groups).sort().map(k => groups[k]); this.order = [];
@@ -114,7 +118,14 @@ class Game {
     if (SPELLS[w.spell].mana > w.mana) w.spell = 'fire';
     for (const q of this.wiz) { q.dir = 0; q.thr = 0; }
   }
+  /* castle form: lasts CASTLE_TURNS of the mage's own turns after the one it was cast on */
+  uncastle(w, broken) {
+    if (!w.castle) return; w.castle = 0; w.chp = 0; w.castleT = 0; w.castleNew = 0; w.vx = 0;
+    this.ev.push({ e: 'castle', i: w.i, on: 0, broken: broken ? 1 : 0, x: Math.round(w.x), y: Math.round(w.y) });
+  }
   endTurn() {
+    const o = this.wiz[this.turn];
+    if (o && o.castle) { if (o.castleNew) o.castleNew = 0; else if (--o.castleT <= 0) this.uncastle(o, 0); }
     for (const w of this.wiz) { w.dir = 0; w.thr = 0; }
     const al = this.wiz.filter(w => w.alive), teams = new Set(al.map(w => w.team));
     if (teams.size < 2) { this.state = 'over'; this.over = { team: al.length ? al[0].team : -1, names: al.map(w => w.name) }; return; }
@@ -128,17 +139,30 @@ class Game {
     if (m.t === 'thr') { w.thr = m.v ? 1 : 0; return; }
     if (this.state !== 'aim' || this.turn !== i) return;
     const n = v => typeof v === 'number' && isFinite(v);
-    if (m.t === 'jump') { if (w.grounded) { const d = m.v > 0 ? 1 : m.v < 0 ? -1 : 0; w.vy = -330; w.vx = d * 170; w.grounded = false; if (d && d !== (Math.cos(w.angle * Math.PI / 180) >= 0 ? 1 : -1)) w.angle = 180 - w.angle; } }
+    if (m.t === 'jump') { if (w.grounded && !w.castle) { const d = m.v > 0 ? 1 : m.v < 0 ? -1 : 0; w.vy = -330; w.vx = d * 170; w.grounded = false; if (d && d !== (Math.cos(w.angle * Math.PI / 180) >= 0 ? 1 : -1)) w.angle = 180 - w.angle; } }
     else if (m.t === 'aim') { if (n(m.angle)) w.angle = clamp(m.angle, -90, 270); if (n(m.power)) w.power = clamp(m.power, 10, 100); }
-    else if (m.t === 'spell') { if (SPELLS[m.k] && w.mana >= SPELLS[m.k].mana) w.spell = m.k; }
+    else if (m.t === 'spell') {
+      const q = SPELLS[m.k]; if (!q) return;
+      if (q.castle && w.castle) { w.spell = 'castle'; this.fire(w); return; } /* picking Castle while a castle = cancel */
+      if (q.jet && w.castle) return;
+      if (w.mana >= q.mana) w.spell = m.k;
+    }
     else if (m.t === 'fire') {
       if (n(m.angle)) w.angle = clamp(m.angle, -90, 270); if (n(m.power)) w.power = clamp(m.power, 10, 100);
-      if (SPELLS[m.spell] && w.mana >= SPELLS[m.spell].mana) w.spell = m.spell;
+      if (SPELLS[m.spell] && (w.mana >= SPELLS[m.spell].mana || (SPELLS[m.spell].castle && w.castle))) w.spell = m.spell;
       this.fire(w);
     }
   }
   fire(w) {
-    const sp = SPELLS[w.spell]; if (this.state !== 'aim' || sp.jet || w.mana < sp.mana) return;
+    const sp = SPELLS[w.spell]; if (this.state !== 'aim' || sp.jet) return;
+    if (sp.castle) {
+      if (w.castle) { this.uncastle(w, 0); w.spell = 'fire'; return; } /* cancel: free, doesn't end the turn */
+      if (!w.grounded || w.mana < sp.mana) return;
+      w.mana -= sp.mana; w.castle = 1; w.chp = CASTLE_HP; w.castleT = CASTLE_TURNS; w.castleNew = 1; w.vx = 0; w.vy = 0; w.spell = 'fire';
+      this.ev.push({ e: 'castle', i: w.i, on: 1, x: Math.round(w.x), y: Math.round(w.y) });
+      this.state = 'resolve'; this.resolveT = 0; this.settle = 0; return;
+    }
+    if (w.mana < sp.mana) return;
     w.mana -= sp.mana;
     const a = w.angle * Math.PI / 180, [mx, my] = muzzle(w, w.angle);
     this.projs.push({ id: this.pid++, sp: w.spell, x: mx, y: my, vx: Math.cos(a) * w.power * sp.k, vy: -Math.sin(a) * w.power * sp.k, age: 0, owner: w });
@@ -150,11 +174,11 @@ class Game {
     for (const w of this.wiz) {
       let walk = 0;
       /* Jetpack: hold thrust while it's selected; fuel is mana */
-      const mine = aim && w === c && !w.ai && w.alive, jet = mine && SPELLS[w.spell].jet, thr = !!(jet && w.thr && w.mana > .05);
+      const mine = aim && w === c && !w.ai && w.alive, jet = mine && !w.castle && SPELLS[w.spell].jet, thr = !!(jet && w.thr && w.mana > .05);
       if (thr) w.mana = Math.max(0, w.mana - 20 * dt);
       if (jet && w.mana <= .05) { w.spell = 'fire'; w.thr = 0; }
       w.lavaT = Math.max(0, w.lavaT - dt);
-      if (mine && w.dir) {
+      if (mine && w.dir && !w.castle) {
         const f = Math.cos(w.angle * Math.PI / 180) >= 0 ? 1 : -1; if (w.dir !== f) w.angle = 180 - w.angle; walk = w.dir * (jet && !w.grounded ? 115 : 75);
       }
       w.flying = thr ? 1 : 0;
@@ -202,10 +226,15 @@ class Game {
   }
   hurt(w, d, kx, ky) {
     d = Math.round(d); if (d <= 0 || !w.alive) return;
+    if (w.castle) { /* castle soaks damage, no knockback; overflow spills onto the mage */
+      const a = Math.min(d, w.chp); w.chp -= a; this.ev.push({ e: 'hurt', i: w.i, d: a });
+      if (w.chp <= 0) { const over = d - a; this.uncastle(w, 1); if (over > 0) this.hurt(w, over, 0, 0); }
+      return;
+    }
     w.hp -= d; this.ev.push({ e: 'hurt', i: w.i, d }); w.vx += kx; w.vy += ky; if (ky < 0) w.grounded = false;
     if (w.hp <= 0) { w.hp = 0; this.kill(w); }
   }
-  kill(w) { if (!w.alive) return; w.alive = false; this.ev.push({ e: 'kill', i: w.i, x: w.x, y: w.y }); }
+  kill(w) { if (!w.alive) return; w.alive = false; w.castle = 0; this.ev.push({ e: 'kill', i: w.i, x: w.x, y: w.y }); }
   /* terrain bite from lava (explosions carve through explode(); their 'boom' event carries the carve) */
   carve(x, y, r) {
     x = Math.round(x); y = Math.round(y); carveMask(this.mask, x, y, r); this.carves.push([x, y, r]);
@@ -230,8 +259,8 @@ class Game {
       if (b.y > WATER) b.life = 0;
       for (const w of this.wiz) {
         if (!w.alive || w.lavaT > 0) continue;
-        const cy = clamp(b.y, w.y - 50, w.y - 6);
-        if (Math.hypot(b.x - w.x, b.y - cy) < b.r + 9) { this.hurt(w, 4, 0, 0); w.lavaT = .5; }
+        const cy = clamp(b.y, w.y - (w.castle ? 104 : 50), w.y - 6);
+        if (Math.hypot(Math.max(0, Math.abs(b.x - w.x) - (w.castle ? 34 : 0)), b.y - cy) < b.r + 9) { this.hurt(w, 4, 0, 0); w.lavaT = .5; }
       }
     }
     this.lava = this.lava.filter(b => b.life > 0);
@@ -242,7 +271,7 @@ class Game {
     if (sp.lava) this.spawnLava(x, y);
     for (const w of this.wiz) {
       if (!w.alive) continue;
-      const RR = (sp.dr || sp.r) * 1.7, cy = Math.max(w.y - 50, Math.min(w.y - 6, y)), d = Math.hypot(w.x - x, cy - y);
+      const RR = (sp.dr || sp.r) * 1.7, cy = Math.max(w.y - (w.castle ? 104 : 50), Math.min(w.y - 6, y)), d = Math.hypot(Math.max(0, Math.abs(w.x - x) - (w.castle ? 34 : 0)), cy - y);
       const ux = w.x - x, uy = (w.y - 26) - y, ud = Math.hypot(ux, uy) || 1;
       if (d < RR) { const f = 1 - d / RR; this.hurt(w, sp.dmg * f * 1.15, ux / ud * 280 * f, (uy / ud) * 280 * f - 90 * f); }
     }
@@ -276,7 +305,7 @@ class Game {
     const es = this.wiz.filter(t => t.alive && t.team !== w.team); if (!es.length) return { a: w.angle, p: w.power, k: 'fire' };
     es.sort((a, b) => Math.abs(a.x - w.x) - Math.abs(b.x - w.x)); const t = es[0]; let best = null;
     for (const k of SKEYS) {
-      const sp = SPELLS[k]; if (sp.jet || sp.mana > w.mana) continue;
+      const sp = SPELLS[k]; if (sp.jet || sp.castle || sp.mana > w.mana) continue;
       for (let a = -84; a <= 264; a += 4) for (let p = 25; p <= 100; p += 5) { const s = this.sim(w, a, p, sp, t) - (sp.dr || sp.r) * .6; if (!best || s < best.s) best = { a, p, k, s }; }
     }
     if (!best) return { a: w.angle, p: w.power, k: 'fire' };
@@ -294,7 +323,7 @@ class Game {
     const r = v => Math.round(v * 10) / 10;
     return {
       turn: this.turn, state: this.state, timer: r(this.timer), wind: this.wind,
-      w: this.wiz.map(w => [r(w.x), r(w.y), w.hp, Math.round(w.mana), r(w.angle), r(w.power), (this.state === 'aim' && w.i === this.turn) ? w.dir : 0, w.grounded ? 1 : 0, w.alive ? 1 : 0, SKEYS.indexOf(w.spell), w.flying ? 1 : 0]),
+      w: this.wiz.map(w => [r(w.x), r(w.y), w.hp, Math.round(w.mana), r(w.angle), r(w.power), (this.state === 'aim' && w.i === this.turn && !w.castle) ? w.dir : 0, w.grounded ? 1 : 0, w.alive ? 1 : 0, SKEYS.indexOf(w.spell), w.flying ? 1 : 0, w.castle ? 1 : 0, Math.round(w.chp), w.castleT]),
       p: this.projs.map(p => [p.id, SKEYS.indexOf(p.sp), r(p.x), r(p.y), Math.round(p.vx), Math.round(p.vy)]),
       l: this.lava.map(b => [r(b.x), r(b.y), r(b.r), r(b.life)]),
       over: this.over
@@ -303,6 +332,6 @@ class Game {
   drain() { const e = this.ev; this.ev = []; return e; }
 }
 
-const api = { W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW, ballStep, bombStep };
+const api = { CASTLE_HP, CASTLE_TURNS, W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW, ballStep, bombStep };
 if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Core = api;
 })(this);
