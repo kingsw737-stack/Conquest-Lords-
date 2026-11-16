@@ -55,6 +55,8 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .row .fld{margin:0;flex:1;min-width:0;text-transform:uppercase;letter-spacing:4px}
 .row .big{margin:0;width:auto;padding:12px 18px;font-size:16px}
 #ost{min-height:44px;margin:10px 0 0;color:#ffd86b;font-weight:600}
+#snd{position:fixed;left:8px;top:calc(env(safe-area-inset-top) + 96px);z-index:12;display:flex;flex-direction:column;gap:6px}
+#snd button{background:var(--ui);border:1px solid #ffffff40;border-radius:12px;width:40px;height:40px;font-size:18px;cursor:pointer}
 #net{position:fixed;top:calc(env(safe-area-inset-top) + 70px);left:50%;transform:translateX(-50%);z-index:20;background:#b3261eee;border-radius:10px;padding:6px 14px;font-size:13px;font-weight:600;pointer-events:none}
 </style>
 </head>
@@ -97,6 +99,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <button class="big" id="oback" style="background:#ffffff22">Back</button>
 </div>
 <div id="net" class="hide"></div>
+<div id="snd"><button id="mu" aria-label="Sound effects">🔊</button><button id="mm" aria-label="Music">🎵</button></div>
 <div class="ov hide" id="over">
   <h1 id="ot">Victory!</h1><p id="os"></p>
   <button class="big" id="again">Play again</button>
@@ -159,6 +162,7 @@ const mk=(i,name,x,col,col2,isAI)=>({i,name,x,y:0,vx:0,vy:0,hp:100,mana:60,angle
 const cur=()=>wiz[turn];
 let me=0;
 const ctl=w=>!!w&&!w.ai&&(mode!=='online'||w.i===me);
+function hitW(w,x,y){const cy=Math.max(w.y-50,Math.min(w.y-6,y));return Math.hypot(x-w.x,y-cy)<14}
 function muzzle(w,ang){const a=ang*Math.PI/180,f=Math.cos(a)>=0?1:-1,lx=Math.abs(Math.cos(a)),ly=-Math.sin(a);return[w.x+f*1.2*(3+lx*27),w.y+1.2*(-22+ly*27)]}
 function physW(w,dt,walk){
   if(!w.alive)return;
@@ -187,20 +191,20 @@ function physW(w,dt,walk){
 }
 function hurt(w,d,kx,ky){
   d=Math.round(d);if(d<=0||!w.alive)return;
-  w.hp-=d;w.hurt=.5;txts.push({x:w.x,y:w.y-55,t:'-'+d,life:1.2});
+  sfx('hurt');w.hp-=d;w.hurt=.5;txts.push({x:w.x,y:w.y-55,t:'-'+d,life:1.2});
   w.vx+=kx;w.vy+=ky;if(ky<0)w.grounded=false;
   if(w.hp<=0){w.hp=0;kill(w)}
 }
 function kill(w){
-  if(!w.alive)return;w.alive=false;shake=Math.max(shake,8);
+  if(!w.alive)return;w.alive=false;sfx('kill');shake=Math.max(shake,8);
   for(let i=0;i<40;i++)P(w.x,w.y-18,R(-160,160),R(-260,60),R(.5,1.2),R(2,5),i%2?'#ffe9a8':w.col,200);
 }
 
 /* ---------- Particles / FX ---------- */
 function P(x,y,vx,vy,life,size,col,g=0,add=true){if(parts.length>700)parts.shift();parts.push({x,y,vx,vy,life,max:life,size,col,g,add})}
-function splash(x){for(let i=0;i<26;i++)P(x,WATER,R(-90,90),R(-320,-120),R(.4,.9),R(2,4),'#c6ecff',520)}
+function splash(x){sfx('splash');for(let i=0;i<26;i++)P(x,WATER,R(-90,90),R(-320,-120),R(.4,.9),R(2,4),'#c6ecff',520)}
 function boom(x,y,sp,elec){
-  const r=sp.r;boomT=time;boomX=x;boomY=y;
+  sfx(elec?'zap':'boom',sp.r);const r=sp.r;boomT=time;boomX=x;boomY=y;
   if(elec){
     for(let i=0;i<9;i++){let a=R(0,6.28),px=x,py=y;const pts=[[px,py]];for(let j=0;j<6;j++){const aa=a+R(-.7,.7);px+=Math.cos(aa)*r*.4;py+=Math.sin(aa)*r*.4;pts.push([px,py])}fx.push({t:'bolt',pts,life:.35,max:.35})}
     for(let i=0;i<40;i++)P(x,y,R(-320,320),R(-320,320),R(.2,.55),R(1.5,3),'#c8f4ff',200);
@@ -218,15 +222,15 @@ function explode(x,y,sp,key){
   carve(x,y,sp.r);shake=Math.max(shake,sp.r/5);boom(x,y,sp,key==='bolt');
   for(const w of wiz){
     if(!w.alive)continue;
-    const dx=w.x-x,dy=w.y-14-y,d=Math.hypot(dx,dy)||1,RR=sp.r*1.7;
-    if(d<RR){const f=1-d/RR;hurt(w,sp.dmg*f*1.15,dx/d*280*f,(dy/d)*280*f-90*f)}
+    const RR=sp.r*1.7,cy=Math.max(w.y-50,Math.min(w.y-6,y)),d=Math.hypot(w.x-x,cy-y),ux=w.x-x,uy=(w.y-26)-y,ud=Math.hypot(ux,uy)||1;
+    if(d<RR){const f=1-d/RR;hurt(w,sp.dmg*f*1.15,ux/ud*280*f,(uy/ud)*280*f-90*f)}
   }
 }
 
 /* ---------- Projectiles ---------- */
 function fire(w){
   const sp=SPELLS[w.spell];if(state!=='aim'||w.mana<sp.mana)return;
-  w.mana-=sp.mana;w.cast=.5;
+  w.mana-=sp.mana;w.cast=.5;sfx(w.spell==='bolt'?'bolt':'fire');
   const a=w.angle*Math.PI/180,[mx,my]=muzzle(w,w.angle);
   projs.push({sp:w.spell,x:mx,y:my,vx:Math.cos(a)*w.power*sp.k,vy:-Math.sin(a)*w.power*sp.k,age:0,owner:w,trail:[]});
   state='resolve';resolveT=0;settle=0;
@@ -238,7 +242,7 @@ function stepProj(p,dt){
     if(p.y>WATER){splash(p.x);p.dead=true;return}
     if(p.x<-150||p.x>W+150||p.y>H+100||p.age>12){p.dead=true;return}
     if(solid(p.x,p.y)){explode(p.x,p.y,sp,p.sp);p.dead=true;return}
-    for(const w of wiz)if(w.alive&&(p.age>.25||w!==p.owner)&&Math.hypot(w.x-p.x,w.y-14-p.y)<15){explode(p.x,p.y,sp,p.sp);p.dead=true;return}
+    for(const w of wiz)if(w.alive&&(p.age>.25||w!==p.owner)&&hitW(w,p.x,p.y)){explode(p.x,p.y,sp,p.sp);p.dead=true;return}
   }
   if(p.sp==='fire'){P(p.x,p.y,R(-25,25),R(-25,25),.5,7,'#ff8a1f',-30);if(Math.random()<.4)P(p.x,p.y,R(-15,15),R(-30,-5),.9,8,'#443',-40,false)}
   else{p.trail.push([p.x,p.y]);if(p.trail.length>10)p.trail.shift()}
@@ -250,7 +254,7 @@ function sim(w,ang,pow,sp,t){
   for(let i=0;i<900;i++){
     vy+=sp.g*h;vx+=wind*14*sp.wf*h;x+=vx*h;y+=vy*h;
     if(y>WATER||x<0||x>W||solid(x,y))break;
-    if(Math.hypot(t.x-x,t.y-14-y)<15)return 0;
+    if(hitW(t,x,y))return 0;
   }
   let d=Math.hypot(x-t.x,y-(t.y-14));
   if(Math.hypot(x-w.x,y-w.y)<sp.r*1.8)d+=300;
@@ -277,7 +281,7 @@ function start(m){
 function newTurn(first){
   const w=cur();wind=Math.round(R(-8,8));timer=30;state='aim';cam.auto=true;
   if(!first)w.mana=Math.min(100,w.mana+20);
-  ai={t:0,plan:null,hold:0};
+  ai={t:0,plan:null,hold:0};if(!first&&!w.ai)sfx('turn');
   if(SPELLS[w.spell].mana>w.mana)w.spell='fire';
 }
 function endTurn(){
@@ -291,9 +295,9 @@ function showOver(win){
   if(!win){t='Draw!';s='Both wizards fell.'}
   else if(mode==='ai'){t=win.i===0?'Victory!':'Defeat';s=win.i===0?'You outwitted Morgana.':'Morgana wins this round.'}
   else{t=win.name+' wins!';s='Last mage standing.'}
-  $('ot').textContent=t;$('os').textContent=s;$('over').classList.remove('hide');
+  sfx(t==='Defeat'?'lose':'win');$('ot').textContent=t;$('os').textContent=s;$('over').classList.remove('hide');
 }
-function jump(){const w=cur();if(state!=='aim'||!ctl(w))return;if(mode==='online')sendAct({t:'jump'});else if(w.grounded){w.vy=-330;w.grounded=false}}
+function jump(){const w=cur();if(state!=='aim'||!ctl(w))return;if(mode==='online'){sendAct({t:'jump'});sfx('jump')}else if(w.grounded){w.vy=-330;w.grounded=false;sfx('jump')}}
 function pick(k){const w=cur();if(state!=='aim'||!ctl(w)||w.mana<SPELLS[k].mana)return;w.spell=k;if(mode==='online'){pickT=performance.now();sendAct({t:'spell',k})}}
 function doFire(){const c=cur();if(state!=='aim'||!ctl(c))return;if(mode==='online')sendAct({t:'fire',angle:c.angle,power:c.power,spell:c.spell});else fire(c)}
 
@@ -465,7 +469,8 @@ function hud(){
   const t=Math.ceil(Math.max(0,timer));$('timer').textContent=t;$('timer').classList.toggle('low',t<=5);
   $('wt').textContent='Wind '+(wind>0?'\u25B6 ':wind<0?'\u25C0 ':'')+Math.abs(wind);
   const f=$('wf').style;f.width=Math.abs(wind)/8*50+'%';f.left=wind>=0?'50%':(50-Math.abs(wind)/8*50)+'%';
-  const c=cur(),on=state==='aim'&&ctl(c);$('ctrl').classList.toggle('off',!on);
+  const c=cur(),on=state==='aim'&&ctl(c);
+  if(t!==AU.lastTick){AU.lastTick=t;if(on&&t>0&&t<=5)sfx('tick')}$('ctrl').classList.toggle('off',!on);
   $('ar').value=Math.round(c.angle);$('pr').value=Math.round(c.power);$('av').textContent=Math.round(c.angle)+'\u00B0';$('pv').textContent=Math.round(c.power);
   for(const b of spBox.children){b.classList.toggle('sel',b.dataset.k===c.spell);b.disabled=SPELLS[b.dataset.k].mana>c.mana}
 }
@@ -502,6 +507,100 @@ $('fs').onclick=()=>{const d=document,el=d.documentElement;d.fullscreenElement?d
 $('p1').onclick=()=>start('ai');$('p2').onclick=()=>start('pvp');
 $('again').onclick=()=>{if(mode==='online'){netSend({t:'rematch'});$('os').textContent='Waiting for your opponent\u2026';return}start(mode)};
 $('tomenu').onclick=()=>{leaveOnline();$('again').textContent='Play again';$('over').classList.add('hide');$('menu').classList.remove('hide');demo()};
+
+
+/* ---------- Audio: every sound is synthesized in the browser (no files to load) ---------- */
+const AU={ctx:null,on:true,mus:true,lastTick:-1};
+try{AU.on=localStorage.getItem('aw_sfx')!=='0';AU.mus=localStorage.getItem('aw_mus')!=='0'}catch(e){}
+const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const fq=n=>{const m=/^([A-G])(#|b)?(\d)$/.exec(n);return 440*Math.pow(2,(NOTE[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0)+12*(+m[3]+1)-69)/12)};
+function auInit(){
+  if(AU.ctx){if(AU.ctx.state==='suspended'&&!document.hidden)AU.ctx.resume();return}
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  const c=AU.ctx=new AC();
+  const comp=c.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=6;comp.connect(c.destination);
+  AU.out=c.createGain();AU.out.gain.value=.9;AU.out.connect(comp);
+  AU.sg=c.createGain();AU.sg.gain.value=AU.on?.7:0;AU.sg.connect(AU.out);
+  AU.mg=c.createGain();AU.mg.gain.value=AU.mus?.4:0;AU.mg.connect(AU.out);
+  /* echo gives the music a magical, spacious feel */
+  const dl=c.createDelay(1),fb=c.createGain(),wet=c.createGain(),lp=c.createBiquadFilter();
+  dl.delayTime.value=.33;fb.gain.value=.32;wet.gain.value=.3;lp.type='lowpass';lp.frequency.value=2400;
+  dl.connect(lp);lp.connect(fb);fb.connect(dl);lp.connect(wet);wet.connect(AU.mg);
+  AU.mbus=c.createGain();AU.mbus.connect(AU.mg);AU.mbus.connect(dl);
+  const nb=c.createBuffer(1,c.sampleRate,c.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;AU.noise=nb;
+  if(c.state==='suspended')c.resume();
+  AU.timer=setInterval(musicTick,120);AU.next=c.currentTime+.25;AU.bar=0;
+}
+function tone(type,f0,f1,t,dur,vol,dest,att){
+  const c=AU.ctx,o=c.createOscillator(),g=c.createGain(),a=att||.01;
+  o.type=type;o.frequency.setValueAtTime(f0,t);if(f1!==f0)o.frequency.exponentialRampToValueAtTime(Math.max(1,f1),t+dur);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(dest||AU.sg);o.start(t);o.stop(t+dur+.05);
+}
+function noiseBurst(t,dur,vol,type,f0,f1,q){
+  const c=AU.ctx,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
+  s.buffer=AU.noise;s.loop=true;f.type=type;f.Q.value=q||1;
+  f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(f);f.connect(g);g.connect(AU.sg);s.start(t,Math.random());s.stop(t+dur+.05);
+}
+function sfx(k,a){
+  const c=AU.ctx;if(!c||!AU.on||c.state!=='running')return;const t=c.currentTime;
+  switch(k){
+    case 'click':tone('sine',660,880,t,.07,.25);break;
+    case 'fire':noiseBurst(t,.5,.5,'bandpass',500,2200,1.2);tone('sawtooth',180,520,t,.35,.18);break;
+    case 'bolt':tone('sawtooth',1800,120,t,.28,.3);tone('square',900,200,t,.2,.1);noiseBurst(t,.18,.3,'highpass',3000,6000,.7);break;
+    case 'boom':{const s=Math.min(1.4,(a||48)/48);tone('sine',140,38,t,.6*s,.9);noiseBurst(t,.7*s,.85,'lowpass',2400,120,.8);noiseBurst(t,.15,.4,'highpass',1500,800,.7);break}
+    case 'zap':tone('sawtooth',900,60,t,.25,.35);tone('sine',220,50,t,.3,.6);noiseBurst(t,.22,.55,'highpass',2500,9000,.7);break;
+    case 'hurt':tone('triangle',420,160,t,.22,.4);break;
+    case 'kill':tone('sawtooth',500,50,t,.9,.35);noiseBurst(t,.5,.4,'lowpass',1600,150,.8);[784,988,1175].forEach((f,i)=>tone('sine',f,f,t+.5+i*.12,.5,.18));break;
+    case 'splash':noiseBurst(t,.45,.5,'bandpass',900,300,.9);tone('sine',500,120,t,.2,.25);break;
+    case 'jump':tone('sine',260,520,t,.14,.3);break;
+    case 'tick':tone('square',1000,1000,t,.04,.1);break;
+    case 'turn':tone('sine',880,880,t,.35,.25);tone('sine',1320,1320,t+.1,.45,.2);break;
+    case 'win':[523,659,784,1047].forEach((f,i)=>tone('triangle',f,f,t+i*.13,.5,.35));break;
+    case 'lose':[392,330,262,196].forEach((f,i)=>tone('triangle',f,f*.98,t+i*.2,.6,.3));break;
+  }
+}
+/* ----- melody: 8-bar loop in A minor (Am - F - C - G), arpeggio + bass + pad + lead ----- */
+const BEAT=60/92;
+const CHORDS=[
+  {bass:'A2',arp:['A3','C4','E4','A4','E4','C4','E4','C4'],pad:['A3','C4','E4']},
+  {bass:'F2',arp:['F3','A3','C4','F4','C4','A3','C4','A3'],pad:['F3','A3','C4']},
+  {bass:'C3',arp:['C4','E4','G4','C5','G4','E4','G4','E4'],pad:['C4','E4','G4']},
+  {bass:'G2',arp:['G3','B3','D4','G4','D4','B3','D4','B3'],pad:['G3','B3','D4']}
+];
+const LEAD=[
+  [['E5',2],['D5',1],['C5',1]],[['A4',2],['C5',1],['A4',1]],[['E5',1.5],['G5',.5],['E5',1],['D5',1]],[['D5',3],[null,1]],
+  [['C5',1],['E5',1],['A5',2]],[['G5',1],['F5',1],['E5',2]],[['E5',1],['D5',1],['C5',1],['D5',1]],[['B4',2],['D5',2]]
+];
+function schedBar(b,t){
+  const ch=CHORDS[b%4],bf=fq(ch.bass);
+  tone('sine',bf,bf,t,BEAT*1.9,.32,AU.mg,.02);tone('sine',bf,bf,t+BEAT*2,BEAT*1.9,.26,AU.mg,.02);
+  for(const n of ch.pad){
+    const f=fq(n);
+    for(const det of[-6,6]){
+      const c=AU.ctx,o=c.createOscillator(),g=c.createGain(),lp=c.createBiquadFilter();
+      o.type='sawtooth';o.frequency.value=f;o.detune.value=det;lp.type='lowpass';lp.frequency.value=650;
+      g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.035,t+.9);g.gain.setValueAtTime(.035,t+BEAT*3.2);g.gain.linearRampToValueAtTime(.0001,t+BEAT*4.1);
+      o.connect(lp);lp.connect(g);g.connect(AU.mg);o.start(t);o.stop(t+BEAT*4.2);
+    }
+  }
+  ch.arp.forEach((n,i)=>{const f=fq(n);tone('triangle',f,f,t+i*BEAT/2,BEAT*.9,.13,AU.mbus,.005)});
+  let off=0;for(const[n,beats]of LEAD[b%8]){if(n){const f=fq(n);tone('triangle',f,f,t+off*BEAT,beats*BEAT*.95,.2,AU.mbus,.04)}off+=beats}
+}
+function musicTick(){
+  const c=AU.ctx;if(!c||c.state!=='running')return;
+  if(AU.next<c.currentTime-1)AU.next=c.currentTime+.1;
+  while(AU.next<c.currentTime+.5){schedBar(AU.bar%8,AU.next);AU.next+=BEAT*4;AU.bar++}
+}
+function setSfx(v){AU.on=v;try{localStorage.setItem('aw_sfx',v?'1':'0')}catch(e){}if(AU.sg)AU.sg.gain.value=v?.7:0;$('mu').textContent=v?'\u{1F50A}':'\u{1F507}'}
+function setMus(v){AU.mus=v;try{localStorage.setItem('aw_mus',v?'1':'0')}catch(e){}if(AU.mg)AU.mg.gain.setTargetAtTime(v?.4:0,AU.ctx.currentTime,.1);$('mm').style.opacity=v?1:.35}
+for(const ev of['pointerdown','touchend','click','keydown'])addEventListener(ev,auInit,{passive:true});
+document.addEventListener('visibilitychange',()=>{const c=AU.ctx;if(!c)return;if(document.hidden)c.suspend();else c.resume()});
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('button'))sfx('click')});
+$('mu').onclick=()=>setSfx(!AU.on);$('mm').onclick=()=>setMus(!AU.mus);
+setSfx(AU.on);setMus(AU.mus);
 
 /* ---------- Online multiplayer ---------- */
 const SK=Object.keys(SPELLS),PCOL=[['#3d6fe0','#23449e'],['#d4365a','#8a1f3c']];
@@ -598,6 +697,7 @@ function startOnline(m){
 function applySnap(s){
   if(mode!=='online'||!wiz.length)return;
   const now=performance.now();
+  if(gotSnap&&s.turn!==turn&&s.turn===me&&s.state==='aim')sfx('turn');
   turn=s.turn;state=s.state;timer=s.timer;wind=s.wind;
   s.w.forEach((a,i)=>{
     const w=wiz[i];if(!w)return;
@@ -616,9 +716,9 @@ function applySnap(s){
 function onEv(list){
   for(const e of list){
     const w=wiz[e.i];
-    if(e.e==='cast'){if(w)w.cast=.5}
-    else if(e.e==='hurt'){if(w){w.hurt=.5;txts.push({x:w.x,y:w.y-55,t:'-'+e.d,life:1.2})}}
-    else if(e.e==='kill'){if(w){shake=Math.max(shake,8);for(let i=0;i<40;i++)P(e.x,e.y-18,R(-160,160),R(-260,60),R(.5,1.2),R(2,5),i%2?'#ffe9a8':w.col,200)}}
+    if(e.e==='cast'){if(w){w.cast=.5;sfx(w.spell==='bolt'?'bolt':'fire')}}
+    else if(e.e==='hurt'){if(w){sfx('hurt');w.hurt=.5;txts.push({x:w.x,y:w.y-55,t:'-'+e.d,life:1.2})}}
+    else if(e.e==='kill'){if(w){sfx('kill');shake=Math.max(shake,8);for(let i=0;i<40;i++)P(e.x,e.y-18,R(-160,160),R(-260,60),R(.5,1.2),R(2,5),i%2?'#ffe9a8':w.col,200)}}
     else if(e.e==='splash')splash(e.x);
     else if(e.e==='boom'){
       const sp=SPELLS[e.k];if(!sp)continue;
@@ -660,7 +760,7 @@ function showOnlineOver(o,msg){
   else if(o.team<0){t='Draw!';s='Both wizards fell.'}
   else if(o.team===me){t='Victory!';s='You outwitted '+(o.names[0]||'your opponent').replace(' (you)','')+'.'}
   else{t='Defeat';s=(o.names[0]||'Your opponent')+' wins this round.'}
-  $('ot').textContent=t;$('os').textContent=s;$('over').classList.remove('hide');
+  sfx(t==='Defeat'?'lose':'win');$('ot').textContent=t;$('os').textContent=s;$('over').classList.remove('hide');
 }
 function initOnlineUI(){
   if(typeof Core==='undefined')$('p3').classList.add('hide');

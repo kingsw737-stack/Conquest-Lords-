@@ -41,6 +41,8 @@ function genMask(seed) {
   }
   return mask;
 }
+/* wizard hitbox: a vertical capsule from feet to hat (the old check only covered the belly, so head/hat shots passed through) */
+function hitW(w, x, y) { const cy = Math.max(w.y - 50, Math.min(w.y - 6, y)); return Math.hypot(x - w.x, y - cy) < 14; }
 function muzzle(w, ang) {
   const a = ang * Math.PI / 180, f = Math.cos(a) >= 0 ? 1 : -1, lx = Math.abs(Math.cos(a)), ly = -Math.sin(a);
   return [w.x + f * 1.2 * (3 + lx * 27), w.y + 1.2 * (-22 + ly * 27)];
@@ -160,8 +162,9 @@ class Game {
     this.ev.push({ e: 'boom', x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, k: key });
     for (const w of this.wiz) {
       if (!w.alive) continue;
-      const dx = w.x - x, dy = w.y - 14 - y, d = Math.hypot(dx, dy) || 1, RR = sp.r * 1.7;
-      if (d < RR) { const f = 1 - d / RR; this.hurt(w, sp.dmg * f * 1.15, dx / d * 280 * f, (dy / d) * 280 * f - 90 * f); }
+      const RR = sp.r * 1.7, cy = Math.max(w.y - 50, Math.min(w.y - 6, y)), d = Math.hypot(w.x - x, cy - y);
+      const ux = w.x - x, uy = (w.y - 26) - y, ud = Math.hypot(ux, uy) || 1;
+      if (d < RR) { const f = 1 - d / RR; this.hurt(w, sp.dmg * f * 1.15, ux / ud * 280 * f, (uy / ud) * 280 * f - 90 * f); }
     }
   }
   stepProj(p, dt) {
@@ -171,7 +174,7 @@ class Game {
       if (p.y > WATER) { this.ev.push({ e: 'splash', x: p.x }); p.dead = true; return; }
       if (p.x < -150 || p.x > W + 150 || p.y > H + 100 || p.age > 12) { p.dead = true; return; }
       if (this.solid(p.x, p.y)) { this.explode(p.x, p.y, p.sp); p.dead = true; return; }
-      for (const w of this.wiz) if (w.alive && (p.age > .25 || w !== p.owner) && Math.hypot(w.x - p.x, w.y - 14 - p.y) < 15) { this.explode(p.x, p.y, p.sp); p.dead = true; return; }
+      for (const w of this.wiz) if (w.alive && (p.age > .25 || w !== p.owner) && hitW(w, p.x, p.y)) { this.explode(p.x, p.y, p.sp); p.dead = true; return; }
     }
   }
   /* ----- AI ----- */
@@ -180,7 +183,7 @@ class Game {
     for (let i = 0; i < 900; i++) {
       vy += sp.g * h; vx += this.wind * 14 * sp.wf * h; x += vx * h; y += vy * h;
       if (y > WATER || x < 0 || x > W || this.solid(x, y)) break;
-      if (Math.hypot(t.x - x, t.y - 14 - y) < 15) return 0;
+      if (hitW(t, x, y)) return 0;
     }
     let d = Math.hypot(x - t.x, y - (t.y - 14));
     if (Math.hypot(x - w.x, y - w.y) < sp.r * 1.8) d += 300;
@@ -217,6 +220,6 @@ class Game {
   drain() { const e = this.ev; this.ev = []; return e; }
 }
 
-const api = { W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, carveMask, muzzle };
+const api = { W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, carveMask, muzzle, hitW };
 if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Core = api;
 })(this);
