@@ -42,29 +42,8 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .grp{display:flex;flex-direction:column;gap:5px;align-items:center}
 .grp small{font-size:9px;font-weight:800;letter-spacing:1.5px;color:#cdbdff;text-shadow:0 1px 2px #000}
 .grp .gb{width:46px;height:42px;font-size:24px;font-weight:800;line-height:1}
-#bf{position:relative;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;width:86px;height:86px;border-radius:50%;border:3px solid #ffffffaa;background:radial-gradient(circle at 50% 28%,#ffe08a,#ff8a2a 42%,#d6204f);box-shadow:inset 0 3px 0 #fff7,inset 0 -7px 0 #0004,0 0 20px #ff7a2a99,0 6px 10px #000a;color:#fff;font-weight:900;font-size:16px;letter-spacing:1px;text-shadow:0 2px 0 #0008;cursor:pointer;touch-action:none}
-#bf:active,#bf.charging{transform:scale(.95);filter:brightness(1.15)}
-#bf:before{content:"";position:absolute;inset:-10px;border-radius:50%;pointer-events:none;opacity:0;background:conic-gradient(#ffd23f calc(var(--p,0)*1%),#ffffff22 0);-webkit-mask:radial-gradient(farthest-side,#0000 calc(100% - 7px),#000 calc(100% - 6px));mask:radial-gradient(farthest-side,#0000 calc(100% - 7px),#000 calc(100% - 6px))}
-#bf.charging:before{opacity:1}
-#bf.charging{animation:chgpulse .45s ease-in-out infinite alternate}
-@keyframes chgpulse{from{box-shadow:inset 0 3px 0 #fff7,inset 0 -7px 0 #0004,0 0 18px #ff7a2a99,0 6px 10px #000a}to{box-shadow:inset 0 3px 0 #fff7,inset 0 -7px 0 #0004,0 0 42px #ffd23fdd,0 6px 10px #000a}}
-#atk{display:flex;flex-direction:column;align-items:center;gap:12px}
-#bc{touch-action:none;user-select:none;-webkit-user-select:none;width:56px;height:56px;border-radius:50%;border:2px solid #ffffff66;background:linear-gradient(#6b6b86,#33334d);color:#fff;display:grid;place-items:center;align-content:center;padding:0;line-height:1;cursor:pointer;opacity:.45;box-shadow:inset 0 2px 0 #fff4,0 4px 8px #0008}
-#bc b{font-size:20px}#bc small{font-size:8px;font-weight:800;letter-spacing:.5px}
-#bc:not(:disabled){opacity:1;border-color:#ffb0b0;background:linear-gradient(#ff6b6b,#a81e3a)}
-#bc:not(:disabled):active{transform:scale(.92)}
-#chg{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 96px);transform:translateX(-50%);width:min(70vw,360px);padding:6px 12px 8px;border-radius:16px;background:linear-gradient(#2a1f62f0,#150d38f0);border:2px solid #0b0620;box-shadow:0 0 0 1px #ffd86b88,0 6px 14px #000a;text-align:center;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s}
-#chg.on{opacity:1;visibility:visible}
-#chg .t{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
-#chgv{font-size:26px;font-weight:900;text-shadow:0 2px 3px #000}
-#chg small{font-size:10px;font-weight:700;letter-spacing:1px;color:#cdbdff}
-#chgb{position:relative;height:22px;border-radius:11px;background:#0009;border:2px solid #0b0620;overflow:hidden;box-shadow:inset 0 2px 4px #000a}
-#chgf{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#4de06a,#ffd23f 60%,#ff4a3a);background-size:var(--bw,320px) 100%;box-shadow:0 0 12px #ffd23f}
-#chgf:after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,#0000 30%,#fff7 50%,#0000 70%);background-size:200% 100%;animation:shimmer .7s linear infinite}
-@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
-#chgb:after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 2px),#0009 calc(10% - 2px) 10%)}
-#chg.max #chgv{color:#ff6a5a;animation:chgpulse2 .25s infinite alternate}
-@keyframes chgpulse2{to{transform:scale(1.12)}}
+#bf{width:86px;height:86px;border-radius:50%;border:3px solid #ffffffaa;background:radial-gradient(circle at 50% 28%,#ffe08a,#ff8a2a 42%,#d6204f);box-shadow:inset 0 3px 0 #fff7,inset 0 -7px 0 #0004,0 0 20px #ff7a2a99,0 6px 10px #000a;color:#fff;font-weight:900;font-size:20px;letter-spacing:1px;text-shadow:0 2px 0 #0008;cursor:pointer;touch-action:manipulation}
+#bf:active{transform:scale(.93);filter:brightness(1.15)}
 #wpn{display:flex;align-items:center;gap:8px;padding:6px 9px;margin:0 auto;min-width:0;background:linear-gradient(#2a1f62f0,#150d38f0);border:2px solid #0b0620;border-radius:18px;box-shadow:inset 0 2px 0 #ffffff30,0 0 0 1px #ffd86b55,0 6px 14px #000a}
 #wcol{display:flex;flex-direction:column;gap:6px}
 #mn{height:6px;border-radius:3px;background:#0009;overflow:hidden;border:1px solid #0b0620}#mn i{display:block;height:100%;width:100%;background:linear-gradient(#9cc4ff,#3a63e8);transition:width .3s}
@@ -133,11 +112,9 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <div id="aim">
     <div class="grp"><small>ANGLE</small><button class="gb" id="au" aria-label="Angle up"><svg class="ic"><use href="#arw"/></svg></button><button class="gb" id="ad" aria-label="Angle down"><svg class="ic" style="transform:rotate(180deg)"><use href="#arw"/></svg></button></div>
     <div class="grp"><small>POWER</small><button class="gb" id="pu" aria-label="More power">+</button><button class="gb" id="pd" aria-label="Less power">&minus;</button></div>
-    <div id="atk"><button id="bc" aria-label="Cancel charge (Esc)" disabled><b>&#10005;</b><small>CANCEL</small></button><button id="bf" aria-label="Attack: hold to charge, release to fire">ATTACK</button></div>
+    <button id="bf">FIRE</button>
   </div>
 </div>
-
-<div id="chg"><div class="t"><b id="chgv">0%</b><small>RELEASE TO FIRE &middot; CANCEL TO ABORT</small></div><div id="chgb"><i id="chgf"></i></div></div>
 
 <div class="ov" id="menu">
   <h1>ARCANE<br>WARFARE</h1>
@@ -146,7 +123,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <button class="big on" id="p3">Play Online</button>
   <button class="big alt" id="p2">Local 2-Player</button>
   <div id="snd"><button id="mu" aria-label="Sound effects">🔊 Sound</button><button id="mm" aria-label="Music">🎵 Music</button></div>
-  <small>Move: &larr; &rarr; / A D &middot; Jump: W (hold &larr; &rarr; for a side jump) &middot; Enter / Backspace: jump forward / back &middot; Aim: &uarr; &darr; or drag on the battlefield &middot; Power: Q E &middot; Attack: hold Space, release to fire &middot; Cancel: Esc &middot; Spells: 1 2 &middot; Zoom: wheel<br>On phones hold ATTACK to charge, release to fire, tap CANCEL to abort.</small>
+  <small>Move: &larr; &rarr; / A D &middot; Jump: W (hold &larr; &rarr; for a side jump) &middot; Enter / Backspace: jump forward / back &middot; Aim: &uarr; &darr; or drag on the battlefield &middot; Power: Q E &middot; Fire: Space &middot; Spells: 1 2 &middot; Zoom: wheel<br>On phones use the on-screen buttons and sliders.</small>
 </div>
 <div class="ov hide" id="online">
   <h1 style="font-size:clamp(30px,8vw,54px)">ONLINE</h1>
@@ -368,27 +345,10 @@ function inputs(dt){
     pw:(keys.KeyE?1:0)-(keys.KeyQ?1:0)+(ui.pu?ramp('pu'):0)-(ui.pd?ramp('pd'):0)}
 }
 function pick(k){const w=cur();if(state!=='aim'||!ctl(w)||w.mana<SPELLS[k].mana)return;w.spell=k;if(mode==='online'){pickT=performance.now();sendAct({t:'spell',k})}}
-/* ---- charge & release attack ---- */
-let charging=false,chargeV=0,chargeSrc='',fireLock=0;const CHARGE_TIME=1.6;
-const effPower=c=>charging?Math.max(10,chargeV):c.power;
-function canAttack(){const c=cur();return state==='aim'&&ctl(c)&&SPELLS[c.spell].mana<=c.mana&&performance.now()>fireLock}
-function startCharge(src){if(charging||!canAttack())return false;charging=true;chargeV=0;chargeSrc=src;return true}
-function cancelCharge(){charging=false;chargeV=0;chargeSrc=''}
-function releaseCharge(src){
-  if(!charging||chargeSrc!==src)return;
-  const p=Math.round(Math.max(10,chargeV));cancelCharge();
-  if(!canAttack())return;
-  cur().power=p;fireLock=performance.now()+700;doFire();
-}
-function chargeTick(dt){
-  if(!charging)return;
-  if(!canAttack()){cancelCharge();return}
-  chargeV=Math.min(100,chargeV+100/CHARGE_TIME*dt);
-}
 function doFire(){const c=cur();if(state!=='aim'||!ctl(c))return;if(mode==='online')sendAct({t:'fire',angle:c.angle,power:c.power,spell:c.spell});else fire(c)}
 
 function update(dt){
-  time+=dt;shake=Math.max(0,shake-dt*30);flash=Math.max(0,flash-dt);chargeTick(dt);
+  time+=dt;shake=Math.max(0,shake-dt*30);flash=Math.max(0,flash-dt);
   if(mode==='online'){onUpdate(dt);return}
   const c=cur();
   let dir=0;
@@ -520,19 +480,15 @@ function draw(){
   ctx.drawImage(tc,0,0);
   const c=cur();
   if(state==='aim'&&ctl(c)){
-    const sp=SPELLS[c.spell],a=c.angle*Math.PI/180,h=1/120;let[x,y]=muzzle(c,c.angle),vx=Math.cos(a)*effPower(c)*sp.k,vy=-Math.sin(a)*effPower(c)*sp.k;
+    const sp=SPELLS[c.spell],a=c.angle*Math.PI/180,h=1/120;let[x,y]=muzzle(c,c.angle),vx=Math.cos(a)*c.power*sp.k,vy=-Math.sin(a)*c.power*sp.k;
     ctx.fillStyle='rgba(255,255,255,.75)';
     for(let i=0;i<10;i++){for(let j=0;j<7;j++){vy+=sp.g*h;vx+=wind*14*sp.wf*h;x+=vx*h;y+=vy*h}ctx.beginPath();ctx.arc(x,y,2.6-i*.2,0,7);ctx.fill()}
-    const an=c.angle*Math.PI/180,ca=Math.cos(an),sa=-Math.sin(an),gx=c.x,gy=c.y-22,pn=Math.round(effPower(c)/10);
+    const an=c.angle*Math.PI/180,ca=Math.cos(an),sa=-Math.sin(an),gx=c.x,gy=c.y-22,pn=Math.round(c.power/10);
     for(let i=0;i<10;i++){const d=30+i*6.5,on=i<pn;ctx.globalAlpha=on?1:.2;ctx.fillStyle=on?'hsl('+(125-125*i/9)+',95%,56%)':'#fff';ctx.beginPath();ctx.arc(gx+ca*d,gy+sa*d,2+i*.28,0,7);ctx.fill()}
     ctx.globalAlpha=1;const rx=gx+ca*112,ry=gy+sa*112,rp=1+Math.sin(time*5)*.08;
     for(const[lw,col]of[[5,'#000a'],[2,'#ffd86b']]){ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.beginPath();ctx.arc(rx,ry,8*rp,0,7);ctx.stroke();for(let k=0;k<4;k++){const q=k*Math.PI/2;ctx.beginPath();ctx.moveTo(rx+Math.cos(q)*5,ry+Math.sin(q)*5);ctx.lineTo(rx+Math.cos(q)*14*rp,ry+Math.sin(q)*14*rp);ctx.stroke()}}
   }
   for(const w of wiz)if(w.alive)drawWiz(w,w===c&&state==='aim');
-  if(charging&&c){const[ox,oy]=muzzle(c,c.angle),r=5+chargeV*.16+Math.sin(time*30)*1.5,hu=125-125*chargeV/100;
-    const g=ctx.createRadialGradient(ox,oy,0,ox,oy,r*2.4);g.addColorStop(0,'hsla('+hu+',100%,85%,.95)');g.addColorStop(.4,'hsla('+hu+',100%,55%,.6)');g.addColorStop(1,'hsla('+hu+',100%,50%,0)');
-    ctx.fillStyle=g;ctx.beginPath();ctx.arc(ox,oy,r*2.4,0,7);ctx.fill();
-    ctx.strokeStyle='hsla('+hu+',100%,70%,.9)';ctx.lineWidth=2;for(let k=0;k<5;k++){const q=time*6+k*1.2566,d=r*(1.6+.5*Math.sin(time*9+k));ctx.beginPath();ctx.arc(ox+Math.cos(q)*d,oy+Math.sin(q)*d,1.8,0,7);ctx.stroke()}}
   for(const p of projs)drawProj(p);
   for(const f of fx){
     const k=f.life/f.max;ctx.globalCompositeOperation='lighter';
@@ -566,20 +522,10 @@ function hud(){
   const c=cur(),on=state==='aim'&&ctl(c);
   if(t!==AU.lastTick){AU.lastTick=t;if(on&&t>0&&t<=5)sfx('tick')}$('ctrl').classList.toggle('off',!on);
   $('mnf').style.width=c.mana+'%';const ra=c.angle*Math.PI/180;$('needle').setAttribute('x2',20+14*Math.cos(ra));$('needle').setAttribute('y2',21-14*Math.sin(ra));
-  $('av').textContent=Math.round(c.angle)+'\u00B0';const ep=effPower(c);$('pv').textContent=Math.round(ep);$('pfill').style.clipPath='inset(0 '+(100-(ep-10)/90*100)+'% 0 0)';
-  $('bf').classList.toggle('charging',charging);$('bf').style.setProperty('--p',chargeV);$('bc').disabled=!charging;
-  const cg=$('chg');cg.classList.toggle('on',charging);cg.classList.toggle('max',charging&&chargeV>=100);$('chgf').style.width=chargeV+'%';$('chgf').style.setProperty('--bw',$('chgb').clientWidth+'px');$('chgv').textContent=Math.round(chargeV)+'%';
+  $('av').textContent=Math.round(c.angle)+'\u00B0';$('pv').textContent=Math.round(c.power);$('pfill').style.clipPath='inset(0 '+(100-(c.power-10)/90*100)+'% 0 0)';
   for(const b of spBox.children){b.classList.toggle('sel',b.dataset.k===c.spell);b.disabled=SPELLS[b.dataset.k].mana>c.mana}
 }
-const bfEl=$('bf');
-bfEl.addEventListener('pointerdown',e=>{e.preventDefault();if(startCharge('ptr'))bfEl.setPointerCapture(e.pointerId)});
-bfEl.addEventListener('pointerup',e=>{e.preventDefault();releaseCharge('ptr')});
-bfEl.addEventListener('pointercancel',()=>{if(chargeSrc==='ptr')cancelCharge()});
-bfEl.addEventListener('contextmenu',e=>e.preventDefault());
-$('bc').addEventListener('pointerdown',e=>{e.preventDefault();cancelCharge()});
-$('bc').addEventListener('contextmenu',e=>e.preventDefault());
-addEventListener('blur',cancelCharge);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelCharge()});
+$('bf').onclick=doFire;
 const hold=(id,k)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();ui[k]=1;b.classList.add('dn');b.setPointerCapture(e.pointerId)});for(const ev of['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{ui[k]=0;b.classList.remove('dn')})};
 hold('bl','l');hold('br','r');hold('au','au');hold('ad','ad');hold('pu','pu');hold('pd','pd');
 const tapJ=(id,d)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();b.classList.add('dn');jump(d)});for(const ev of['pointerup','pointercancel','pointerleave'])b.addEventListener(ev,()=>b.classList.remove('dn'))};
@@ -590,17 +536,16 @@ function setPw(e){if(state!=='aim'||!ctl(cur()))return;const r=pb.getBoundingCli
 pb.addEventListener('pointerdown',e=>{e.preventDefault();pdrag=true;pb.setPointerCapture(e.pointerId);setPw(e)});pb.addEventListener('pointermove',e=>{if(pdrag)setPw(e)});for(const ev of['pointerup','pointercancel'])pb.addEventListener(ev,()=>pdrag=false);
 addEventListener('keydown',e=>{
   keys[e.code]=true;
-  if(e.code==='Escape'){cancelCharge();e.preventDefault()}
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   if(state==='aim'&&ctl(cur())){
-    if(e.code==='Space'&&!e.repeat)startCharge('key');
+    if(e.code==='Space')doFire();
     const c=cur(),hd=((keys.ArrowRight||keys.KeyD||ui.r)?1:0)-((keys.ArrowLeft||keys.KeyA||ui.l)?1:0);
     if(e.code==='KeyW'||e.code==='KeyJ')jump(hd);
     if(e.code==='Enter')jump(facing(c));if(e.code==='Backspace'){e.preventDefault();jump(-facing(c))}
     if(e.code==='Digit1')pick('fire');if(e.code==='Digit2')pick('bolt');
   }
 });
-addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='Space')releaseCharge('key')});
+addEventListener('keyup',e=>keys[e.code]=false);
 let drag=false;
 function aimTo(e){
   if(state!=='aim'||!ctl(cur()))return;const w=cur();
