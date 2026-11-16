@@ -92,10 +92,10 @@ class Game {
     if (this.state !== 'aim' || this.turn !== i) return;
     const n = v => typeof v === 'number' && isFinite(v);
     if (m.t === 'jump') { if (w.grounded) { const d = m.v > 0 ? 1 : m.v < 0 ? -1 : 0; w.vy = -330; w.vx = d * 170; w.grounded = false; if (d && d !== (Math.cos(w.angle * Math.PI / 180) >= 0 ? 1 : -1)) w.angle = 180 - w.angle; } }
-    else if (m.t === 'aim') { if (n(m.angle)) w.angle = clamp(m.angle, 0, 180); if (n(m.power)) w.power = clamp(m.power, 10, 100); }
+    else if (m.t === 'aim') { if (n(m.angle)) w.angle = clamp(m.angle, -90, 270); if (n(m.power)) w.power = clamp(m.power, 10, 100); }
     else if (m.t === 'spell') { if (SPELLS[m.k] && w.mana >= SPELLS[m.k].mana) w.spell = m.k; }
     else if (m.t === 'fire') {
-      if (n(m.angle)) w.angle = clamp(m.angle, 0, 180); if (n(m.power)) w.power = clamp(m.power, 10, 100);
+      if (n(m.angle)) w.angle = clamp(m.angle, -90, 270); if (n(m.power)) w.power = clamp(m.power, 10, 100);
       if (SPELLS[m.spell] && w.mana >= SPELLS[m.spell].mana) w.spell = m.spell;
       this.fire(w);
     }
@@ -199,10 +199,10 @@ class Game {
     es.sort((a, b) => Math.abs(a.x - w.x) - Math.abs(b.x - w.x)); const t = es[0]; let best = null;
     for (const k of SKEYS) {
       const sp = SPELLS[k]; if (sp.mana > w.mana) continue;
-      for (let a = 4; a <= 176; a += 3) for (let p = 25; p <= 100; p += 5) { const s = this.sim(w, a, p, sp, t) - sp.r * .6; if (!best || s < best.s) best = { a, p, k, s }; }
+      for (let a = -84; a <= 264; a += 4) for (let p = 25; p <= 100; p += 5) { const s = this.sim(w, a, p, sp, t) - sp.r * .6; if (!best || s < best.s) best = { a, p, k, s }; }
     }
     if (!best) return { a: w.angle, p: w.power, k: 'fire' };
-    return { a: clamp(best.a + this.R(-2.5, 2.5), 0, 180), p: clamp(best.p + this.R(-4, 4), 10, 100), k: best.k };
+    return { a: clamp(best.a + this.R(-2.5, 2.5), -90, 270), p: clamp(best.p + this.R(-4, 4), 10, 100), k: best.k };
   }
   runAI(c, dt) {
     const ai = this.ai; ai.t += dt; if (!ai.plan && ai.t > .9) ai.plan = this.think(c);
