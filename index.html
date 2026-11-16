@@ -11,7 +11,8 @@
 html,body{margin:0;height:100%;overflow:hidden;background:#120a2e;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff}
 canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
 button{font:inherit;color:inherit;touch-action:manipulation}
-#top{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 6px) 8px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;pointer-events:none}
+#c0,#c1{display:none}
+#top{justify-content:center!important;position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 6px) 8px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;pointer-events:none}
 .card{background:var(--ui);border:1px solid #ffffff30;border-radius:12px;padding:6px 10px;width:min(34vw,230px)}
 .card b{font-size:13px;display:block;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card.active{border-color:var(--gold);box-shadow:0 0 14px #ffd86b88}
@@ -36,7 +37,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .gb{touch-action:none;user-select:none}
 #mv{display:flex;flex-direction:column;gap:6px;align-items:center}
 .r3,.r2{display:flex;gap:6px}
-.r3 .gb{width:48px;height:44px}.r2 .gb{width:75px;height:54px}.r2 .ic{width:28px;height:28px}
+.r3 .gb{width:48px;height:44px}.r2 .gb{width:62px;height:46px}.r2 .ic{width:24px;height:24px}
 #aim{display:flex;gap:8px;align-items:flex-end}
 .grp{display:flex;flex-direction:column;gap:5px;align-items:center}
 .grp small{font-size:9px;font-weight:800;letter-spacing:1.5px;color:#cdbdff;text-shadow:0 1px 2px #000}
@@ -44,6 +45,8 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 #bf{width:86px;height:86px;border-radius:50%;border:3px solid #ffffffaa;background:radial-gradient(circle at 50% 28%,#ffe08a,#ff8a2a 42%,#d6204f);box-shadow:inset 0 3px 0 #fff7,inset 0 -7px 0 #0004,0 0 20px #ff7a2a99,0 6px 10px #000a;color:#fff;font-weight:900;font-size:20px;letter-spacing:1px;text-shadow:0 2px 0 #0008;cursor:pointer;touch-action:manipulation}
 #bf:active{transform:scale(.93);filter:brightness(1.15)}
 #wpn{display:flex;align-items:center;gap:8px;padding:6px 9px;margin:0 auto;min-width:0;background:linear-gradient(#2a1f62f0,#150d38f0);border:2px solid #0b0620;border-radius:18px;box-shadow:inset 0 2px 0 #ffffff30,0 0 0 1px #ffd86b55,0 6px 14px #000a}
+#wcol{display:flex;flex-direction:column;gap:6px}
+#mn{height:6px;border-radius:3px;background:#0009;overflow:hidden;border:1px solid #0b0620}#mn i{display:block;height:100%;width:100%;background:linear-gradient(#9cc4ff,#3a63e8);transition:width .3s}
 #sp{display:flex;gap:6px}
 #sp button{position:relative;width:44px;height:44px;border-radius:13px;font-size:24px;line-height:1;cursor:pointer;background:linear-gradient(#3d3180,#1f1650);border:2px solid #0b0620;box-shadow:inset 0 2px 0 #ffffff35,0 0 0 1px #ffffff25;display:grid;place-items:center;padding:0}
 #sp button.sel{border-color:var(--gold);box-shadow:inset 0 2px 0 #fff5,0 0 0 1px var(--gold),0 0 12px #ffd86b99;background:linear-gradient(#6a4fc0,#33227a)}
@@ -71,8 +74,11 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .row .fld{margin:0;flex:1;min-width:0;text-transform:uppercase;letter-spacing:4px}
 .row .big{margin:0;width:auto;padding:12px 18px;font-size:16px}
 #ost{min-height:44px;margin:10px 0 0;color:#ffd86b;font-weight:600}
-#snd{position:fixed;left:8px;top:calc(env(safe-area-inset-top) + 96px);z-index:12;display:flex;flex-direction:column;gap:6px}
+#snd{display:flex;gap:10px;justify-content:center;margin:10px 0 0}
+#snd button{width:auto!important;height:44px!important;padding:0 18px!important;font-size:15px!important;font-weight:700}
 #net{position:fixed;top:calc(env(safe-area-inset-top) + 70px);left:50%;transform:translateX(-50%);z-index:20;background:#b3261eee;border-radius:10px;padding:6px 14px;font-size:13px;font-weight:600;pointer-events:none}
+.ov{overflow-y:auto;justify-content:safe center}
+@media(max-height:480px){.ov h1{font-size:36px;margin-bottom:6px}.ov p{margin-bottom:8px;font-size:13px}.big{padding:9px;margin:4px auto;font-size:16px}.ov small{display:none}#snd{margin-top:6px}#snd button{height:38px!important}}
 </style>
 </head>
 <body>
@@ -99,7 +105,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
     </div>
   </div>
   <div id="wpn">
-    <div id="sp"></div><div class="sep"></div>
+    <div id="wcol"><div id="sp"></div><div id="mn"><i id="mnf"></i></div></div><div class="sep"></div>
     <div id="dial"><svg viewBox="0 0 40 24" width="46" height="28"><path class="arc" d="M4 21A16 16 0 0 1 36 21"/><line id="needle" x1="20" y1="21" x2="34" y2="21"/><circle cx="20" cy="21" r="2.6" fill="#fff"/></svg><b id="av">45&deg;</b></div>
     <div class="sep"></div>
     <div id="pw"><div id="pbar"><i id="pfill"></i></div><b id="pv">60</b></div>
@@ -117,6 +123,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <button class="big" id="p1">Play vs AI</button>
   <button class="big on" id="p3">Play Online</button>
   <button class="big alt" id="p2">Local 2-Player</button>
+  <div id="snd"><button id="mu" aria-label="Sound effects">🔊 Sound</button><button id="mm" aria-label="Music">🎵 Music</button></div>
   <small>Move: &larr; &rarr; / A D &middot; Jump: W (hold &larr; &rarr; for a side jump) &middot; Enter / Backspace: jump forward / back &middot; Aim: &uarr; &darr; or drag on the battlefield &middot; Power: Q E &middot; Fire: Space &middot; Spells: 1 2 &middot; Zoom: wheel or + &minus;<br>On phones use the on-screen buttons and sliders.</small>
 </div>
 <div class="ov hide" id="online">
@@ -130,7 +137,6 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <button class="big" id="oback" style="background:#ffffff22">Back</button>
 </div>
 <div id="net" class="hide"></div>
-<div id="snd"><button id="mu" aria-label="Sound effects">🔊</button><button id="mm" aria-label="Music">🎵</button></div>
 <div class="ov hide" id="over">
   <h1 id="ot">Victory!</h1><p id="os"></p>
   <button class="big" id="again">Play again</button>
@@ -516,7 +522,7 @@ function hud(){
   const f=$('wf').style;f.width=Math.abs(wind)/8*50+'%';f.left=wind>=0?'50%':(50-Math.abs(wind)/8*50)+'%';
   const c=cur(),on=state==='aim'&&ctl(c);
   if(t!==AU.lastTick){AU.lastTick=t;if(on&&t>0&&t<=5)sfx('tick')}$('ctrl').classList.toggle('off',!on);
-  const ra=c.angle*Math.PI/180;$('needle').setAttribute('x2',20+14*Math.cos(ra));$('needle').setAttribute('y2',21-14*Math.sin(ra));
+  $('mnf').style.width=c.mana+'%';const ra=c.angle*Math.PI/180;$('needle').setAttribute('x2',20+14*Math.cos(ra));$('needle').setAttribute('y2',21-14*Math.sin(ra));
   $('av').textContent=Math.round(c.angle)+'\u00B0';$('pv').textContent=Math.round(c.power);$('pfill').style.clipPath='inset(0 '+(100-(c.power-10)/90*100)+'% 0 0)';
   for(const b of spBox.children){b.classList.toggle('sel',b.dataset.k===c.spell);b.disabled=SPELLS[b.dataset.k].mana>c.mana}
 }
@@ -555,9 +561,18 @@ function zoom(f){cam.auto=false;cam.z*=f}
 cv.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.001))},{passive:false});
 $('zi').onclick=()=>zoom(1.25);$('zo').onclick=()=>zoom(.8);
 $('fs').onclick=()=>{const d=document,el=d.documentElement;d.fullscreenElement?d.exitFullscreen():(el.requestFullscreen||el.webkitRequestFullscreen||(()=>{})).call(el)};
-$('p1').onclick=()=>start('ai');$('p2').onclick=()=>start('pvp');
+/* Android: entering a game goes fullscreen and locks landscape (both need the tap on a Play button) */
+const isAndroid=/Android/i.test(navigator.userAgent);
+function enterGameScreen(){
+  if(!isAndroid)return;
+  const el=document.documentElement,rq=el.requestFullscreen||el.webkitRequestFullscreen;
+  const lock=()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}};
+  try{if(rq&&!document.fullscreenElement){const p=rq.call(el);if(p&&p.then)p.then(lock,()=>lock());else lock()}else lock()}catch(e){lock()}
+}
+function leaveGameScreen(){if(!isAndroid)return;try{screen.orientation.unlock()}catch(e){}try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
+$('p1').onclick=()=>{enterGameScreen();start('ai')};$('p2').onclick=()=>{enterGameScreen();start('pvp')};
 $('again').onclick=()=>{if(mode==='online'){netSend({t:'rematch'});$('os').textContent='Waiting for your opponent\u2026';return}start(mode)};
-$('tomenu').onclick=()=>{leaveOnline();$('again').textContent='Play again';$('over').classList.add('hide');$('menu').classList.remove('hide');demo()};
+$('tomenu').onclick=()=>{leaveGameScreen();leaveOnline();$('again').textContent='Play again';$('over').classList.add('hide');$('menu').classList.remove('hide');demo()};
 
 
 /* ---------- Audio: every sound is synthesized in the browser (no files to load) ---------- */
@@ -645,8 +660,8 @@ function musicTick(){
   if(AU.next<c.currentTime-1)AU.next=c.currentTime+.1;
   while(AU.next<c.currentTime+.5){schedBar(AU.bar%8,AU.next);AU.next+=BEAT*4;AU.bar++}
 }
-function setSfx(v){AU.on=v;try{localStorage.setItem('aw_sfx',v?'1':'0')}catch(e){}if(AU.sg)AU.sg.gain.value=v?.7:0;$('mu').textContent=v?'\u{1F50A}':'\u{1F507}'}
-function setMus(v){AU.mus=v;try{localStorage.setItem('aw_mus',v?'1':'0')}catch(e){}if(AU.mg)AU.mg.gain.setTargetAtTime(v?.4:0,AU.ctx.currentTime,.1);$('mm').style.opacity=v?1:.35}
+function setSfx(v){AU.on=v;try{localStorage.setItem('aw_sfx',v?'1':'0')}catch(e){}if(AU.sg)AU.sg.gain.value=v?.7:0;$('mu').textContent=(v?'\u{1F50A}':'\u{1F507}')+' Sound'}
+function setMus(v){AU.mus=v;try{localStorage.setItem('aw_mus',v?'1':'0')}catch(e){}if(AU.mg)AU.mg.gain.setTargetAtTime(v?.4:0,AU.ctx.currentTime,.1);$('mm').textContent='\u{1F3B5} Music';$('mm').style.opacity=v?1:.45}
 for(const ev of['pointerdown','touchend','click','keydown'])addEventListener(ev,auInit,{passive:true});
 document.addEventListener('visibilitychange',()=>{const c=AU.ctx;if(!c)return;if(document.hidden)c.suspend();else c.resume()});
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('button'))sfx('click')});
@@ -798,7 +813,7 @@ function initOnlineUI(){
   if(typeof Core==='undefined')$('p3').classList.add('hide');
   try{$('nm').value=localStorage.getItem('aw_name')||''}catch(e){}
   const nm=()=>{const n=$('nm').value.trim()||'Wizard';try{localStorage.setItem('aw_name',n)}catch(e){}return n};
-  $('p3').onclick=()=>{$('menu').classList.add('hide');$('online').classList.remove('hide');setStatus('');$('sh').classList.add('hide')};
+  $('p3').onclick=()=>{enterGameScreen();$('menu').classList.add('hide');$('online').classList.remove('hide');setStatus('');$('sh').classList.add('hide')};
   $('oback').onclick=()=>{leaveOnline();$('online').classList.add('hide');$('menu').classList.remove('hide')};
   $('qm').onclick=()=>{setStatus('Connecting\u2026');connect(()=>netSend({t:'quick',name:nm()}))};
   $('cr').onclick=()=>{setStatus('Connecting\u2026');connect(()=>netSend({t:'create',name:nm()}))};
