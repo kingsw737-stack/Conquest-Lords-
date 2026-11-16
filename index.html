@@ -80,13 +80,21 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 #net{position:fixed;top:calc(env(safe-area-inset-top) + 70px);left:50%;transform:translateX(-50%);z-index:20;background:#b3261eee;border-radius:10px;padding:6px 14px;font-size:13px;font-weight:600;pointer-events:none}
 .ov{overflow-y:auto;justify-content:safe center}
 @media(max-height:480px){.ov h1{font-size:36px;margin-bottom:6px}.ov p{margin-bottom:8px;font-size:13px}.big{padding:9px;margin:4px auto;font-size:16px}.ov small{display:none}#snd{margin-top:6px}#snd button{height:38px!important}}
-#bag{touch-action:manipulation;position:relative;width:42px;height:38px;border-radius:12px;border:2px solid #0b0620;background:linear-gradient(#6a4fc0,#33227a);box-shadow:inset 0 2px 0 #fff4,0 0 0 1px #ffd86b88;display:grid;place-items:center;padding:0;cursor:pointer}
+#bag{touch-action:manipulation;position:relative;width:54px;height:50px;border-radius:14px;border:2px solid #0b0620;background:radial-gradient(circle at 50% 40%,#5a43b0,#2a1d68 75%);box-shadow:inset 0 2px 0 #fff4,0 0 0 1px #ffd86b99,0 0 12px #ffd86b44;display:grid;place-items:center;padding:0;cursor:pointer}
 #bag:active{transform:translateY(2px)}
 #bagsel{position:absolute;right:-5px;top:-7px;font-size:13px;line-height:1;filter:drop-shadow(0 1px 1px #000)}
 #bagpop{position:absolute;right:0;bottom:calc(100% + 10px);padding:8px;border-radius:16px;background:linear-gradient(#2a1f62f8,#150d38f8);border:2px solid #0b0620;box-shadow:0 0 0 1px #ffd86b88,0 8px 18px #000b;display:none}
 #bagpop.on{display:block}
 #bagpop .bh{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:10px;letter-spacing:1.5px;color:#cdbdff}
 #bagpop .bh #mn{flex:1}
+#bag .bagart{width:44px;height:44px;margin-top:-2px;overflow:visible;filter:drop-shadow(0 2px 2px #0009)}
+.bagart.sm{width:26px;height:26px}
+#bag .bgglow{transform-origin:24px 25px;animation:bgpulse 2.2s ease-in-out infinite}
+@keyframes bgpulse{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1.05)}}
+#bag .spk,#bag .spk2{transform-box:fill-box;transform-origin:center;animation:twk 1.6s ease-in-out infinite}
+#bag .spk2{animation-delay:.8s}
+@keyframes twk{0%,100%{opacity:.25;transform:scale(.6) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(25deg)}}
+#bag:active .bagart{transform:scale(.94)}
 </style>
 </head>
 <body>
@@ -98,7 +106,24 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <div class="card" id="c1"><b id="n1"></b><div class="bar hp"><i id="h1"></i></div><div class="bar mp"><i id="m1"></i></div></div>
 </div>
 
-<svg width="0" height="0" style="position:absolute"><symbol id="arw" viewBox="0 0 24 24"><path d="M12 3l9 10h-5.5v8h-7v-8H3z"/></symbol></svg>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="bgL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d79a5a"/><stop offset="1" stop-color="#7a4422"/></linearGradient>
+<linearGradient id="bgF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eab676"/><stop offset="1" stop-color="#a8642f"/></linearGradient>
+<radialGradient id="bgG"><stop offset="0" stop-color="#ffe9a0" stop-opacity=".95"/><stop offset="1" stop-color="#ffd86b" stop-opacity="0"/></radialGradient>
+<symbol id="bagart" viewBox="0 0 48 48">
+<circle class="bgglow" cx="24" cy="25" r="22" fill="url(#bgG)"/>
+<path d="M15 17c0-9 3.5-12 9-12s9 3 9 12" fill="none" stroke="#3a1c0c" stroke-width="5" stroke-linecap="round"/>
+<path d="M15 17c0-9 3.5-12 9-12s9 3 9 12" fill="none" stroke="#8a5530" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M9 20c0-3 2-5 5-5h20c3 0 5 2 5 5l2 19c.2 3-2 5-5 5H12c-3 0-5-2-5-5z" fill="url(#bgL)" stroke="#3a1c0c" stroke-width="2" stroke-linejoin="round"/>
+<path d="M10 33h28" stroke="#3a1c0c" stroke-opacity=".35" stroke-width="1.5"/>
+<path d="M13 41h22" stroke="#f6d9a6" stroke-width="1.3" stroke-dasharray="2.5 2.5" opacity=".85"/>
+<path d="M9 20c0-3 2-5 5-5h20c3 0 5 2 5 5v4c0 4-3 7-7 7H16c-4 0-7-3-7-7z" fill="url(#bgF)" stroke="#3a1c0c" stroke-width="2" stroke-linejoin="round"/>
+<path d="M12 19.5c1-1.8 3-2.5 5-2.5h14" stroke="#fff" stroke-opacity=".45" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<rect x="19.5" y="25" width="9" height="9" rx="2.2" fill="#ffd86b" stroke="#6b3d00" stroke-width="1.6"/>
+<circle cx="24" cy="29.5" r="1.8" fill="#6b3d00"/>
+<path class="spk" d="M40 5l1.3 3L44 9.3 41.3 10.5 40 13.5l-1.3-3L36 9.3l2.7-1.3z" fill="#fff6c2"/>
+<path class="spk2" d="M7 7l.9 2.1L10 10 7.9 10.9 7 13l-.9-2.1L4 10l2.1-.9z" fill="#cfe6ff"/>
+</symbol><symbol id="arw" viewBox="0 0 24 24"><path d="M12 3l9 10h-5.5v8h-7v-8H3z"/></symbol></svg>
 <div id="ctrl" class="off">
   <div id="mv">
     <div class="r3">
@@ -113,8 +138,8 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   </div>
   <div id="wpn">
     <div id="pw"><div id="pbar"><i id="pfill"></i></div><b id="pv">60</b></div>
-    <button id="bag" aria-label="Spell bag" aria-expanded="false"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5a3 3 0 0 1 6 0"/><path d="M7 8h10a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3z"/><path d="M8 14h8"/><path d="M12 12v4"/></svg><span id="bagsel"></span></button>
-    <div id="bagpop"><div class="bh"><b>SPELL BAG</b><div id="mn"><i id="mnf"></i></div></div><div id="sp"></div></div>
+    <button id="bag" aria-label="Spell bag" aria-expanded="false"><svg class="bagart" viewBox="0 0 48 48"><use href="#bagart"/></svg><span id="bagsel"></span></button>
+    <div id="bagpop"><div class="bh"><svg class="bagart sm" viewBox="0 0 48 48"><use href="#bagart"/></svg><b>SPELL BAG</b><div id="mn"><i id="mnf"></i></div></div><div id="sp"></div></div>
   </div>
   <div id="aim">
     <div class="grp"><small>ANGLE</small><button class="gb" id="au" aria-label="Angle up"><svg class="ic"><use href="#arw"/></svg></button><button class="gb" id="ad" aria-label="Angle down"><svg class="ic" style="transform:rotate(180deg)"><use href="#arw"/></svg></button></div>
@@ -408,9 +433,32 @@ function camUpdate(dt){
   }
   if(projs.length){tx=projs[0].x;ty=projs[0].y}else if(time-boomT<1.3){tx=boomX;ty=boomY}
   cam.z=clamp(cam.z,minZ,3);sc=base*cam.z;
-  const hw=cw/2/sc,hh=ch/2/sc,px=hw*2>=W?W/2:clamp(tx,hw,W-hw),py=hh*2>=H?H/2:clamp(ty,hh,H-hh);
+  const hw=cw/2/sc,hh=ch/2/sc;let px=hw*2>=W?W/2:clamp(tx,hw,W-hw),py=hh*2>=H?H/2:clamp(ty,hh,H-hh);
+  let ext=0;
+  if(state==='aim'&&ctl(c)&&!projs.length&&c.alive){const[sx,sy]=clearOfControls(c,px,py);px-=sx/sc;py-=sy/sc;ext=360/sc}
   cam.x+=(px-cam.x)*Math.min(1,dt*4);cam.y+=(py-cam.y)*Math.min(1,dt*4);
-  cam.x=hw*2>=W?W/2:clamp(cam.x,hw,W-hw);cam.y=hh*2>=H?H/2:clamp(cam.y,hh,H-hh);
+  cam.x=hw*2>=W?W/2:clamp(cam.x,hw-ext,W-hw+ext);cam.y=hh*2>=H?H/2:clamp(cam.y,hh-ext,H-hh+ext);
+}
+/* how far (screen px) the wizard must slide so no on-screen control button covers it */
+const ctlEls=['mv','aim','wpn'].map(id=>document.getElementById(id));
+function clearOfControls(c,px,py){
+  const hwz=17*sc,up=54*sc,dn=6*sc;let sx=(c.x-px)*sc+cw/2,sy=(c.y-py)*sc+ch/2,mx=0,my=0;
+  const boxes=[];for(const e of ctlEls){if(!e)continue;const r=e.getBoundingClientRect();if(r.width>0)boxes.push({l:r.left-10,r:r.right+10,t:r.top-10,b:r.bottom+10})}
+  for(let pass=0;pass<2;pass++)for(const b of boxes){
+    const L=sx-hwz,R=sx+hwz,T=sy-up,B=sy+dn;
+    if(R<=b.l||L>=b.r||B<=b.t||T>=b.b)continue;
+    const o=[];
+    if(b.l>6)o.push([-(R-b.l),0]);            /* slide wizard left of the box */
+    if(b.r<cw-6)o.push([b.r-L,0]);             /* slide wizard right of the box */
+    o.push([0,-(B-b.t)]);                      /* slide wizard above the box */
+    if(b.b<ch-6)o.push([0,b.b-T]);
+    o.sort((p,q)=>Math.abs(p[0]+p[1])-Math.abs(q[0]+q[1]));
+    sx+=o[0][0];sy+=o[0][1];mx+=o[0][0];my+=o[0][1];
+  }
+  const L=sx-hwz,R=sx+hwz,T=sy-up;
+  if(L<8)mx+=8-L;else if(R>cw-8)mx-=R-(cw-8);
+  if(T<8)my+=8-T;
+  return[mx,my];
 }
 
 /* ---------- Rendering ---------- */
