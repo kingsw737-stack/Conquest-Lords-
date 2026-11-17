@@ -238,10 +238,10 @@ const keys={},ui={l:0,r:0};
 
 /* ---------- Spell registry (add new spells here) ---------- */
 const SPELLS={
-  fire:{name:'Fireball',icon:'\u{1F525}',k:9.5,g:G,wf:1,r:48,dmg:40,mana:0,col:'#ffa030'},
+  fire:{name:'Fireball',icon:'\u{1F525}',k:9.5,g:G,wf:1,r:32,dr:48,dmg:40,mana:0,col:'#ffa030'},
   bolt:{name:'Lightning',icon:'\u26A1',k:15,g:60,wf:.15,r:28,dmg:30,mana:25,col:'#8fe0ff'},
   /* r = terrain crater radius, dr = damage radius base (defaults to r). Keep in sync with core.js (same order!) */
-  magma:{name:'Magma Bomb',icon:'\u{1F30B}',k:8.8,g:G*1.15,wf:.8,r:86,dr:50,dmg:38,mana:35,col:'#ff6a1a',ring:'#ff7a2a',cols:['#ffe27a','#ff8a1a','#e0360c','#7a1408'],lava:1,bounce:1,fuse:3.5},
+  magma:{name:'Magma Bomb',icon:'\u{1F30B}',k:8.8,g:G*1.15,wf:.8,r:62,dr:50,dmg:38,mana:35,col:'#ff6a1a',ring:'#ff7a2a',cols:['#ffe27a','#ff8a1a','#e0360c','#7a1408'],lava:1,bounce:1,fuse:3.5},
   jet:{name:'Jetpack',icon:'\u{1F680}',jet:1,mana:8,col:'#7fe7ff',note:'burns mana'},
   /* Castle: keep in sync with core.js (LAST in the list) */
   castle:{name:'Castle',icon:'\u{1F3F0}',castle:1,mana:30,col:'#ffd86b',note:'3 turns \u00B7 300 HP'},
@@ -542,6 +542,24 @@ function sim(w,ang,pow,sp,t){
   if(Math.hypot(x-w.x,y-w.y)<(sp.dr||sp.r)*1.8)d+=300;
   return d;
 }
+/* the AI's non-shooting skills. returns {k:'castle'|'drone'|'jet',...} or null (= just shoot) */
+function aiSpecial(w){
+  const es=Core.enemiesOf(wiz,w).sort((a,b)=>a.hp-b.hp);if(!es.length)return null;
+  if(!w.castle&&w.grounded&&w.castleCD<=0&&w.mana>=SPELLS.castle.mana&&w.hp<55&&Math.random()<.6)return{k:'castle'};
+  if(w.mana>=SPELLS.drone.mana&&Math.random()<.45){
+    for(const t of es){
+      const ty=t.y-(t.castle?52:30);let best=null;
+      for(let i=0;i<50;i++){
+        const a=Math.random()*6.283,r=Math.random()*Core.DRONE_RANGE,p=Core.droneClamp(w,w.x+Math.cos(a)*r,w.y-40+Math.sin(a)*r,solid);
+        if(!p.ok||solid(p.x-16,p.y)||solid(p.x+16,p.y)||solid(p.x,p.y-16)||solid(p.x,p.y+16)||!Core.lineClear(solid,p.x,p.y,t.x,ty))continue;
+        const d=Math.hypot(p.x-t.x,p.y-ty);if(!best||d<best.d)best={x:p.x,y:p.y,d};
+      }
+      if(best)return{k:'drone',dp:best,tgt:t.i};
+    }
+  }
+  if(!w.castle&&w.mana>=45&&Math.random()<.25){const t=es[0];return{k:'jet',dir:Math.random()<.6?(t.x>w.x?1:-1):0}}
+  return null;
+}
 function aiThink(w){
   const t=wiz[1-w.i];let best=null;
   for(const k in SPELLS){
@@ -613,7 +631,8 @@ function update(dt){
   for(const w of wiz){
     const mine=w===c&&state==='aim'&&!w.ai;
     /* Jetpack: hold FLY / Space while it's selected; fuel is mana */
-    const jet=!!(mine&&!w.castle&&SPELLS[w.spell].jet),thr=jet&&!!(keys.Space||ui.thr)&&w.mana>.05;
+    const aiJ=w===c&&state==='aim'&&w.ai&&ai.jetT>0;   /* AI jetpack hop */
+    const jet=!!((mine||aiJ)&&!w.castle&&SPELLS[w.spell].jet),thr=jet&&!!(aiJ||keys.Space||ui.thr)&&w.mana>.05;
     if(thr){
       w.mana=Math.max(0,w.mana-20*dt);w.thr=.12;w.jsnd=(w.jsnd||0)-dt;
       if(w.jsnd<=0){w.jsnd=.1;sfx('jet')}
@@ -623,20 +642,29 @@ function update(dt){
     w.lavaT=Math.max(0,(w.lavaT||0)-dt);
     w.walking=mine&&!w.castle&&dir!==0&&w.grounded;if(w.walking)w.ph+=dt*11;
     w.hurt=Math.max(0,w.hurt-dt);w.cast=Math.max(0,w.cast-dt);
-    physW(w,dt,mine&&!w.castle?dir*(jet&&!w.grounded?115:75):0,thr);
+    physW(w,dt,(mine||aiJ)&&!w.castle?(mine?dir:ai.dir||0)*(jet&&!w.grounded?115:75):0,thr);
   }
   for(const p of projs)stepProj(p,dt);projs=projs.filter(p=>!p.dead);
   stepDrones(dt);
-  if(state==='place'){placeT-=dt;if(placeT<=0)deployNow(c,null,null)}
+  if(state==='place'){placeT-=dt;if(c.ai){ai.pt=(ai.pt||0)+dt;if(ai.pt>.6&&ai.dp)deployNow(c,ai.dp.x,ai.dp.y)}if(placeT<=0&&state==='place')deployNow(c,null,null)}
   if(state==='target'){
-    targetT-=dt;const d=drones.find(q=>!q.fly&&q.owner===c),a=d?Core.droneAuto(d,wiz,targetT):-2;
+    targetT-=dt;const d=drones.find(q=>!q.fly&&q.owner===c);if(d&&c.ai){ai.lt=(ai.lt||0)+dt;if(ai.lt>.8&&wiz[ai.tgt]&&wiz[ai.tgt].alive)launchDrone(d,ai.tgt)}
+    const a=state==='target'&&d?Core.droneAuto(d,wiz,targetT):state==='target'?-2:-1;
     if(a>=0)launchDrone(d,a);else if(a===-2){if(d)d.dead=true;state='resolve';resolveT=0;settle=0}
   }
   fxUpdate(dt);lavaUpdate(dt);
   if(state==='aim'){
     timer-=dt;
     if(c.ai){
-      ai.t+=dt;if(!ai.plan&&ai.t>.9)ai.plan=aiThink(c);
+      ai.t+=dt;
+      if(ai.jetT>0){ai.jetT-=dt;if(ai.jetT<=0){c.spell='fire';ai.jetT=0;ai.t=.4}}   /* hop finished: aim from the new spot */
+      else if(!ai.plan&&ai.t>.9){
+        const sk=ai.chosen?null:aiSpecial(c);ai.chosen=1;
+        if(sk&&sk.k==='castle'){c.spell='castle';fire(c)}
+        else if(sk&&sk.k==='drone'){c.spell='drone';ai.dp=sk.dp;ai.tgt=sk.tgt;ai.pt=0;ai.lt=0;fire(c)}
+        else if(sk&&sk.k==='jet'){c.spell='jet';ai.jetT=.5+Math.random()*.5;ai.dir=sk.dir}
+        else ai.plan=aiThink(c);
+      }
       if(ai.plan){
         const p=ai.plan;c.spell=p.k;
         c.angle+=clamp(p.a-c.angle,-90*dt,90*dt);c.power+=clamp(p.p-c.power,-60*dt,60*dt);
