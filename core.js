@@ -108,7 +108,7 @@ function droneSpawn(w, solid) {
   for (let i = 0; i < 40 && solid(x, y); i++) y -= 4;
   return { ox, oy: y - w.y, x, y };
 }
-/* one simulation step of a drone. returns 'hit' (reached its target), 'lost' (nothing left to chase / out of time) or null */
+/* one simulation step of a drone. returns 'hit' (reached its target), 'crash' (flew into the terrain), 'lost' (nothing left to chase / out of time) or null */
 function droneStep(d, dt, wiz, solid) {
   const o = d.owner;
   if (!d.fly) {                                  /* hovering next to its owner, waiting for a target */
@@ -124,19 +124,18 @@ function droneStep(d, dt, wiz, solid) {
     if (!es.length) return 'lost'; t = es[0]; d.tgt = t.i;
   }
   const tx = t.x, ty = t.y - (t.castle ? 52 : 26), L = Math.hypot(tx - d.x, ty - d.y) || 1;
-  let ux = (tx - d.x) / L, uy = (ty - d.y) / L;
-  if (solid(d.x + ux * 28, d.y + uy * 28) || solid(d.x + ux * 14, d.y + uy * 14)) { ux *= .3; uy = -1; } /* hills in the way: climb over them */
-  const n = Math.hypot(ux, uy) || 1; ux /= n; uy /= n;
-  const spd = Math.min(DRONE_SPEED, 140 + d.ft * 420), k = Math.min(1, dt * 7);
-  d.vx += (ux * spd - d.vx) * k; d.vy += (uy * spd - d.vy) * k;
+  /* smooth homing: speed eases up from a slow launch, and the turn gets tighter as it closes in so it never orbits */
+  const spd = Math.min(DRONE_SPEED, 70 + d.ft * 300), k = Math.min(1, dt * (2.5 + 9 * Math.max(0, 1 - L / 170)));
+  d.vx += ((tx - d.x) / L * spd - d.vx) * k; d.vy += ((ty - d.y) / L * spd - d.vy) * k;
   d.x = clamp(d.x + d.vx * dt, -60, W + 60); d.y = Math.min(d.y + d.vy * dt, WATER - 14);
   if (droneDist(t, d.x, d.y) < 18) return 'hit';
+  const v = Math.hypot(d.vx, d.vy) || 1;      /* terrain in the way: it blows up just before touching it */
+  if (solid(d.x, d.y) || solid(d.x + d.vx / v * 12, d.y + d.vy / v * 12)) return 'crash';
   return d.ft > DRONE_LIFE ? 'lost' : null;
 }
 /* hovering drone: which target (index) to launch at without the player? -1 = keep waiting, -2 = nobody to hit */
 function droneAuto(d, wiz, left) {
   const es = enemiesOf(wiz, d.owner); if (!es.length) return -2;
-  if (es.length === 1 && d.t > .9) return es[0].i;                 /* only one possible target: lock on automatically */
   if (left <= 0) return es.sort((a, b) => Math.hypot(a.x - d.x, a.y - d.y) - Math.hypot(b.x - d.x, b.y - d.y))[0].i;
   return -1;
 }
@@ -231,7 +230,7 @@ class Game {
     this.ev.push({ e: 'cast', i: w.i }); this.state = 'resolve'; this.resolveT = 0; this.settle = 0;
   }
   launch(d, ti) {
-    d.tgt = ti; d.fly = 1; d.ft = 0; this.ev.push({ e: 'dgo', id: d.id, i: ti });
+    d.tgt = ti; d.fly = 1; d.ft = 0; d.vx = 0; d.vy = -70; this.ev.push({ e: 'dgo', id: d.id, i: ti });
     this.state = 'resolve'; this.resolveT = 0; this.settle = 0;
   }
   stepDrones(dt) {

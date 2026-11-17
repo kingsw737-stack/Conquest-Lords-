@@ -434,7 +434,7 @@ function stepProj(p,dt){
 }
 
 /* ---------- Killer Drone (movement + damage rules are shared with the server: Core.droneStep) ---------- */
-function launchDrone(d,ti){d.tgt=ti;d.fly=1;d.ft=0;sfx('drone');state='resolve';resolveT=0;settle=0}
+function launchDrone(d,ti){d.tgt=ti;d.fly=1;d.ft=0;d.vx=0;d.vy=-70;sfx('drone');state='resolve';resolveT=0;settle=0}
 function sendTarget(i){
   const c=cur();if(mode==='online'){sendAct({t:'target',v:i});return}
   const d=drones.find(q=>!q.fly&&q.owner===c);if(d)launchDrone(d,i);
@@ -853,7 +853,7 @@ function hud(){
     if(sp.castle){const em=b.lastChild,t=c.castle?'tap to cancel':c.castleCD>0?'recharging':sp.note;if(em.textContent!==t)em.textContent=t}}
   const lab=SPELLS[c.spell].jet?'FLY':SPELLS[c.spell].castle?'BUILD':SPELLS[c.spell].drone?'DRONE':'FIRE';if($('bf').textContent!==lab)$('bf').textContent=lab;
   {const tm=$('tgtmsg'),tg=state==='target'&&ctl(c);tm.classList.toggle('hide',!tg);
-    if(tg){const t=Core.enemiesOf(wiz,c).length>1?'TAP AN ENEMY TO TARGET':'LOCKING ON\u2026';if(tm.textContent!==t)tm.textContent=t}}
+    if(tg){const t='TAP AN ENEMY TO TARGET';if(tm.textContent!==t)tm.textContent=t}}
 }
 $('bf').onclick=doFire;
 const hold=(id,k)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();ui[k]=1;b.classList.add('dn');b.setPointerCapture(e.pointerId)});for(const ev of['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{ui[k]=0;b.classList.remove('dn')})};
@@ -1170,7 +1170,7 @@ function onUpdate(dt){
     if(w.tx!==undefined){const k=Math.min(1,dt*16);w.x+=(w.tx-w.x)*k;w.y+=(w.ty-w.y)*k}
   }
   for(const p of projs)drProj(p,dt);
-  for(const d of drones){if(d.tx!==undefined){const k=Math.min(1,dt*14);d.x+=(d.tx-d.x)*k;d.y+=(d.ty-d.y)*k}d.t+=dt;droneFx(d,dt)}
+  for(const d of drones){if(d.tx!==undefined){if(d.fly){d.tx+=d.vx*dt;d.ty+=d.vy*dt}const k=Math.min(1,dt*14);d.x+=(d.tx-d.x)*k;d.y+=(d.ty-d.y)*k}d.t+=dt;droneFx(d,dt)}
   fxUpdate(dt);camUpdate(dt);
 }
 function showOnlineOver(o,msg){
