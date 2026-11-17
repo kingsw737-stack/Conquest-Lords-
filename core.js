@@ -10,12 +10,12 @@ const SPELLS = {
   magma: { name: 'Magma Bomb', icon: '\u{1F30B}', k: 8.8, g: G * 1.15, wf: .8, r: 62, dr: 50, dmg: 38, mana: 35, col: '#ff6a1a', lava: 1, bounce: 1, fuse: 3.5 },
   jet: { name: 'Jetpack', icon: '\u{1F680}', jet: 1, mana: 8, col: '#7fe7ff' },
   /* Castle: the mage turns into a castle (can't walk/jump/fly, can still cast). Own HP pool; overflow damage spills onto the mage. Using it again while a castle cancels it for free. Keep LAST in this list. */
-  castle: { name: 'Castle', icon: '\u{1F3F0}', castle: 1, mana: 30, col: '#ffd86b', note: '2 turns \u00B7 300 HP' },
+  castle: { name: 'Castle', icon: '\u{1F3F0}', castle: 1, mana: 30, col: '#ffd86b', note: '3 turns \u00B7 300 HP' },
   /* Killer Drone: summons a drone beside the mage, the player taps an enemy, the drone homes in, deals DRONE_DMG and dies. Keep LAST (client indexes spells by position). */
   drone: { name: 'Killer Drone', icon: '\u{1F681}', drone: 1, mana: 40, col: '#c070ff' }
 };
 const DRONE_DMG = 20, DRONE_SPEED = 330, DRONE_LIFE = 8, DRONE_PICK = 12, DRONE_RANGE = 320; /* damage, max flight speed (px/s), max seconds in flight, seconds to pick a target */
-const CASTLE_HP = 300, CASTLE_TURNS = 2, CASTLE_CD = 3, MAGMA_CD = 2; /* in the mage's own turns: the castle stands for 2 (the turn it is built + the next) and can be rebuilt on the 3rd turn after casting; Magma Bomb every 2nd */
+const CASTLE_HP = 300, CASTLE_TURNS = 3, CASTLE_CD = 2, MAGMA_CD = 2; /* in the mage's own turns: the castle stands for 3 (the turn it is built + 2 more), then Castle is locked for 2 turns and can be built again on the 3rd; Magma Bomb every 2nd */
 const SKEYS = Object.keys(SPELLS);
 const COLS = [['#3d6fe0', '#23449e'], ['#d4365a', '#8a1f3c'], ['#2fae5a', '#1b6b38'], ['#e0a020', '#9a6a10'], ['#9a4fd0', '#5e2a8a'], ['#20b8b8', '#12797b']];
 const MAPS = (typeof module !== 'undefined' && module.exports) ? require('./maps.js') : root.MAPS;
@@ -179,13 +179,13 @@ class Game {
   }
   /* castle form: lasts CASTLE_TURNS of the mage's own turns, counting the one it was cast on */
   uncastle(w, broken, own) {
-    if (!w.castle) return; w.castle = 0; w.chp = 0; w.castleT = 0; w.castleNew = 0; w.vx = 0;
+    if (!w.castle) return; w.castleCD = CASTLE_CD + (own ? 1 : 0); w.castle = 0; w.chp = 0; w.castleT = 0; w.castleNew = 0; w.vx = 0;
     this.ev.push({ e: 'castle', i: w.i, on: 0, broken: broken ? 1 : 0, x: Math.round(w.x), y: Math.round(w.y) });
   }
   endTurn() {
     const o = this.wiz[this.turn];
+    if (o) { if (o.castleCD > 0) o.castleCD--; if (o.magmaCD > 0) o.magmaCD--; } /* tick cooldowns first so a castle that expires now starts its full lock */
     if (o && o.castle) { o.castleNew = 0; if (--o.castleT <= 0) this.uncastle(o, 0); }
-    if (o) { if (o.castleCD > 0) o.castleCD--; if (o.magmaCD > 0) o.magmaCD--; }
     for (const w of this.wiz) { w.dir = 0; w.thr = 0; }
     const al = this.wiz.filter(w => w.alive), teams = new Set(al.map(w => w.team));
     if (teams.size < 2) { this.state = 'over'; this.over = { team: al.length ? al[0].team : -1, names: al.map(w => w.name) }; return; }
@@ -231,7 +231,7 @@ class Game {
     if (sp.castle) {
       if (w.castle) { this.uncastle(w, 0, 1); w.spell = 'fire'; return; } /* cancel: free, doesn't end the turn */
       if (!w.grounded || w.mana < sp.mana || w.castleCD > 0) return;
-      w.mana -= sp.mana; w.castleCD = CASTLE_CD; w.castle = 1; w.chp = CASTLE_HP; w.castleT = CASTLE_TURNS; w.castleNew = 1; w.vx = 0; w.vy = 0; w.spell = 'fire';
+      w.mana -= sp.mana; w.castle = 1; w.chp = CASTLE_HP; w.castleT = CASTLE_TURNS; w.castleNew = 1; w.vx = 0; w.vy = 0; w.spell = 'fire';
       this.ev.push({ e: 'castle', i: w.i, on: 1, x: Math.round(w.x), y: Math.round(w.y) });
       this.state = 'resolve'; this.resolveT = 0; this.settle = 0; return;
     }
