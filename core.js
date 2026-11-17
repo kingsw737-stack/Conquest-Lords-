@@ -14,7 +14,7 @@ const SPELLS = {
   /* Killer Drone: summons a drone beside the mage, the player taps an enemy, the drone homes in, deals DRONE_DMG and dies. Keep LAST (client indexes spells by position). */
   drone: { name: 'Killer Drone', icon: '\u{1F681}', drone: 1, mana: 40, col: '#c070ff' }
 };
-const DRONE_DMG = 20, DRONE_SPEED = 330, DRONE_LIFE = 8, DRONE_PICK = 12; /* damage, max flight speed (px/s), max seconds in flight, seconds to pick a target */
+const DRONE_DMG = 20, DRONE_SPEED = 330, DRONE_LIFE = 8, DRONE_PICK = 12, DRONE_RANGE = 320; /* damage, max flight speed (px/s), max seconds in flight, seconds to pick a target */
 const CASTLE_HP = 300, CASTLE_TURNS = 3, CASTLE_CD = 1; /* CASTLE_CD = how many of the mage's own turns it stays locked after the castle ends */
 const SKEYS = Object.keys(SPELLS);
 const COLS = [['#3d6fe0', '#23449e'], ['#d4365a', '#8a1f3c'], ['#2fae5a', '#1b6b38'], ['#e0a020', '#9a6a10'], ['#9a4fd0', '#5e2a8a'], ['#20b8b8', '#12797b']];
@@ -101,7 +101,20 @@ function muzzle(w, ang) {
 function enemiesOf(wiz, o) { return wiz.filter(w => w.alive && (w.team === undefined ? w !== o : w.team !== o.team)); }
 /* distance from a point to a wizard's (or castle's) hitbox */
 function droneDist(w, x, y) { const cy = Math.max(w.y - (w.castle ? 104 : 50), Math.min(w.y - 6, y)); return Math.hypot(Math.max(0, Math.abs(x - w.x) - (w.castle ? 34 : 0)), y - cy); }
-/* where a new drone hovers: beside the mage's head, never inside terrain */
+/* a drone may be deployed anywhere within DRONE_RANGE of the mage, in open air. ok=false when that spot is inside terrain */
+function droneClamp(w, x, y, solid) {
+  const cx = w.x, cy = w.y - 40, d = Math.hypot(x - cx, y - cy);
+  if (d > DRONE_RANGE) { x = cx + (x - cx) / d * DRONE_RANGE; y = cy + (y - cy) / d * DRONE_RANGE; }
+  x = clamp(x, 40, W - 40); y = clamp(y, 30, WATER - 30);
+  return { x, y, ok: !solid(x, y) };
+}
+/* true when a straight line from A to B crosses no terrain (what the drone would see) */
+function lineClear(solid, x0, y0, x1, y1) {
+  const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 6));
+  for (let i = 1; i < n; i++) if (solid(x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n)) return false;
+  return true;
+}
+/* where a new drone hovers by default: beside the mage's head, never inside terrain */
 function droneSpawn(w, solid) {
   const f = Math.cos(w.angle * Math.PI / 180) >= 0 ? 1 : -1, ox = clamp(-f * 58, -58, 58), oy = w.castle ? -130 : -78;
   let x = clamp(w.x + ox, 40, W - 40), y = w.y + oy;
@@ -184,6 +197,10 @@ class Game {
     const w = this.wiz[i]; if (!w || !w.alive || w.ai || !m) return;
     if (m.t === 'dir') { w.dir = m.v > 0 ? 1 : m.v < 0 ? -1 : 0; return; }
     if (m.t === 'thr') { w.thr = m.v ? 1 : 0; return; }
+    if (m.t === 'deploy') { /* Killer Drone: the owner confirms where it spawns */
+      if (this.state !== 'place' || this.turn !== i || typeof m.x !== 'number' || typeof m.y !== 'number' || !isFinite(m.x + m.y)) return;
+      this.deploy(w, m.x, m.y); return;
+    }
     if (m.t === 'target') { /* Killer Drone: the owner taps an enemy */
       if (this.state !== 'target' || this.turn !== i || typeof m.v !== 'number') return;
       const d = this.drones.find(q => !q.fly && q.owner === w), t = this.wiz[m.v | 0];
@@ -216,18 +233,25 @@ class Game {
       this.ev.push({ e: 'castle', i: w.i, on: 1, x: Math.round(w.x), y: Math.round(w.y) });
       this.state = 'resolve'; this.resolveT = 0; this.settle = 0; return;
     }
-    if (sp.drone) {
+    if (sp.drone) { /* step 1: choose where the drone is deployed (mana is paid on deploy) */
       if (w.mana < sp.mana || !enemiesOf(this.wiz, w).length) return;
-      w.mana -= sp.mana;
-      const s = droneSpawn(w, (x, y) => this.solid(x, y)), d = { id: this.pid++, owner: w, x: s.x, y: s.y, ox: s.ox, oy: s.oy, vx: 0, vy: 0, fly: 0, tgt: -1, t: 0, ft: 0 };
-      this.drones.push(d); this.ev.push({ e: 'dsum', i: w.i, id: d.id, x: Math.round(d.x), y: Math.round(d.y) });
-      this.state = 'target'; this.targetT = DRONE_PICK; return;
+      this.state = 'place'; this.placeT = DRONE_PICK; return;
     }
     if (w.mana < sp.mana) return;
     w.mana -= sp.mana;
     const a = w.angle * Math.PI / 180, [mx, my] = muzzle(w, w.angle);
     this.projs.push({ id: this.pid++, sp: w.spell, x: mx, y: my, vx: Math.cos(a) * w.power * sp.k, vy: -Math.sin(a) * w.power * sp.k, age: 0, owner: w });
     this.ev.push({ e: 'cast', i: w.i }); this.state = 'resolve'; this.resolveT = 0; this.settle = 0;
+  }
+  deploy(w, x, y) {
+    const sp = SPELLS.drone;
+    if (w.mana < sp.mana) { this.state = 'resolve'; this.resolveT = 0; this.settle = 0; return; }
+    if (x === null) { const s = droneSpawn(w, (a, b) => this.solid(a, b)); x = s.x; y = s.y; }
+    else { const p = droneClamp(w, x, y, (a, b) => this.solid(a, b)); if (!p.ok) return; x = p.x; y = p.y; }
+    w.mana -= sp.mana;
+    const d = { id: this.pid++, owner: w, x, y, ox: x - w.x, oy: y - w.y, vx: 0, vy: 0, fly: 0, tgt: -1, t: 0, ft: 0 };
+    this.drones.push(d); this.ev.push({ e: 'dsum', i: w.i, id: d.id, x: Math.round(x), y: Math.round(y) });
+    this.state = 'target'; this.targetT = DRONE_PICK;
   }
   launch(d, ti) {
     d.tgt = ti; d.fly = 1; d.ft = 0; d.vx = 0; d.vy = -70; this.ev.push({ e: 'dgo', id: d.id, i: ti });
@@ -261,6 +285,7 @@ class Game {
     for (const p of this.projs) this.stepProj(p, dt);
     this.projs = this.projs.filter(p => !p.dead);
     this.stepDrones(dt);
+    if (this.state === 'place') { this.placeT -= dt; if (this.placeT <= 0) this.deploy(c, null, null); }
     if (this.state === 'target') {                 /* waiting for the player to pick the drone's victim */
       this.targetT -= dt;
       const d = this.drones.find(q => !q.fly && q.owner === c), a = d ? droneAuto(d, this.wiz, this.targetT) : -2;
@@ -413,6 +438,6 @@ class Game {
   drain() { const e = this.ev; this.ev = []; return e; }
 }
 
-const api = { DRONE_DMG, DRONE_PICK, enemiesOf, droneDist, droneSpawn, droneStep, droneAuto, CASTLE_HP, CASTLE_TURNS, CASTLE_CD, W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW, ballStep, bombStep };
+const api = { DRONE_RANGE, droneClamp, lineClear, DRONE_DMG, DRONE_PICK, enemiesOf, droneDist, droneSpawn, droneStep, droneAuto, CASTLE_HP, CASTLE_TURNS, CASTLE_CD, W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW, ballStep, bombStep };
 if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Core = api;
 })(this);

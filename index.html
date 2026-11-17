@@ -120,6 +120,8 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .pl span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pl.me{outline:2px solid var(--gold)}.pl.empty{opacity:.6;justify-content:center}.pl button.x{background:#b3261e;padding:4px 9px}
 #hc{margin:4px auto}
+#deploy{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom) + 112px);z-index:6;padding:12px 18px;font-size:16px;font-weight:800;letter-spacing:1px;color:#fff;border-radius:14px;border:2px solid #fff6;background:linear-gradient(#b070ff,#6a2fd0);box-shadow:inset 0 2px 0 #fff5,0 0 14px #b070ffaa,0 4px 8px #000a;cursor:pointer}
+#deploy:disabled{opacity:.4}
 #tgtmsg{position:fixed;top:calc(env(safe-area-inset-top) + 84px);left:50%;transform:translateX(-50%);z-index:6;background:linear-gradient(#5a1230ee,#2a0a1cee);border:2px solid #ff5a7a;border-radius:12px;padding:6px 14px;font-weight:800;font-size:13px;letter-spacing:1px;white-space:nowrap;pointer-events:none;box-shadow:0 0 14px #ff5a7a88;animation:tgp .7s ease-in-out infinite alternate}
 @keyframes tgp{from{box-shadow:0 0 6px #ff5a7a66}to{box-shadow:0 0 18px #ff5a7acc}}
 </style>
@@ -127,6 +129,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 <body>
 <canvas id="c"></canvas>
 <div id="tgtmsg" class="hide">TAP AN ENEMY TO TARGET</div>
+<button id="deploy" class="hide">DEPLOY</button>
 
 <div id="top">
   <div class="card" id="c0"><b id="n0"></b><div class="bar hp"><i id="h0"></i></div><div class="bar mp"><i id="m0"></i></div></div>
@@ -228,7 +231,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 const $=id=>document.getElementById(id),R=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const W=1400,H=700,WATER=H-45,G=600,cv=$('c'),ctx=cv.getContext('2d');
 let cw,ch,dpr,sc=1,time=0,state='menu',mode='ai',turn=0,wind=0,timer=30,shake=0,flash=0,boomT=-9,boomX=0,boomY=0,settle=0,resolveT=0;
-let drones=[],droneId=0,targetT=0;
+let drones=[],droneId=0,targetT=0,placeT=0,placePos=null,placing=false;
 let wiz=[],projs=[],parts=[],fx=[],txts=[],lava=[],mask,tc,tg,ai={},cam={x:W/2,y:H/2,z:1,auto:true};
 const keys={},ui={l:0,r:0};
 
@@ -404,13 +407,9 @@ function fire(w){
     if(!w.grounded||w.mana<sp.mana||w.castleCD>0)return;
     w.mana-=sp.mana;w.castle=1;w.chp=CASTLE_HP;w.castleT=CASTLE_TURNS;w.castleNew=1;w.vx=0;w.vy=0;w.spell='fire';
     castleFx(w,1);state='resolve';resolveT=0;settle=0;return}
-  if(sp.drone){
+  if(sp.drone){   /* step 1: choose where the drone is deployed (mana is paid on deploy) */
     if(w.mana<sp.mana||!Core.enemiesOf(wiz,w).length)return;
-    w.mana-=sp.mana;w.cast=.5;sfx('drone');
-    const s=Core.droneSpawn(w,solid);
-    drones.push({id:++droneId,owner:w,x:s.x,y:s.y,ox:s.ox,oy:s.oy,vx:0,vy:0,fly:0,tgt:-1,t:0,ft:0});
-    for(let i=0;i<18;i++)P(s.x,s.y,R(-90,90),R(-90,90),R(.3,.7),R(2,4),i%2?'#c070ff':'#ffe9a8',0);
-    state='target';targetT=Core.DRONE_PICK;return}
+    const p=Core.droneSpawn(w,solid);placePos={x:p.x,y:p.y,ok:true};state='place';placeT=Core.DRONE_PICK;return}
   if(w.mana<sp.mana)return;
   w.mana-=sp.mana;w.cast=.5;sfx(w.spell==='bolt'?'bolt':'fire');
   const a=w.angle*Math.PI/180,[mx,my]=muzzle(w,w.angle);
@@ -434,6 +433,23 @@ function stepProj(p,dt){
 }
 
 /* ---------- Killer Drone (movement + damage rules are shared with the server: Core.droneStep) ---------- */
+function deployNow(w,x,y){
+  const sp=SPELLS.drone;
+  if(w.mana<sp.mana){state='resolve';resolveT=0;settle=0;return}
+  if(x===null){const s=Core.droneSpawn(w,solid);x=s.x;y=s.y}else{const p=Core.droneClamp(w,x,y,solid);if(!p.ok)return;x=p.x;y=p.y}
+  w.mana-=sp.mana;w.cast=.5;sfx('drone');
+  drones.push({id:++droneId,owner:w,x,y,ox:x-w.x,oy:y-w.y,vx:0,vy:0,fly:0,tgt:-1,t:0,ft:0});
+  for(let i=0;i<18;i++)P(x,y,R(-90,90),R(-90,90),R(.3,.7),R(2,4),i%2?'#c070ff':'#ffe9a8',0);
+  state='target';targetT=Core.DRONE_PICK;
+}
+function deployClick(){
+  const c=cur();if(state!=='place'||!ctl(c)||!placePos||!placePos.ok)return;
+  if(mode==='online')sendAct({t:'deploy',x:placePos.x,y:placePos.y});else deployNow(c,placePos.x,placePos.y);
+}
+function placeAt(e){
+  const c=cur();if(state!=='place'||!ctl(c))return;
+  placePos=Core.droneClamp(c,cam.x+(e.clientX-cw/2)/sc,cam.y+(e.clientY-ch/2)/sc,solid);
+}
 function launchDrone(d,ti){d.tgt=ti;d.fly=1;d.ft=0;d.vx=0;d.vy=-70;sfx('drone');state='resolve';resolveT=0;settle=0}
 function sendTarget(i){
   const c=cur();if(mode==='online'){sendAct({t:'target',v:i});return}
@@ -459,7 +475,7 @@ function stepDrones(dt){
 }
 function drawDrone(d){
   const c=ctx,ok=droneImg.complete&&droneImg.naturalWidth,DW=96,DH=ok?DW*droneImg.naturalHeight/droneImg.naturalWidth:41;
-  const ap=d.fly?1:Math.min(1,(d.t||0)*3),sz=ap*(.55+.45*ap),bob=d.fly?0:Math.sin(time*4+d.id)*3,tilt=clamp((d.vx||0)/1200,-.25,.25);
+  const ap=(d.fly?1:Math.min(1,(d.t||0)*3))*(d.alpha||1),sz=ap*(.55+.45*ap),bob=d.fly?0:Math.sin(time*4+d.id)*3,tilt=clamp((d.vx||0)/1200,-.25,.25);
   c.save();c.translate(d.x,d.y+bob);c.rotate(tilt);c.scale(sz,sz);c.globalAlpha=ap;
   const col=(d.owner&&d.owner.col)||'#c070ff',g=c.createRadialGradient(0,0,0,0,0,DW*.7);g.addColorStop(0,col+'88');g.addColorStop(1,col+'00');
   c.globalCompositeOperation='lighter';c.fillStyle=g;c.beginPath();c.arc(0,0,DW*.7,0,7);c.fill();c.globalCompositeOperation='source-over';
@@ -475,8 +491,23 @@ function reticle(x,y,r,lock){
   }
   c.restore();
 }
+function sightLines(x,y,c){
+  ctx.save();ctx.setLineDash([8,7]);ctx.lineWidth=2.5;
+  for(const t of Core.enemiesOf(wiz,c)){
+    const ty=t.y-(t.castle?52:30),clear=Core.lineClear(solid,x,y,t.x,ty);
+    ctx.strokeStyle=clear?'rgba(93,255,138,.85)':'rgba(255,90,90,.8)';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(t.x,ty);ctx.stroke();
+  }
+  ctx.restore();
+}
 function drawTargets(){
   const c=cur();if(!c)return;
+  if(state==='place'&&ctl(c)&&placePos){
+    ctx.save();ctx.setLineDash([10,9]);ctx.strokeStyle='rgba(192,112,255,.7)';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(c.x,c.y-40,Core.DRONE_RANGE,0,7);ctx.stroke();ctx.restore();
+    sightLines(placePos.x,placePos.y,c);
+    drawDrone({x:placePos.x,y:placePos.y,fly:0,t:9,id:0,owner:c,vx:0,vy:0,alpha:placePos.ok?.8:.4});
+    if(!placePos.ok){ctx.strokeStyle='#ff4a4a';ctx.lineWidth=3;ctx.beginPath();ctx.arc(placePos.x,placePos.y,30,0,7);ctx.moveTo(placePos.x-20,placePos.y-20);ctx.lineTo(placePos.x+20,placePos.y+20);ctx.stroke()}
+  }
+  if(state==='target'&&ctl(c)){const h=drones.find(q=>!q.fly&&q.owner===c);if(h)sightLines(h.x,h.y,c)}
   if(state==='target'&&ctl(c)){
     const es=Core.enemiesOf(wiz,c);
     for(const w of es)reticle(w.x,w.y-(w.castle?52:30),(w.castle?52:34)+Math.sin(time*6)*3,false);
@@ -590,6 +621,7 @@ function update(dt){
   }
   for(const p of projs)stepProj(p,dt);projs=projs.filter(p=>!p.dead);
   stepDrones(dt);
+  if(state==='place'){placeT-=dt;if(placeT<=0)deployNow(c,null,null)}
   if(state==='target'){
     targetT-=dt;const d=drones.find(q=>!q.fly&&q.owner===c),a=d?Core.droneAuto(d,wiz,targetT):-2;
     if(a>=0)launchDrone(d,a);else if(a===-2){if(d)d.dead=true;state='resolve';resolveT=0;settle=0}
@@ -852,10 +884,11 @@ function hud(){
     b.disabled=sp.castle?(!c.castle&&(c.mana<sp.mana||!c.grounded||c.castleCD>0)):(sp.jet&&c.castle)||sp.mana>c.mana;
     if(sp.castle){const em=b.lastChild,t=c.castle?'tap to cancel':c.castleCD>0?'recharging':sp.note;if(em.textContent!==t)em.textContent=t}}
   const lab=SPELLS[c.spell].jet?'FLY':SPELLS[c.spell].castle?'BUILD':SPELLS[c.spell].drone?'DRONE':'FIRE';if($('bf').textContent!==lab)$('bf').textContent=lab;
-  {const tm=$('tgtmsg'),tg=state==='target'&&ctl(c);tm.classList.toggle('hide',!tg);
-    if(tg){const t='TAP AN ENEMY TO TARGET';if(tm.textContent!==t)tm.textContent=t}}
+  {const tm=$('tgtmsg'),pl=state==='place'&&ctl(c),tg=state==='target'&&ctl(c);tm.classList.toggle('hide',!(pl||tg));
+    if(pl||tg){const t=pl?'TAP TO PLACE THE DRONE':'TAP AN ENEMY TO TARGET';if(tm.textContent!==t)tm.textContent=t}
+    const db=$('deploy');db.classList.toggle('hide',!pl);if(pl)db.disabled=!(placePos&&placePos.ok)}
 }
-$('bf').onclick=doFire;
+$('bf').onclick=doFire;$('deploy').onclick=deployClick;$('deploy').addEventListener('pointerdown',e=>e.stopPropagation());
 const hold=(id,k)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();ui[k]=1;b.classList.add('dn');b.setPointerCapture(e.pointerId)});for(const ev of['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{ui[k]=0;b.classList.remove('dn')})};
 hold('bl','l');hold('br','r');hold('au','au');hold('ad','ad');hold('pu','pu');hold('pd','pd');hold('bf','thr');
 const tapJ=(id,d)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();b.classList.add('dn');jump(d)});for(const ev of['pointerup','pointercancel','pointerleave'])b.addEventListener(ev,()=>b.classList.remove('dn'))};
@@ -867,6 +900,7 @@ pb.addEventListener('pointerdown',e=>{e.preventDefault();pdrag=true;pb.setPointe
 addEventListener('keydown',e=>{
   keys[e.code]=true;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
+  if(state==='place'&&ctl(cur())&&(e.code==='Space'||e.code==='Enter'))deployClick();
   if(state==='target'&&ctl(cur())&&(e.code==='Space'||e.code==='Enter')){   /* drone: Space/Enter = nearest enemy */
     const c=cur(),es=Core.enemiesOf(wiz,c).sort((a,b)=>Math.abs(a.x-c.x)-Math.abs(b.x-c.x));if(es.length)sendTarget(es[0].i);
   }
@@ -886,9 +920,9 @@ function aimTo(e){
   let ang=Math.atan2(dy,dx)*180/Math.PI;if(ang<-90)ang+=360;
   w.angle=clamp(ang,-90,270);w.power=clamp(Math.hypot(dx,dy)*.35,10,100);aimChanged();
 }
-cv.addEventListener('pointerdown',e=>{if(state==='target'){pickTarget(e);return}drag=true;aimTo(e)});
-cv.addEventListener('pointermove',e=>{if(drag)aimTo(e)});
-addEventListener('pointerup',()=>drag=false);
+cv.addEventListener('pointerdown',e=>{if(state==='place'){placing=true;placeAt(e);return}if(state==='target'){pickTarget(e);return}drag=true;aimTo(e)});
+cv.addEventListener('pointermove',e=>{if(placing)placeAt(e);else if(drag)aimTo(e)});
+addEventListener('pointerup',()=>{drag=false;placing=false});
 function zoom(f){cam.auto=false;cam.z*=f}
 cv.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.001))},{passive:false});
 /* Android: entering a game goes fullscreen and locks landscape (both need the tap on a Play button) */
@@ -1095,6 +1129,7 @@ function applySnap(s){
   if(mode!=='online'||!wiz.length)return;
   const now=performance.now();
   if(gotSnap&&s.turn!==turn&&s.turn===me&&s.state==='aim')sfx('turn');
+  if(s.state==='place'&&state!=='place'&&s.turn===me&&wiz[me]){const p=Core.droneSpawn(wiz[me],solid);placePos={x:p.x,y:p.y,ok:true}}
   turn=s.turn;state=s.state;timer=s.timer;wind=s.wind;
   s.w.forEach((a,i)=>{
     const w=wiz[i];if(!w)return;
