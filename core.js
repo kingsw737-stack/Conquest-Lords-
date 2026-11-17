@@ -12,11 +12,15 @@ const SPELLS = {
   /* Castle: the mage turns into a castle (can't walk/jump/fly, can still cast). Own HP pool; overflow damage spills onto the mage. Using it again while a castle cancels it for free. Keep LAST in this list. */
   castle: { name: 'Castle', icon: '\u{1F3F0}', castle: 1, mana: 30, col: '#ffd86b', note: '3 turns \u00B7 300 HP' },
   /* Killer Drone: summons a drone beside the mage, the player taps an enemy, the drone homes in, deals DRONE_DMG and dies. Keep LAST (client indexes spells by position). */
-  drone: { name: 'Killer Drone', icon: '\u{1F681}', drone: 1, mana: 40, col: '#c070ff' }
+  drone: { name: 'Killer Drone', icon: '\u{1F681}', drone: 1, mana: 40, col: '#c070ff' },
+  /* Terrain Genesis: the player picks a spot (or the area around their own mage) and the ground rises there. Keep LAST (client indexes spells by position). */
+  terrain: { name: 'Terrain Genesis', icon: '\u26F0\uFE0F', terrain: 1, mana: 45, col: '#7be08a', note: '45 mana \u00B7 raises land' }
 };
 const DRONE_DMG = 20, DRONE_SPEED = 330, DRONE_LIFE = 8, DRONE_PICK = 12, DRONE_RANGE = 320; /* damage, max flight speed (px/s), max seconds in flight, seconds to pick a target */
 const CASTLE_HP = 300, CASTLE_TURNS = 3, CASTLE_CD = 2, MAGMA_CD = 2; /* in the mage's own turns: the castle stands for 3 (the turn it is built + 2 more), then Castle is locked for 2 turns and can be built again on the 3rd; Magma Bomb every 2nd */
 const SKEYS = Object.keys(SPELLS);
+/* Terrain Genesis tuning. TG_R = half-width of the mound, TG_MAXH = tallest the peak may stand above the ground, TG_RANGE = how far from the mage it can be cast, TG_TIME = seconds the ground takes to rise, TG_CD = cooldown in the mage's own turns, TG_SELF_LIFT = how high the peak stands above a mage who casts it "around me" (the ground lifts them up with it) */
+const TG_R = 75, TG_MAXH = 190, TG_RANGE = 360, TG_TIME = 1.1, TG_CD = 3, TG_SELF_LIFT = 110, TG_MIN = 900;
 const COLS = [['#3d6fe0', '#23449e'], ['#d4365a', '#8a1f3c'], ['#2fae5a', '#1b6b38'], ['#e0a020', '#9a6a10'], ['#9a4fd0', '#5e2a8a'], ['#20b8b8', '#12797b']];
 const MAPS = (typeof module !== 'undefined' && module.exports) ? require('./maps.js') : root.MAPS;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -56,6 +60,51 @@ function pickSpawns(map, n, r) {
   }
   return out.map(c => ({ x: c[0], y: c[1] }));
 }
+/* ---------- Terrain Genesis: shared by the server Game and the offline client ---------- */
+/* first solid pixel scanning down from (x, y); WATER when there is none (new land may rise from the sea floor) */
+function groundBelow(solid, x, y) { for (let yy = Math.max(0, y | 0); yy < WATER; yy++) if (solid(x, yy)) return yy; return WATER; }
+/* the shape of the new land: a rocky mound whose peak sits at (cx, ay) and slopes down to the existing ground on both sides.
+   plan = { cx, x0, pk, g[], t[], area }: per column from x0, g = ground y, t = final top y (t >= g means nothing is added there) */
+function genPlan(solid, cx, ay) {
+  cx = Math.round(clamp(cx, 40, W - 40)); ay = Math.round(clamp(ay, 30, WATER - 10));
+  const x0 = Math.max(0, cx - TG_R), x1 = Math.min(W - 1, cx + TG_R);
+  const gyc = groundBelow(solid, cx, ay), pk = Math.max(ay, gyc - TG_MAXH);
+  const g = [], t = []; let area = 0;
+  for (let x = x0; x <= x1; x++) {
+    const d = Math.abs(x - cx) / TG_R, gy = groundBelow(solid, x, pk);
+    const top = Math.round(pk + 150 * Math.pow(d, 2.2) + (Math.sin(x * .23) * 4 + Math.sin(x * .071 + 1.7) * 7) * Math.min(1, d * 3));
+    g.push(gy);
+    if (gy - top >= 1) { t.push(top); area += gy - top; } else t.push(gy);
+  }
+  return { cx, x0, pk, g, t, area };
+}
+/* clamp a wanted spot to the mage's casting range and say whether it would actually build something */
+function genClamp(w, x, y, solid) {
+  const cx0 = w.x, cy0 = w.y - 40, d = Math.hypot(x - cx0, y - cy0);
+  if (d > TG_RANGE) { x = cx0 + (x - cx0) / d * TG_RANGE; y = cy0 + (y - cy0) / d * TG_RANGE; }
+  const plan = genPlan(solid, x, y);
+  return { x: plan.cx, y: Math.round(clamp(y, 30, WATER - 10)), plan, ok: plan.area >= TG_MIN };
+}
+const genEase = p => p >= 1 ? 1 : 1 - (1 - p) * (1 - p);
+/* grow the land from progress p0 to p1 (0..1). paint(x, yFrom, yTo) is called for every column that gained rows (client art) */
+function genRise(mask, plan, p0, p1, paint) {
+  const e0 = genEase(p0), e1 = genEase(p1);
+  for (let i = 0; i < plan.g.length; i++) {
+    const g = plan.g[i], h = g - plan.t[i]; if (h < 1) continue;
+    const ya = Math.ceil(g - h * e1), yb = Math.ceil(g - h * e0), x = plan.x0 + i; if (ya >= yb) continue;
+    for (let y = ya; y < yb; y++) mask[y * W + x] = 1;
+    if (paint) paint(x, ya, yb, g);
+  }
+}
+/* mages standing where the land rises are carried up with it (never buried) */
+function genLift(wiz, solid, plan) {
+  const xa = plan.x0 - 6, xb = plan.x0 + plan.g.length + 6;
+  for (const w of wiz) {
+    if (!w.alive || w.x < xa || w.x > xb) continue;
+    let n = 0; while (n++ < 400 && (solid(w.x, w.y) || solid(w.x - 4, w.y) || solid(w.x + 4, w.y))) { w.y--; w.vy = 0; w.grounded = true; }
+  }
+}
+
 /* ---------- Bouncing bombs (Magma Bomb): bounce, roll, then explode when settled or when the fuse runs out ---------- */
 function normalAt(solid, x, y) {
   let sx = 0, sy = 0;
@@ -158,11 +207,11 @@ class Game {
   constructor(o) {
     this.seed = o.seed >>> 0; this.mask = genMask(this.seed);
     const r = this.rnd = rng(this.seed ^ 0x9e3779b9); this.R = (a, b) => a + r() * (b - a);
-    this.wiz = []; this.projs = []; this.lava = []; this.drones = []; this.ev = []; this.carves = []; this.pid = 1; this.over = null;
+    this.wiz = []; this.projs = []; this.lava = []; this.drones = []; this.grows = []; this.growLog = []; this.placeKind = 'drone'; this.ev = []; this.carves = []; this.pid = 1; this.over = null;
     const n = o.players.length, spawns = pickSpawns(mapFor(this.seed), n, r);
     o.players.forEach((p, i) => {
       const sp = spawns[i];
-      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x: sp.x, y: sp.y, vx: 0, vy: 0, hp: 100, mana: 60, angle: sp.x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0, thr: 0, lavaT: 0, castle: 0, chp: 0, castleT: 0, castleNew: 0, castleCD: 0, magmaCD: 0 });
+      this.wiz.push({ i, name: p.name, team: p.team, ai: !!p.ai, x: sp.x, y: sp.y, vx: 0, vy: 0, hp: 100, mana: 60, angle: sp.x < W / 2 ? 45 : 135, power: 60, spell: 'fire', alive: true, grounded: false, dir: 0, thr: 0, lavaT: 0, castle: 0, chp: 0, castleT: 0, castleNew: 0, castleCD: 0, magmaCD: 0, genCD: 0 });
     });
     const groups = {}; this.wiz.forEach(w => (groups[w.team] = groups[w.team] || []).push(w.i));
     const gs = Object.keys(groups).sort().map(k => groups[k]); this.order = [];
@@ -174,7 +223,7 @@ class Game {
     const w = this.wiz[this.turn];
     this.drones = []; this.wind = Math.round(this.R(-8, 8)); this.timer = 30; this.state = 'aim'; this.ai = { t: 0, plan: null, hold: 0 };
     if (!first) w.mana = Math.min(100, w.mana + 20);
-    if (SPELLS[w.spell].mana > w.mana || (w.spell === 'magma' && w.magmaCD > 0)) w.spell = 'fire';
+    if (SPELLS[w.spell].mana > w.mana || (w.spell === 'magma' && w.magmaCD > 0) || (w.spell === 'terrain' && w.genCD > 0)) w.spell = 'fire';
     for (const q of this.wiz) { q.dir = 0; q.thr = 0; }
   }
   /* castle form: lasts CASTLE_TURNS of the mage's own turns, counting the one it was cast on */
@@ -184,7 +233,7 @@ class Game {
   }
   endTurn() {
     const o = this.wiz[this.turn];
-    if (o) { if (o.castleCD > 0) o.castleCD--; if (o.magmaCD > 0) o.magmaCD--; } /* tick cooldowns first so a castle that expires now starts its full lock */
+    if (o) { if (o.castleCD > 0) o.castleCD--; if (o.magmaCD > 0) o.magmaCD--; if (o.genCD > 0) o.genCD--; } /* tick cooldowns first so a castle that expires now starts its full lock */
     if (o && o.castle) { o.castleNew = 0; if (--o.castleT <= 0) this.uncastle(o, 0); }
     for (const w of this.wiz) { w.dir = 0; w.thr = 0; }
     const al = this.wiz.filter(w => w.alive), teams = new Set(al.map(w => w.team));
@@ -218,6 +267,7 @@ class Game {
       if (q.jet && w.castle) return;
       if (q.castle && w.castleCD > 0) return;
       if (m.k === 'magma' && w.magmaCD > 0) return;
+      if (m.k === 'terrain' && w.genCD > 0) return;
       if (w.mana >= q.mana) w.spell = m.k;
     }
     else if (m.t === 'fire') {
@@ -237,7 +287,11 @@ class Game {
     }
     if (sp.drone) { /* step 1: choose where the drone is deployed (mana is paid on deploy) */
       if (w.mana < sp.mana || !enemiesOf(this.wiz, w).length) return;
-      this.state = 'place'; this.placeT = DRONE_PICK; return;
+      this.state = 'place'; this.placeKind = 'drone'; this.placeT = DRONE_PICK; return;
+    }
+    if (sp.terrain) { /* step 1: choose where the land rises (mana + cooldown are paid on cast) */
+      if (w.mana < sp.mana || w.genCD > 0) return;
+      this.state = 'place'; this.placeKind = 'terrain'; this.placeT = DRONE_PICK; return;
     }
     if (w.mana < sp.mana || (w.spell === 'magma' && w.magmaCD > 0)) return;
     w.mana -= sp.mana; if (w.spell === 'magma') w.magmaCD = MAGMA_CD;
@@ -245,7 +299,27 @@ class Game {
     this.projs.push({ id: this.pid++, sp: w.spell, x: mx, y: my, vx: Math.cos(a) * w.power * sp.k, vy: -Math.sin(a) * w.power * sp.k, age: 0, owner: w });
     this.ev.push({ e: 'cast', i: w.i }); this.state = 'resolve'; this.resolveT = 0; this.settle = 0;
   }
+  /* Terrain Genesis, step 2: the owner confirmed the spot (x === null = no pick in time -> around the mage) */
+  genesis(w, x, y) {
+    const sp = SPELLS.terrain, auto = x === null;
+    if (w.mana < sp.mana || w.genCD > 0) { this.state = 'resolve'; this.resolveT = 0; this.settle = 0; return; }
+    if (auto) { x = w.x; y = w.y - TG_SELF_LIFT; }
+    const p = genClamp(w, x, y, (a, b) => this.solid(a, b));
+    if (!p.ok) { if (auto) this.state = 'aim'; return; } /* nothing would grow there: keep choosing (or fall back to aiming when it was automatic) */
+    w.mana -= sp.mana; w.genCD = TG_CD;
+    this.grows.push({ id: this.pid++, plan: p.plan, p: 0 }); this.growLog.push(p.plan);
+    this.ev.push({ e: 'gen', i: w.i, cx: p.plan.cx, x0: p.plan.x0, pk: p.plan.pk, g: p.plan.g, t: p.plan.t });
+    this.state = 'resolve'; this.resolveT = 0; this.settle = 0;
+  }
+  stepGrows(dt) {
+    for (const g of this.grows) {
+      const p0 = g.p; g.p = Math.min(1, g.p + dt / TG_TIME);
+      genRise(this.mask, g.plan, p0, g.p); genLift(this.wiz, (a, b) => this.solid(a, b), g.plan);
+    }
+    this.grows = this.grows.filter(g => g.p < 1);
+  }
   deploy(w, x, y) {
+    if (this.placeKind === 'terrain') return this.genesis(w, x, y);
     const sp = SPELLS.drone;
     if (w.mana < sp.mana) { this.state = 'resolve'; this.resolveT = 0; this.settle = 0; return; }
     if (x === null) { const s = droneSpawn(w, (a, b) => this.solid(a, b)); x = s.x; y = s.y; }
@@ -286,7 +360,7 @@ class Game {
     this.lavaStep(dt);
     for (const p of this.projs) this.stepProj(p, dt);
     this.projs = this.projs.filter(p => !p.dead);
-    this.stepDrones(dt);
+    this.stepDrones(dt); this.stepGrows(dt);
     if (this.state === 'place') { this.placeT -= dt; if (this.placeT <= 0) this.deploy(c, null, null); }
     if (this.state === 'target') {                 /* waiting for the player to pick the drone's victim */
       this.targetT -= dt;
@@ -300,7 +374,7 @@ class Game {
       if (this.timer <= 0 && this.state === 'aim') this.endTurn();
     } else if (this.state === 'resolve') {
       this.resolveT += dt;
-      const calm = !this.projs.length && !this.lava.length && !this.drones.length && this.wiz.every(w => !w.alive || (w.grounded && Math.abs(w.vx) < 8));
+      const calm = !this.projs.length && !this.lava.length && !this.drones.length && !this.grows.length && this.wiz.every(w => !w.alive || (w.grounded && Math.abs(w.vx) < 8));
       this.settle = calm ? this.settle + dt : 0;
       if (this.settle > .9 || this.resolveT > 20) this.endTurn();
     }
@@ -412,7 +486,7 @@ class Game {
     const es = this.wiz.filter(t => t.alive && t.team !== w.team); if (!es.length) return { a: w.angle, p: w.power, k: 'fire' };
     es.sort((a, b) => Math.abs(a.x - w.x) - Math.abs(b.x - w.x)); const t = es[0]; let best = null;
     for (const k of SKEYS) {
-      const sp = SPELLS[k]; if (sp.jet || sp.castle || sp.drone || sp.mana > w.mana || (k === 'magma' && w.magmaCD > 0)) continue;
+      const sp = SPELLS[k]; if (sp.jet || sp.castle || sp.drone || sp.terrain || sp.mana > w.mana || (k === 'magma' && w.magmaCD > 0)) continue;
       for (let a = -84; a <= 264; a += 4) for (let p = 25; p <= 100; p += 5) { const s = this.sim(w, a, p, sp, t) - (sp.dr || sp.r) * .6; if (!best || s < best.s) best = { a, p, k, s }; }
     }
     if (!best) return { a: w.angle, p: w.power, k: 'fire' };
@@ -430,7 +504,7 @@ class Game {
     const r = v => Math.round(v * 10) / 10;
     return {
       turn: this.turn, state: this.state, timer: r(this.timer), wind: this.wind,
-      w: this.wiz.map(w => [r(w.x), r(w.y), w.hp, Math.round(w.mana), r(w.angle), r(w.power), (this.state === 'aim' && w.i === this.turn && !w.castle) ? w.dir : 0, w.grounded ? 1 : 0, w.alive ? 1 : 0, SKEYS.indexOf(w.spell), w.flying ? 1 : 0, w.castle ? 1 : 0, Math.round(w.chp), w.castleT, w.castleCD, w.magmaCD]),
+      w: this.wiz.map(w => [r(w.x), r(w.y), w.hp, Math.round(w.mana), r(w.angle), r(w.power), (this.state === 'aim' && w.i === this.turn && !w.castle) ? w.dir : 0, w.grounded ? 1 : 0, w.alive ? 1 : 0, SKEYS.indexOf(w.spell), w.flying ? 1 : 0, w.castle ? 1 : 0, Math.round(w.chp), w.castleT, w.castleCD, w.magmaCD, w.genCD]),
       p: this.projs.map(p => [p.id, SKEYS.indexOf(p.sp), r(p.x), r(p.y), Math.round(p.vx), Math.round(p.vy)]),
       d: this.drones.map(d => [d.id, r(d.x), r(d.y), d.fly ? 1 : 0, d.tgt, d.owner.i, Math.round(d.vx), Math.round(d.vy)]),
       l: this.lava.map(b => [r(b.x), r(b.y), r(b.r), r(b.life)]),
@@ -440,6 +514,6 @@ class Game {
   drain() { const e = this.ev; this.ev = []; return e; }
 }
 
-const api = { DRONE_RANGE, droneClamp, lineClear, DRONE_DMG, DRONE_PICK, enemiesOf, droneDist, droneSpawn, droneStep, droneAuto, CASTLE_HP, CASTLE_TURNS, CASTLE_CD, MAGMA_CD, W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW, ballStep, bombStep };
+const api = { TG_R, TG_MAXH, TG_RANGE, TG_TIME, TG_CD, TG_SELF_LIFT, TG_MIN, genPlan, genClamp, genRise, genLift, DRONE_RANGE, droneClamp, lineClear, DRONE_DMG, DRONE_PICK, enemiesOf, droneDist, droneSpawn, droneStep, droneAuto, CASTLE_HP, CASTLE_TURNS, CASTLE_CD, MAGMA_CD, W, H, WATER, G, SPELLS, SKEYS, COLS, Game, genMask, mapFor, pickSpawns, MAPS, carveMask, muzzle, hitW, ballStep, bombStep };
 if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Core = api;
 })(this);
