@@ -357,7 +357,7 @@ class Game {
       b.life -= dt;
       if (this.solid(b.x, b.y + 2)) {
         b.vx = 0; b.vy = 0; b.melt += dt;
-        if (b.melt > .17) { b.melt = 0; this.carve(b.x, b.y + 4, b.r); b.y += 3; }
+        if (b.melt > .3) { b.melt = 0; this.carve(b.x, b.y + 4, b.r * .6); b.y += 2; }
       } else {
         b.vy += G * dt; b.x += b.vx * dt; b.y += b.vy * dt; b.vx *= Math.pow(.6, dt);
         if (b.x < -100 || b.x > W + 100) b.life = 0;

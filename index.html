@@ -373,7 +373,7 @@ function lavaUpdate(dt){
     b.life-=dt;
     if(solid(b.x,b.y+2)){
       b.vx=0;b.vy=0;b.melt+=dt;
-      if(b.melt>.17){b.melt=0;carve(b.x,b.y+4,b.r);b.y+=3}
+      if(b.melt>.3){b.melt=0;carve(b.x,b.y+4,b.r*.6);b.y+=2}
       if(Math.random()<dt*10)P(b.x+R(-4,4),b.y-3,R(-14,14),R(-70,-25),R(.4,.8),R(2,4),'#ff8a2a',-20);
     }else{
       b.vy+=G*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;b.vx*=Math.pow(.6,dt);
@@ -542,6 +542,21 @@ function sim(w,ang,pow,sp,t){
   if(Math.hypot(x-w.x,y-w.y)<(sp.dr||sp.r)*1.8)d+=300;
   return d;
 }
+/* AI movement: most turns it takes a short walk (sometimes with a hop) before it shoots, never off a cliff */
+function aiGround(w){   /* is there ground just ahead in its walking direction? if not, turn around */
+  for(let k=0;k<2;k++){
+    const x=w.x+ai.wdir*18;for(let y=w.y-12;y<=w.y+60;y+=4)if(solid(x,y))return true;
+    ai.wdir*=-1;
+  }
+  return false;
+}
+function aiStartWalk(w){
+  if(w.castle||!w.grounded||Math.random()<.25)return;
+  const es=Core.enemiesOf(wiz,w).sort((a,b)=>Math.abs(a.x-w.x)-Math.abs(b.x-w.x)),t=es[0];
+  ai.wdir=t&&Math.random()<.5?(t.x>w.x?1:-1):(Math.random()<.5?1:-1);
+  ai.walkT=.5+Math.random()*1.3;
+  if(Math.random()<.3){w.vy=-330;w.vx=ai.wdir*170;w.grounded=false}
+}
 /* the AI's non-shooting skills. returns {k:'castle'|'drone'|'jet',...} or null (= just shoot) */
 function aiSpecial(w){
   const es=Core.enemiesOf(wiz,w).sort((a,b)=>a.hp-b.hp);if(!es.length)return null;
@@ -632,6 +647,8 @@ function update(dt){
     const mine=w===c&&state==='aim'&&!w.ai;
     /* Jetpack: hold FLY / Space while it's selected; fuel is mana */
     const aiJ=w===c&&state==='aim'&&w.ai&&ai.jetT>0;   /* AI jetpack hop */
+    const aiW=w===c&&state==='aim'&&w.ai&&ai.walkT>0&&w.grounded&&!w.castle&&aiGround(w);   /* AI strolling around */
+    if(aiW){const f=Math.cos(w.angle*Math.PI/180)>=0?1:-1;if(ai.wdir!==f)w.angle=180-w.angle}
     const jet=!!((mine||aiJ)&&!w.castle&&SPELLS[w.spell].jet),thr=jet&&!!(aiJ||keys.Space||ui.thr)&&w.mana>.05;
     if(thr){
       w.mana=Math.max(0,w.mana-20*dt);w.thr=.12;w.jsnd=(w.jsnd||0)-dt;
@@ -640,9 +657,9 @@ function update(dt){
     }else w.thr=Math.max(0,(w.thr||0)-dt);
     if(jet&&w.mana<=.05)w.spell='fire';
     w.lavaT=Math.max(0,(w.lavaT||0)-dt);
-    w.walking=mine&&!w.castle&&dir!==0&&w.grounded;if(w.walking)w.ph+=dt*11;
+    w.walking=(mine&&dir!==0||aiW)&&!w.castle&&w.grounded;if(w.walking)w.ph+=dt*11;
     w.hurt=Math.max(0,w.hurt-dt);w.cast=Math.max(0,w.cast-dt);
-    physW(w,dt,(mine||aiJ)&&!w.castle?(mine?dir:ai.dir||0)*(jet&&!w.grounded?115:75):0,thr);
+    physW(w,dt,(mine||aiJ||aiW)&&!w.castle?(mine?dir:aiJ?ai.dir||0:ai.wdir)*(jet&&!w.grounded?115:75):0,thr);
   }
   for(const p of projs)stepProj(p,dt);projs=projs.filter(p=>!p.dead);
   stepDrones(dt);
@@ -657,8 +674,10 @@ function update(dt){
     timer-=dt;
     if(c.ai){
       ai.t+=dt;
+      if(!ai.walked){ai.walked=1;aiStartWalk(c)}
+      if(ai.walkT>0){ai.walkT-=dt;if(ai.walkT<=0){ai.walkT=0;ai.t=.5}}   /* done walking: settle, then think */
       if(ai.jetT>0){ai.jetT-=dt;if(ai.jetT<=0){c.spell='fire';ai.jetT=0;ai.t=.4}}   /* hop finished: aim from the new spot */
-      else if(!ai.plan&&ai.t>.9){
+      else if(!ai.plan&&ai.t>.9&&!(ai.walkT>0)){
         const sk=ai.chosen?null:aiSpecial(c);ai.chosen=1;
         if(sk&&sk.k==='castle'){c.spell='castle';fire(c)}
         else if(sk&&sk.k==='drone'){c.spell='drone';ai.dp=sk.dp;ai.tgt=sk.tgt;ai.pt=0;ai.lt=0;fire(c)}
