@@ -197,6 +197,7 @@ class Game {
     const w = this.wiz[i]; if (!w || !w.alive || w.ai || !m) return;
     if (m.t === 'dir') { w.dir = m.v > 0 ? 1 : m.v < 0 ? -1 : 0; return; }
     if (m.t === 'thr') { w.thr = m.v ? 1 : 0; return; }
+    if (m.t === 'cancel') { if (this.state === 'place' && this.turn === i) this.state = 'aim'; return; } /* back out of drone placement, nothing spent */
     if (m.t === 'deploy') { /* Killer Drone: the owner confirms where it spawns */
       if (this.state !== 'place' || this.turn !== i || typeof m.x !== 'number' || typeof m.y !== 'number' || !isFinite(m.x + m.y)) return;
       this.deploy(w, m.x, m.y); return;

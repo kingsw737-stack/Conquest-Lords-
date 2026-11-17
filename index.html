@@ -122,6 +122,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 #hc{margin:4px auto}
 #deploy{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom) + 112px);z-index:6;padding:12px 18px;font-size:16px;font-weight:800;letter-spacing:1px;color:#fff;border-radius:14px;border:2px solid #fff6;background:linear-gradient(#b070ff,#6a2fd0);box-shadow:inset 0 2px 0 #fff5,0 0 14px #b070ffaa,0 4px 8px #000a;cursor:pointer}
 #deploy:disabled{opacity:.4}
+#cancelp{position:fixed;right:135px;bottom:calc(env(safe-area-inset-bottom) + 112px);z-index:6;padding:12px 16px;font-size:16px;font-weight:800;letter-spacing:1px;color:#fff;border-radius:14px;border:2px solid #fff6;background:linear-gradient(#6a6a8a,#34344f);box-shadow:inset 0 2px 0 #fff4,0 4px 8px #000a;cursor:pointer}
 #tgtmsg{position:fixed;top:calc(env(safe-area-inset-top) + 84px);left:50%;transform:translateX(-50%);z-index:6;background:linear-gradient(#5a1230ee,#2a0a1cee);border:2px solid #ff5a7a;border-radius:12px;padding:6px 14px;font-weight:800;font-size:13px;letter-spacing:1px;white-space:nowrap;pointer-events:none;box-shadow:0 0 14px #ff5a7a88;animation:tgp .7s ease-in-out infinite alternate}
 @keyframes tgp{from{box-shadow:0 0 6px #ff5a7a66}to{box-shadow:0 0 18px #ff5a7acc}}
 </style>
@@ -129,7 +130,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 <body>
 <canvas id="c"></canvas>
 <div id="tgtmsg" class="hide">TAP AN ENEMY TO TARGET</div>
-<button id="deploy" class="hide">DEPLOY</button>
+<button id="cancelp" class="hide">CANCEL</button><button id="deploy" class="hide">DEPLOY</button>
 
 <div id="top">
   <div class="card" id="c0"><b id="n0"></b><div class="bar hp"><i id="h0"></i></div><div class="bar mp"><i id="m0"></i></div></div>
@@ -445,6 +446,11 @@ function deployNow(w,x,y){
 function deployClick(){
   const c=cur();if(state!=='place'||!ctl(c)||!placePos||!placePos.ok)return;
   if(mode==='online')sendAct({t:'deploy',x:placePos.x,y:placePos.y});else deployNow(c,placePos.x,placePos.y);
+}
+function cancelPlace(){
+  if(state!=='place'||!ctl(cur()))return;
+  if(mode==='online')sendAct({t:'cancel'});
+  state='aim';placePos=null;setBag(true);   /* back to aiming, spell bag open to pick another skill */
 }
 function placeAt(e){
   const c=cur();if(state!=='place'||!ctl(c))return;
@@ -886,9 +892,9 @@ function hud(){
   const lab=SPELLS[c.spell].jet?'FLY':SPELLS[c.spell].castle?'BUILD':SPELLS[c.spell].drone?'DRONE':'FIRE';if($('bf').textContent!==lab)$('bf').textContent=lab;
   {const tm=$('tgtmsg'),pl=state==='place'&&ctl(c),tg=state==='target'&&ctl(c);tm.classList.toggle('hide',!(pl||tg));
     if(pl||tg){const t=pl?'TAP TO PLACE THE DRONE':'TAP AN ENEMY TO TARGET';if(tm.textContent!==t)tm.textContent=t}
-    const db=$('deploy');db.classList.toggle('hide',!pl);if(pl)db.disabled=!(placePos&&placePos.ok)}
+    $('cancelp').classList.toggle('hide',!pl);const db=$('deploy');db.classList.toggle('hide',!pl);if(pl)db.disabled=!(placePos&&placePos.ok)}
 }
-$('bf').onclick=doFire;$('deploy').onclick=deployClick;$('deploy').addEventListener('pointerdown',e=>e.stopPropagation());
+$('bf').onclick=doFire;$('deploy').onclick=deployClick;$('cancelp').onclick=cancelPlace;$('cancelp').addEventListener('pointerdown',e=>e.stopPropagation());$('deploy').addEventListener('pointerdown',e=>e.stopPropagation());
 const hold=(id,k)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();ui[k]=1;b.classList.add('dn');b.setPointerCapture(e.pointerId)});for(const ev of['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{ui[k]=0;b.classList.remove('dn')})};
 hold('bl','l');hold('br','r');hold('au','au');hold('ad','ad');hold('pu','pu');hold('pd','pd');hold('bf','thr');
 const tapJ=(id,d)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();b.classList.add('dn');jump(d)});for(const ev of['pointerup','pointercancel','pointerleave'])b.addEventListener(ev,()=>b.classList.remove('dn'))};
@@ -901,6 +907,7 @@ addEventListener('keydown',e=>{
   keys[e.code]=true;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   if(state==='place'&&ctl(cur())&&(e.code==='Space'||e.code==='Enter'))deployClick();
+  if(state==='place'&&ctl(cur())&&e.code==='Escape')cancelPlace();
   if(state==='target'&&ctl(cur())&&(e.code==='Space'||e.code==='Enter')){   /* drone: Space/Enter = nearest enemy */
     const c=cur(),es=Core.enemiesOf(wiz,c).sort((a,b)=>Math.abs(a.x-c.x)-Math.abs(b.x-c.x));if(es.length)sendTarget(es[0].i);
   }
@@ -1129,6 +1136,7 @@ function applySnap(s){
   if(mode!=='online'||!wiz.length)return;
   const now=performance.now();
   if(gotSnap&&s.turn!==turn&&s.turn===me&&s.state==='aim')sfx('turn');
+  if(state==='place'&&s.state==='aim'&&s.turn===me)placePos=null;
   if(s.state==='place'&&state!=='place'&&s.turn===me&&wiz[me]){const p=Core.droneSpawn(wiz[me],solid);placePos={x:p.x,y:p.y,ok:true}}
   turn=s.turn;state=s.state;timer=s.timer;wind=s.wind;
   s.w.forEach((a,i)=>{
