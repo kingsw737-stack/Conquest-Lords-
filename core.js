@@ -63,15 +63,29 @@ function pickSpawns(map, n, r) {
 /* ---------- Terrain Genesis: shared by the server Game and the offline client ---------- */
 /* first solid pixel scanning down from (x, y); WATER when there is none (new land may rise from the sea floor) */
 function groundBelow(solid, x, y) { for (let yy = Math.max(0, y | 0); yy < WATER; yy++) if (solid(x, yy)) return yy; return WATER; }
+/* ground for Terrain Genesis: the first run below y that is solid across (not just a thin spire or stray pixel) and at least TG_THICK rows tall.
+   Thin things in the way (spires, props, floating specks) are not ground: the mound rises through and over them, so no column is left blank next to other objects */
+const TG_THICK = 28, TG_SIDE = 7;
+function genGround(solid, x, y) {
+  const xa = Math.max(0, x - TG_SIDE), xb = Math.min(W - 1, x + TG_SIDE), ok = yy => solid(x, yy) && solid(xa, yy) && solid(xb, yy);
+  let yy = Math.max(0, y | 0);
+  while (yy < WATER) {
+    if (!ok(yy)) { yy++; continue; }
+    let e = yy; while (e < WATER && ok(e)) e++;
+    if (e - yy >= TG_THICK || e >= WATER) return yy;
+    yy = e;
+  }
+  return WATER;
+}
 /* the shape of the new land: a rocky mound whose peak sits at (cx, ay) and slopes down to the existing ground on both sides.
    plan = { cx, x0, pk, g[], t[], area }: per column from x0, g = ground y, t = final top y (t >= g means nothing is added there) */
 function genPlan(solid, cx, ay) {
   cx = Math.round(clamp(cx, 40, W - 40)); ay = Math.round(clamp(ay, 30, WATER - 10));
   const x0 = Math.max(0, cx - TG_R), x1 = Math.min(W - 1, cx + TG_R);
-  const gyc = groundBelow(solid, cx, ay), pk = Math.max(ay, gyc - TG_MAXH);
+  const gyc = genGround(solid, cx, ay), pk = Math.max(ay, gyc - TG_MAXH);
   const g = [], t = []; let area = 0;
   for (let x = x0; x <= x1; x++) {
-    const d = Math.abs(x - cx) / TG_R, gy = groundBelow(solid, x, pk);
+    const d = Math.abs(x - cx) / TG_R, gy = genGround(solid, x, pk);
     const top = Math.round(pk + 150 * Math.pow(d, 2.2) + (Math.sin(x * .23) * 4 + Math.sin(x * .071 + 1.7) * 7) * Math.min(1, d * 3));
     g.push(gy);
     if (gy - top >= 1) { t.push(top); area += gy - top; } else t.push(gy);
