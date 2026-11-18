@@ -31,10 +31,9 @@ const wss = new WebSocketServer({ server, maxPayload: 8192 });
    Players sign in on the client with Firebase Auth and send their ID token in the 'hello' message.
    We verify it here (RS256 signature against Google's public certs, plus aud / iss / exp checks),
    so nobody can skip the login screen and talk to the WebSocket directly.
-   Set FIREBASE_PROJECT_ID in Render (Environment tab). No firebase-admin package needed. */
+   No firebase-admin package and no Render environment variable needed. */
 const https = require('https');
-const FIREBASE_PROJECT_ID = (process.env.FIREBASE_PROJECT_ID || '').trim();
-if (!FIREBASE_PROJECT_ID) console.warn('WARNING: FIREBASE_PROJECT_ID is not set. Online play is disabled until you set it.');
+const FIREBASE_PROJECT_ID = 'arcane-warfare';   /* must equal projectId in the Firebase web config; no Render setting needed */
 const CERT_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
 let certs = null, certsExp = 0;
 const getCerts = () => new Promise((resolve, reject) => {
