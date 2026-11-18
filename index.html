@@ -549,8 +549,8 @@ body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
 </div>
 <div class="ov hide" id="online">
   <h1 style="font-size:clamp(30px,8vw,54px)">ONLINE</h1>
-  <input class="fld" id="nm" maxlength="14" placeholder="Your wizard name" autocomplete="off" readonly>
-  <button class="big on" id="enter">Enter Lobby</button>
+  <input class="fld" id="nm" maxlength="14" placeholder="Your wizard name" autocomplete="off" readonly style="display:none">
+  <button class="big on" id="enter" style="display:none">Enter Lobby</button>
   <p class="st"></p>
   <button class="big" id="oback" style="background:#ffffff22">Back</button>
   <button class="big" id="sout" style="background:#ffffff12;font-size:14px;padding:9px">Sign out</button>
@@ -657,7 +657,7 @@ window.AWAuth = {
   ready: () => auth.authStateReady(),
   user: () => auth.currentUser,
   onChange: cb => onAuthStateChanged(auth, cb),
-  token: () => auth.currentUser.getIdToken(),
+  token: force => auth.currentUser.getIdToken(!!force),
   signIn: async (email, pw) => (await signInWithEmailAndPassword(auth, email, pw)).user,
   signUp: async (email, pw) => (await createUserWithEmailAndPassword(auth, email, pw)).user,
   /* wizard names live in Firestore: players/{uid} = this player's name, names/{lowercase} = who owns it (create-only, so unique and permanent) */
@@ -1705,6 +1705,7 @@ let roomS=null,inMatch=false,myTeam=0,pendingJoin='',cn=1,cLock=false;
 const netSend=o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))};
 const sendAct=m=>netSend({t:'act',m});
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
+function retryBtn(){const b=$('enter');b.style.display='';b.textContent='Try again'}
 function setStatus(t){for(const p of document.querySelectorAll('.st'))p.textContent=t||''}
 function show(id){for(const x of['auth','nameset','online','lobby','room'])$(x).classList.toggle('hide',x!==id)}
 function netBanner(t){const b=$('net');b.textContent=t||'';b.classList.toggle('hide',!t)}
@@ -1732,7 +1733,7 @@ function onClosed(){
     retryT=setTimeout(()=>connect(()=>netSend({t:'rejoin',code:sess.code,token:sess.token})),1500);return;
   }
   sess=null;roomS=null;
-  if(!inMatch&&$('menu').classList.contains('hide')){show('online');setStatus('Disconnected. Please try again.')}
+  if(!inMatch&&$('menu').classList.contains('hide')){show('online');setStatus('Disconnected. Please try again.');retryBtn()}
 }
 function leaveOnline(){
   wantClose=true;clearTimeout(retryT);clearTimeout(aimTimer);aimTimer=0;
@@ -1768,8 +1769,9 @@ function onNet(m){
     case 'left':
       netBanner('');roomS=null;sess=null;inMatch=false;show('lobby');setStatus(m.msg||'');break;
     case 'err':
+      if(m.needAuth&&window.awRetryHello&&window.awRetryHello())break;   /* retry once with a fresh token; never sign the player out for this */
       setStatus(m.msg);
-      if(m.needAuth){try{AWAuth.signOut()}catch(e){}show('auth');setStatus(m.msg)}
+      if(!$('online').classList.contains('hide'))retryBtn();
       if(m.needName&&window.awShowName)window.awShowName();
       if(m.fatal){netBanner(m.msg);sess=null;setTimeout(toMenu,2000)}
       break;
@@ -2036,11 +2038,14 @@ function initOnlineUI(){
     const A=window.AWAuth;
     if(A){try{await A.ready()}catch(e){}}
     const u=A&&A.user();
-    if(u){let nm='';try{nm=await A.getName()}catch(e){}if(!nm){window.awShowName&&window.awShowName();return}$('nm').value=nm;show('online')}else show('auth');
+    if(u){let nm='';try{nm=await A.getName()}catch(e){}if(!nm){window.awShowName&&window.awShowName();return}$('nm').value=nm;show('online');$('enter').onclick();return}show('auth');
     setStatus(pendingJoin?(u?'Tap Enter Lobby to join room ':'Sign in to join room ')+pendingJoin:'');
   };
   $('oback').onclick=()=>{leaveOnline();show(null);$('menu').classList.remove('hide')};
+  let helloTries=0;
+  window.awRetryHello=()=>{if(helloTries++>=1||!window.AWAuth||!AWAuth.user())return false;AWAuth.token(true).then(t=>netSend({t:'hello',token:t})).catch(()=>{});return true};
   $('enter').onclick=()=>{
+    helloTries=0;$('enter').style.display='none';
     if(!window.AWAuth||!AWAuth.user()){show('auth');setStatus('Please sign in first.');return}
     setStatus('Connecting\u2026');
     connect(async()=>{
