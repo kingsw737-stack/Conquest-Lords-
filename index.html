@@ -167,7 +167,6 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 #menu .mb.prime .sub{color:#ffe8c4}
 #menu .mb.prime .ico{background:#3a0e0555}
 #menu .mb.net .ico{background:linear-gradient(#4fe0c8,#17806f)}
-#menu .mb.loc .ico{background:linear-gradient(#a58bff,#5a37c4)}
 #menu .mhint{margin:0;max-width:min(520px,92vw);font-size:12px;line-height:1.35;color:#ffeccd;text-shadow:0 1px 3px #000,0 0 10px #000}
 #menu .mtools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 #menu .mtools button{height:34px;padding:0 15px;border-radius:17px;border:1px solid #ffffff44;background:#0d0617d6;color:#eadfff;font:600 13px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;cursor:pointer;transition:border-color .15s,background .15s}
@@ -299,6 +298,22 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   #lobby .rempty::before{display:none}
 }
 @media (prefers-reduced-motion:reduce){#lobby *{animation:none!important;transition:none!important}}
+/* in-game leave button + confirm (every full-screen overlay covers/hides them automatically) */
+#leave{position:fixed;left:max(env(safe-area-inset-left),8px);top:calc(env(safe-area-inset-top) + 6px);z-index:5;width:36px;height:36px;padding:0;display:grid;place-items:center;border-radius:12px;border:2px solid #0b0620;background:linear-gradient(#4f4096,#2a1f62 55%,#1c1445);box-shadow:inset 0 2px 0 #ffffff45,inset 0 -3px 0 #0006,0 0 0 1px #ffffff2a,0 4px 8px #0008;cursor:pointer;-webkit-tap-highlight-color:transparent;opacity:.85}
+#leave svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 0 #0008)}
+#leave:hover{opacity:1}#leave:active{transform:translateY(2px);background:linear-gradient(#ffc45a,#d9692a)}
+#leave:focus-visible,#lvq button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
+#lvq{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:#070310a8;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#lvq.hide{display:none}
+#lvq .lvp{width:min(340px,100%);padding:18px 18px 16px;border-radius:18px;border:1px solid #c9993a99;background:linear-gradient(#2a1647f7,#140b24fa);box-shadow:inset 0 1px 0 #ffffff2e,0 16px 40px #000c;text-align:center;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#lvq h2{margin:0 0 8px;font:800 20px Georgia,"Palatino Linotype",serif;color:#ffd86b}
+#lvq p{margin:0 0 14px;color:#d9ccff;font-size:14px;line-height:1.4}
+#lvq .lvb{display:flex;gap:10px}
+#lvq .lvb button{flex:1;height:46px;border-radius:12px;font:800 15px Georgia,serif;color:#fff;cursor:pointer;border:2px solid #ffffff55;transition:transform .1s,filter .12s}
+#lvq .lvb button:hover{filter:brightness(1.1)}#lvq .lvb button:active{transform:translateY(2px)}
+#lvq #lvstay{background:linear-gradient(#8f7bff,#5a37c4 55%,#3b2394);box-shadow:inset 0 2px 0 #fff5}
+#lvq #lvgo{border-color:#ffd86bb0;background:linear-gradient(#ffb04a,#e3541f 55%,#b3321a);text-shadow:0 1px 0 #3a0e05;box-shadow:inset 0 2px 0 #fff6}
 /* ================= ROOM v3 (same panel language as the lobby; fits one screen) ================= */
 #room{--gold:#ffd86b;--ink:#eadfff;--mute:#b9a8f0;--panel:linear-gradient(#2a1647f2,#140b24f7);
   padding:calc(env(safe-area-inset-top,0px) + 10px) max(env(safe-area-inset-right,0px),14px) calc(env(safe-area-inset-bottom,0px) + 8px) max(env(safe-area-inset-left,0px),14px);
@@ -407,6 +422,11 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <div id="mid"><div id="timer">30</div></div>
   <div class="card" id="c1"><b id="n1"></b><div class="bar hp"><i id="h1"></i></div><div class="bar mp"><i id="m1"></i></div></div>
 </div>
+<button id="leave" aria-label="Leave game" title="Leave game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H9"/><path d="M16 8l4 4-4 4M20 12H9"/></svg></button>
+<div id="lvq" class="hide" role="dialog" aria-modal="true" aria-labelledby="lvh">
+  <div class="lvp"><h2 id="lvh">Leave the match?</h2><p id="lvt"></p>
+    <div class="lvb"><button id="lvstay">Keep playing</button><button id="lvgo">Leave</button></div></div>
+</div>
 
 <svg width="0" height="0" style="position:absolute"><defs>
 <linearGradient id="bgL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d79a5a"/><stop offset="1" stop-color="#7a4422"/></linearGradient>
@@ -464,7 +484,6 @@ button{font:inherit;color:inherit;touch-action:manipulation}
     <div class="mbtns">
       <button class="mb prime" id="p1"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 7.5 14h9z"/><path d="M4 17.5c2.4-1.4 5.2-2 8-2s5.6.6 8 2"/><path d="M6.5 20.5h11"/></svg></span><span class="t"><b>Play vs AI</b><span class="sub">Duel the AI sorceress</span></span></button>
       <button class="mb net" id="p3"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5S9.4 5.9 12 3.5z"/></svg></span><span class="t"><b>Play online</b><span class="sub">Find a rival anywhere</span></span></button>
-      <button class="mb loc" id="p2"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8.5" r="3"/><circle cx="16.5" cy="8.5" r="3"/><path d="M2.5 19c.4-3.2 2.7-5 5.5-5s5.1 1.8 5.5 5M12.5 14.4c.9-.3 2-.4 4-.4 2.8 0 5 1.8 5.5 5"/></svg></span><span class="t"><b>Local 2-player</b><span class="sub">Two mages, one screen</span></span></button>
     </div>
     <div class="mtools"><button id="mu" aria-label="Sound effects">🔊 Sound</button><button id="mm" aria-label="Music">🎵 Music</button><button id="hw" aria-haspopup="dialog">How to play</button></div>
   </div>
@@ -1051,7 +1070,7 @@ function endTurn(){
   const o=cur();if(o){if(o.castleCD>0)o.castleCD--;if(o.magmaCD>0)o.magmaCD--;if(o.genCD>0)o.genCD--}   /* tick cooldowns first so a castle that expires now starts its full lock */
   if(o&&o.castle){o.castleNew=0;if(--o.castleT<=0)uncastle(o,0)}
   const al=wiz.filter(w=>w.alive);
-  if(al.length<2){state='over';setTimeout(()=>showOver(al[0]),1200);return}
+  if(al.length<2){state='over';setTimeout(()=>{if(state==='over')showOver(al[0])},1200);return}   /* (skipped if the player already left to the menu) */
   do{turn=(turn+1)%wiz.length}while(!wiz[turn].alive);
   newTurn();
 }
@@ -1447,8 +1466,13 @@ function enterGameScreen(){
   try{if(rq&&!document.fullscreenElement){const p=rq.call(el);if(p&&p.then)p.then(lock,()=>lock());else lock()}else lock()}catch(e){lock()}
 }
 function leaveGameScreen(){if(!isAndroid)return;try{screen.orientation.unlock()}catch(e){}try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
-$('p1').onclick=()=>{enterGameScreen();start('ai')};$('p2').onclick=()=>{enterGameScreen();start('pvp')};
+$('p1').onclick=()=>{enterGameScreen();start('ai')};
 $('again').onclick=()=>{if(mode==='online'){backToRoom();return}start(mode)};
+/* leave a running match (online: counts as a forfeit, the server handles it) */
+const askLeave=on=>{$('lvq').classList.toggle('hide',!on);if(on){$('lvt').textContent=mode==='online'?'You will forfeit this match and return to the main menu.':'This game will end and you will return to the main menu.';$('lvstay').focus()}};
+$('leave').onclick=()=>askLeave(true);$('lvstay').onclick=()=>askLeave(false);
+$('lvgo').onclick=()=>{askLeave(false);leaveGameScreen();leaveOnline();$('again').textContent='Play again';$('over').classList.add('hide');show(null);$('menu').classList.remove('hide');demo()};
+addEventListener('keydown',e=>{if(e.code!=='Escape')return;if(!$('lvq').classList.contains('hide'))askLeave(false);else if(state!=='menu'&&!document.querySelector('.ov:not(.hide)'))askLeave(true)});
 $('tomenu').onclick=()=>{leaveGameScreen();leaveOnline();$('again').textContent='Play again';$('over').classList.add('hide');$('menu').classList.remove('hide');demo()};
 
 
