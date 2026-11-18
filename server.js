@@ -25,7 +25,50 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': type, 'Cache-Control': m ? 'public, max-age=3600' : 'no-cache' }); res.end(d);
   });
 });
-const wss = new WebSocketServer({ server, maxPayload: 4096 });
+const wss = new WebSocketServer({ server, maxPayload: 8192 });
+
+/* ---- Firebase sign-in check -------------------------------------------------------------
+   Players sign in on the client with Firebase Auth and send their ID token in the 'hello' message.
+   We verify it here (RS256 signature against Google's public certs, plus aud / iss / exp checks),
+   so nobody can skip the login screen and talk to the WebSocket directly.
+   Set FIREBASE_PROJECT_ID in Render (Environment tab). No firebase-admin package needed. */
+const https = require('https');
+const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || '';
+if (!FIREBASE_PROJECT_ID) console.warn('WARNING: FIREBASE_PROJECT_ID is not set. Online play is disabled until you set it.');
+const CERT_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
+let certs = null, certsExp = 0;
+const getCerts = () => new Promise((resolve, reject) => {
+  if (certs && Date.now() < certsExp) return resolve(certs);
+  https.get(CERT_URL, res => {
+    let b = ''; res.on('data', d => b += d);
+    res.on('end', () => {
+      try {
+        certs = JSON.parse(b);
+        const mx = /max-age=(\d+)/.exec(res.headers['cache-control'] || '');
+        certsExp = Date.now() + (mx ? +mx[1] : 3600) * 1000;
+        resolve(certs);
+      } catch (e) { reject(e); }
+    });
+  }).on('error', reject);
+});
+const b64u = s => Buffer.from(s.replace(/-/g, '+').replace(/_/g, '/'), 'base64');
+async function verifyFirebaseToken(token, getCertsFn = getCerts, projectId = FIREBASE_PROJECT_ID) {
+  if (!projectId) throw new Error('auth not configured');
+  if (typeof token !== 'string' || token.length > 4000) throw new Error('bad token');
+  const parts = token.split('.'); if (parts.length !== 3) throw new Error('bad token');
+  const header = JSON.parse(b64u(parts[0]).toString()), p = JSON.parse(b64u(parts[1]).toString());
+  if (header.alg !== 'RS256' || !header.kid) throw new Error('bad alg');
+  const pem = (await getCertsFn())[header.kid]; if (!pem) throw new Error('unknown key');
+  const ok = crypto.createVerify('RSA-SHA256').update(parts[0] + '.' + parts[1]).verify(crypto.createPublicKey(pem), b64u(parts[2]));
+  if (!ok) throw new Error('bad signature');
+  const now = Math.floor(Date.now() / 1000);
+  if (p.aud !== projectId || p.iss !== 'https://securetoken.google.com/' + projectId) throw new Error('wrong project');
+  if (!(p.exp > now) || !(p.iat <= now + 60)) throw new Error('expired');
+  if (!p.sub || typeof p.sub !== 'string') throw new Error('no subject');
+  return p;
+}
+/* ------------------------------------------------------------------------------------------ */
+
 
 const rooms = new Map(), names = new Map();
 const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -169,12 +212,30 @@ wss.on('connection', ws => {
       return;
     }
     if (m.t === 'hello') {
-      if (r) return;
-      const n = clean(m.name); if (!n) return send(ws, { t: 'err', msg: 'Pick a name first.' });
-      const k = n.toLowerCase(), o = names.get(k);
-      if (o && o !== ws) return send(ws, { t: 'err', msg: 'That name is taken, try another.' });
-      if (ws.name) names.delete(ws.name.toLowerCase());
-      ws.name = n; names.set(k, ws); send(ws, { t: 'hello', name: n }); send(ws, roomsMsg()); return;
+      if (r || ws.authing) return;
+      ws.authing = true;
+      verifyFirebaseToken(m.token).then(p => {
+        ws.authing = false;
+        if (ws.readyState !== 1 || ws.room) return;
+        /* the name comes from the signed-in account, not from the client */
+        const n = clean(p.name || (p.email ? p.email.split('@')[0] : ''));
+        if (!n) return send(ws, { t: 'err', msg: 'Your account has no wizard name. Sign out and sign up again.' });
+        /* one connection per account: take over an idle old one, refuse if that account is mid-match */
+        for (const o of wss.clients) {
+          if (o !== ws && o.uid === p.sub) {
+            if (o.room && o.room.phase === 'game') return send(ws, { t: 'err', msg: 'This account is already in a match.' });
+            try { o.terminate(); } catch (e) { }
+          }
+        }
+        const k = n.toLowerCase(), o = names.get(k);
+        if (o && o !== ws && o.readyState === 1 && o.uid !== p.sub) return send(ws, { t: 'err', msg: 'That name is taken, try another.' });
+        if (ws.name) names.delete(ws.name.toLowerCase());
+        ws.uid = p.sub; ws.name = n; names.set(k, ws); send(ws, { t: 'hello', name: n }); send(ws, roomsMsg());
+      }).catch(e => {
+        ws.authing = false;
+        send(ws, { t: 'err', msg: e.message === 'auth not configured' ? 'Online play is not set up yet.' : 'Please sign in again.', needAuth: e.message !== 'auth not configured' });
+      });
+      return;
     }
     if (!ws.name) return;
     const me = r && r.by(ws), host = !!me && me.id === r.hostId;

@@ -508,10 +508,23 @@ body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
 </div>
 <div class="ov hide" id="online">
   <h1 style="font-size:clamp(30px,8vw,54px)">ONLINE</h1>
-  <input class="fld" id="nm" maxlength="14" placeholder="Choose your name" autocomplete="off">
+  <input class="fld" id="nm" maxlength="14" placeholder="Your wizard name" autocomplete="off" readonly>
   <button class="big on" id="enter">Enter Lobby</button>
   <p class="st"></p>
   <button class="big" id="oback" style="background:#ffffff22">Back</button>
+  <button class="big" id="sout" style="background:#ffffff12;font-size:14px;padding:9px">Sign out</button>
+</div>
+<div class="ov hide" id="auth">
+  <h1 style="font-size:clamp(30px,8vw,54px)" id="atitle">SIGN IN</h1>
+  <p id="asub">Create a free account to play online.</p>
+  <input class="fld" id="anm" maxlength="14" placeholder="Wizard name" autocomplete="nickname" autocapitalize="off" spellcheck="false" style="display:none">
+  <input class="fld" id="aem" type="email" placeholder="Email" autocomplete="email" autocapitalize="off" spellcheck="false">
+  <input class="fld" id="apw" type="password" placeholder="Password" autocomplete="current-password">
+  <button class="big on" id="ago">Sign in</button>
+  <button class="big alt" id="aswap">New here? Create account</button>
+  <button class="big" id="afg" style="background:#ffffff12;font-size:14px;padding:9px">Forgot password?</button>
+  <p class="st"></p>
+  <button class="big" id="aback" style="background:#ffffff22">Back</button>
 </div>
 <div class="ov hide" id="lobby">
   <div class="lhead">
@@ -564,6 +577,33 @@ body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
   <button class="big alt" id="tomenu">Main menu</button>
 </div>
 
+<script type="module">
+/* Firebase sign-in (web app config for the arcane-warfare project). */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
+         sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDiPRhDCZt1DdBSXfw6DifBijCw0p6I44E",
+  authDomain: "arcane-warfare.firebaseapp.com",
+  projectId: "arcane-warfare",
+  appId: "1:606888424123:web:6bdddb17d292ae2ea56f9e"
+};
+const auth = getAuth(initializeApp(firebaseConfig));
+window.AWAuth = {
+  ready: () => auth.authStateReady(),
+  user: () => auth.currentUser,
+  token: () => auth.currentUser.getIdToken(),
+  signIn: async (email, pw) => (await signInWithEmailAndPassword(auth, email, pw)).user,
+  signUp: async (email, pw, name) => {
+    const c = await createUserWithEmailAndPassword(auth, email, pw);
+    await updateProfile(c.user, { displayName: name });
+    await c.user.getIdToken(true);   /* refresh so the token carries the wizard name */
+    return c.user;
+  },
+  reset: email => sendPasswordResetEmail(auth, email),
+  signOut: () => signOut(auth)
+};
+</script>
 <script src="maps.js"></script>
 <script src="core.js"></script>
 <script>
@@ -1583,7 +1623,7 @@ const netSend=o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))};
 const sendAct=m=>netSend({t:'act',m});
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
 function setStatus(t){for(const p of document.querySelectorAll('.st'))p.textContent=t||''}
-function show(id){for(const x of['online','lobby','room'])$(x).classList.toggle('hide',x!==id)}
+function show(id){for(const x of['auth','online','lobby','room'])$(x).classList.toggle('hide',x!==id)}
 function netBanner(t){const b=$('net');b.textContent=t||'';b.classList.toggle('hide',!t)}
 function aimChanged(){
   if(mode!=='online')return;aimT=performance.now();
@@ -1646,6 +1686,7 @@ function onNet(m){
       netBanner('');roomS=null;sess=null;inMatch=false;show('lobby');setStatus(m.msg||'');break;
     case 'err':
       setStatus(m.msg);
+      if(m.needAuth){try{AWAuth.signOut()}catch(e){}show('auth');setStatus(m.msg)}
       if(m.fatal){netBanner(m.msg);sess=null;setTimeout(toMenu,2000)}
       break;
   }
@@ -1830,19 +1871,63 @@ function renderRoom(){
   $('sh').classList.toggle('hide',r.locked);
   setStatus(!host?'Waiting for the host to start\u2026':ok?'Ready when you are!':'Teams need the same number of players to start.');
 }
+function initAuthUI(){
+  let signup=false;
+  const A=()=>window.AWAuth;
+  const msgs={'auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong email or password.','auth/user-not-found':'Wrong email or password.','auth/email-already-in-use':'That email already has an account. Try signing in.','auth/weak-password':'Password must be at least 6 characters.','auth/invalid-email':'That email address looks wrong.','auth/too-many-requests':'Too many tries. Wait a moment and try again.','auth/network-request-failed':'No connection. Check your internet.','auth/user-disabled':'This account has been disabled.'};
+  const err=e=>setStatus(msgs[e&&e.code]||(e&&e.message)||'Something went wrong.');
+  function mode(v){
+    signup=v;$('anm').style.display=v?'':'none';
+    $('atitle').textContent=v?'CREATE ACCOUNT':'SIGN IN';
+    $('ago').textContent=v?'Create account':'Sign in';
+    $('aswap').textContent=v?'Have an account? Sign in':'New here? Create account';
+    $('afg').style.display=v?'none':'';
+    $('apw').autocomplete=v?'new-password':'current-password';setStatus('');
+  }
+  async function go(){
+    if(!A()){setStatus('Sign-in is unavailable right now. Reload the page.');return}
+    const em=$('aem').value.trim(),pw=$('apw').value,nm=$('anm').value.trim();
+    if(!em||!pw){setStatus('Enter your email and password.');return}
+    if(signup&&!/^[\w \-.]{2,14}$/.test(nm)){setStatus('Wizard name: 2-14 letters, numbers, spaces, - or .');return}
+    $('ago').disabled=true;setStatus(signup?'Creating account\u2026':'Signing in\u2026');
+    try{
+      const u=signup?await A().signUp(em,pw,nm):await A().signIn(em,pw);
+      $('apw').value='';$('nm').value=u.displayName||nm;setStatus('');show('online');
+    }catch(e){err(e)}
+    $('ago').disabled=false;
+  }
+  $('ago').onclick=go;
+  $('aswap').onclick=()=>mode(!signup);
+  $('afg').onclick=async()=>{
+    const em=$('aem').value.trim();if(!em){setStatus('Type your email above first.');return}
+    try{await A().reset(em);setStatus('Reset link sent. Check your inbox.')}catch(e){err(e)}
+  };
+  $('apw').onkeydown=$('aem').onkeydown=$('anm').onkeydown=e=>{if(e.key==='Enter')go()};
+  $('aback').onclick=()=>{show(null);setStatus('');$('menu').classList.remove('hide')};
+  $('sout').onclick=async()=>{leaveOnline();try{await A().signOut()}catch(e){}$('aem').value='';mode(false);show('auth')};
+}
 function initOnlineUI(){
   if(typeof Core==='undefined')$('p3').classList.add('hide');
-  try{$('nm').value=localStorage.getItem('aw_name')||''}catch(e){}
   mkSeg($('cmodes'),n=>{cn=n;setSeg($('cmodes'),n)});setSeg($('cmodes'),cn);
   mkSeg($('rmodes'),n=>netSend({t:'mode',n}));
-  $('p3').onclick=()=>{enterGameScreen();$('menu').classList.add('hide');show('online');setStatus('')};
+  $('p3').onclick=async()=>{
+    enterGameScreen();$('menu').classList.add('hide');
+    const A=window.AWAuth;
+    if(A){try{await A.ready()}catch(e){}}
+    const u=A&&A.user();
+    if(u){$('nm').value=u.displayName||'';show('online')}else show('auth');
+    setStatus(pendingJoin?(u?'Tap Enter Lobby to join room ':'Sign in to join room ')+pendingJoin:'');
+  };
   $('oback').onclick=()=>{leaveOnline();show(null);$('menu').classList.remove('hide')};
   $('enter').onclick=()=>{
-    const n=$('nm').value.trim();if(!n){setStatus('Choose a name first.');return}
-    try{localStorage.setItem('aw_name',n)}catch(e){}
-    setStatus('Connecting\u2026');connect(()=>netSend({t:'hello',name:n}));
+    if(!window.AWAuth||!AWAuth.user()){show('auth');setStatus('Please sign in first.');return}
+    setStatus('Connecting\u2026');
+    connect(async()=>{
+      try{netSend({t:'hello',token:await AWAuth.token()})}
+      catch(e){show('auth');setStatus('Please sign in again.')}
+    });
   };
-  $('nm').onkeydown=e=>{if(e.key==='Enter')$('enter').onclick()};
+  initAuthUI();
   $('clk').onclick=()=>{cLock=!cLock;lockTxt($('clk'),cLock)};
   $('cr').onclick=()=>netSend({t:'create',n:cn,locked:cLock});
   $('jn').onclick=()=>{
