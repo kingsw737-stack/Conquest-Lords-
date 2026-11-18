@@ -451,10 +451,16 @@ body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
   .gcard .gp{margin-bottom:8px}.gcard h2{font-size:19px}.gwarn{margin-bottom:6px}
   .gf{flex-direction:row}
 }
+#rot{display:none;position:fixed;inset:0;z-index:60;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;background:radial-gradient(circle at 50% 40%,#3b2490f2,#0b0620fa);color:#fff;font-weight:700;font-size:18px;letter-spacing:.5px}
+#rot svg{width:84px;height:84px;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;animation:rotphone 1.8s ease-in-out infinite}
+#rot small{display:block;margin-top:6px;font-weight:500;font-size:13px;color:#d9ccff}
+@keyframes rotphone{0%,15%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+@media (orientation:portrait) and (pointer:coarse){body.ingame #rot{display:flex}}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="rot" role="alert" aria-live="polite"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg><div>Turn your phone sideways<small>The battlefield plays in landscape</small></div></div>
 <div id="tgtmsg" class="hide">TAP AN ENEMY TO TARGET</div>
 <button id="selfp" class="hide">AROUND ME</button><button id="cancelp" class="hide">CANCEL</button><button id="deploy" class="hide">DEPLOY</button>
 
@@ -526,7 +532,7 @@ body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
       <button class="mb prime" id="p1"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 7.5 14h9z"/><path d="M4 17.5c2.4-1.4 5.2-2 8-2s5.6.6 8 2"/><path d="M6.5 20.5h11"/></svg></span><span class="t"><b>Play vs AI</b><span class="sub">Duel the AI sorceress</span></span></button>
       <button class="mb net" id="p3"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5S9.4 5.9 12 3.5z"/></svg></span><span class="t"><b>Play online</b><span class="sub">Find a rival anywhere</span></span></button>
     </div>
-    <div class="mtools"><button id="mu" aria-label="Sound effects">🔊 Sound</button><button id="mm" aria-label="Music">🎵 Music</button><button id="hw" aria-haspopup="dialog">How to play</button></div>
+    <div class="mtools"><button id="mu" aria-label="Sound effects">🔊 Sound</button><button id="mm" aria-label="Music">🎵 Music</button><button id="hw" aria-haspopup="dialog">How to play</button><button id="mout" aria-label="Log out">⎋ Log out</button></div>
   </div>
   <div class="howto hide" id="howto" role="dialog" aria-modal="true" aria-labelledby="hwt">
     <div class="hpanel">
@@ -694,6 +700,7 @@ window.dispatchEvent(new Event('awauth-ready'));
 const $=id=>document.getElementById(id),R=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const W=1400,H=700,WATER=H-45,G=600,cv=$('c'),ctx=cv.getContext('2d');
 let cw,ch,dpr,sc=1,time=0,state='menu',mode='ai',turn=0,wind=0,timer=30,shake=0,flash=0,boomT=-9,boomX=0,boomY=0,settle=0,resolveT=0;
+let myName='';   /* wizard name picked at registration (cached after sign-in) */
 let drones=[],droneId=0,targetT=0,placeT=0,placePos=null,placing=false,grows=[];
 let wiz=[],projs=[],parts=[],fx=[],txts=[],lava=[],mask,tc,tg,ai={},cam={x:W/2,y:H/2,z:1,auto:true};
 const keys={},ui={l:0,r:0};
@@ -1178,10 +1185,10 @@ function aiThink(w){
 /* ---------- Game flow ---------- */
 function start(m){
   mode=m;useMap(pickMap());
-  wiz=placePair(mk(0,'Aldric',0,'#3d6fe0','#23449e',false),mk(1,m==='ai'?'Morgana (AI)':'Morgana',0,'#d4365a','#8a1f3c',m==='ai'));
+  wiz=placePair(mk(0,(m==='ai'&&myName)||'Aldric',0,'#3d6fe0','#23449e',false),mk(1,m==='ai'?'Morgana (AI)':'Morgana',0,'#d4365a','#8a1f3c',m==='ai'));
   $('n0').textContent=wiz[0].name;$('n1').textContent=wiz[1].name;
   projs=[];parts=[];fx=[];txts=[];lava=[];drones=[];grows=[];turn=0;newTurn(true);
-  $('menu').classList.add('hide');$('over').classList.add('hide');
+  $('menu').classList.add('hide');$('over').classList.add('hide');setInGame(true);
 }
 function newTurn(first){
   const w=cur();wind=Math.round(R(-8,8));timer=30;state='aim';cam.auto=true;
@@ -1578,18 +1585,30 @@ cv.addEventListener('pointermove',e=>{if(placing)placeAt(e);else if(drag)aimTo(e
 addEventListener('pointerup',()=>{drag=false;placing=false});
 function zoom(f){cam.auto=false;cam.z*=f}
 cv.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.001))},{passive:false});
-/* Android: entering a game goes fullscreen and locks landscape (both need the tap on a Play button) */
+/* entering any game mode goes fullscreen and locks landscape (both need the tap on a Play button).
+   iPhone Safari allows neither, so there the "turn your phone sideways" overlay (#rot) asks for landscape instead. */
 const isAndroid=/Android/i.test(navigator.userAgent);
 const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const isTouch=isAndroid||isIOS||matchMedia('(pointer:coarse)').matches;
 if(isIOS&&!navigator.standalone&&!matchMedia('(display-mode: standalone)').matches)$('iosHint').classList.remove('hide');
+const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+function setInGame(on){document.body.classList.toggle('ingame',!!on)}
 function enterGameScreen(){
-  if(!isAndroid)return;
   const el=document.documentElement,rq=el.requestFullscreen||el.webkitRequestFullscreen;
-  const lock=()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}};
-  try{if(rq&&!document.fullscreenElement){const p=rq.call(el);if(p&&p.then)p.then(lock,()=>lock());else lock()}else lock()}catch(e){lock()}
+  const lock=()=>{if(!isTouch)return;try{const o=screen.orientation;if(o&&o.lock)o.lock('landscape').catch(()=>{})}catch(e){}};
+  try{if(rq&&!fsEl()){const p=rq.call(el);if(p&&p.then)p.then(lock,()=>lock());else lock()}else lock()}catch(e){lock()}
 }
-function leaveGameScreen(){if(!isAndroid)return;try{screen.orientation.unlock()}catch(e){}try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
-$('p1').onclick=()=>{enterGameScreen();start('ai')};
+function leaveGameScreen(){
+  setInGame(false);
+  try{if(isTouch&&screen.orientation&&screen.orientation.unlock)screen.orientation.unlock()}catch(e){}
+  try{if(fsEl()){const ex=document.exitFullscreen||document.webkitExitFullscreen;if(ex){const p=ex.call(document);if(p&&p.catch)p.catch(()=>{})}}}catch(e){}
+}
+document.addEventListener('fullscreenchange',()=>setTimeout(resize,150));document.addEventListener('webkitfullscreenchange',()=>setTimeout(resize,150));
+$('p1').onclick=async()=>{
+  enterGameScreen();   /* must run inside the tap, before any await */
+  if(!myName){try{const A=window.AWAuth;if(A&&A.user())myName=(await A.getName())||''}catch(e){}}
+  start('ai');
+};
 $('again').onclick=()=>{if(mode==='online'){backToRoom();return}start(mode)};
 /* leave a running match (online: counts as a forfeit, the server handles it) */
 const askLeave=on=>{$('lvq').classList.toggle('hide',!on);if(on){$('lvt').textContent=mode==='online'?'You will forfeit this match and return to the main menu.':'This game will end and you will return to the main menu.';$('lvstay').focus()}};
@@ -1738,14 +1757,14 @@ function onClosed(){
 function leaveOnline(){
   wantClose=true;clearTimeout(retryT);clearTimeout(aimTimer);aimTimer=0;
   if(ws){netSend({t:'leave'});try{ws.close()}catch(e){}ws=null}
-  sess=null;roomS=null;inMatch=false;rj=0;lastDir=0;overShown=false;pendingJoin='';netBanner('');
+  sess=null;roomS=null;inMatch=false;rj=0;lastDir=0;overShown=false;pendingJoin='';netBanner('');setInGame(false);
   if(mode==='online')mode='ai';
 }
 function toMenu(){
   leaveOnline();show(null);$('over').classList.add('hide');$('menu').classList.remove('hide');$('again').textContent='Play again';demo();
 }
 function backToRoom(){
-  inMatch=false;overShown=false;$('over').classList.add('hide');netBanner('');demo();$('again').textContent='Play again';
+  setInGame(false);inMatch=false;overShown=false;$('over').classList.add('hide');netBanner('');demo();$('again').textContent='Play again';
   if(ws&&roomS){show('room');renderRoom()}else{show(ws?'lobby':'online');if(!ws)setStatus('Disconnected. Please try again.')}
 }
 function onNet(m){
@@ -1786,7 +1805,7 @@ function startOnline(m){
   wiz=m.names.map((n,i)=>{const t=m.teams[i],c=TCOL[t][rank[t]++%5],w=mk(i,n+(i===me?' (you)':''),0,c[0],c[1],false);w.team=t;return w});
   projs=[];parts=[];fx=[];txts=[];lava=[];drones=[];grows=[];turn=0;state='aim';timer=30;wind=0;cam.auto=true;
   if($('n0')){$('n0').textContent=wiz[0].name;$('n1').textContent=wiz[1].name}
-  show(null);$('menu').classList.add('hide');$('over').classList.add('hide');
+  show(null);$('menu').classList.add('hide');$('over').classList.add('hide');setInGame(true);
   $('again').textContent='Back to room';netBanner('');
 }
 function applySnap(s){
@@ -1971,7 +1990,7 @@ function initAuthUI(){
   window.awShowName=showName;
   const afterLogin=async()=>{
     setStatus('');
-    try{if(!(await A().getName())){showName();return}}
+    try{const nm=await A().getName();if(!nm){showName();return}myName=nm}
     catch(e){show('auth');$('aform').style.display='';setStatus('Could not load your profile. Check your connection and try again.');return}
     if(pendingJoin)$('p3').onclick();else toMenuScreen();
   };
@@ -2016,9 +2035,9 @@ function initAuthUI(){
   $('wn').oninput=()=>{armed='';$('wgo').textContent='Choose name';setStatus('')};
   $('wn').onkeydown=e=>{if(e.key==='Enter')$('wgo').onclick()};
   const signOutNow=async()=>{leaveOnline();try{await A().signOut()}catch(e){}$('aem').value='';mode(false);show('auth')};
-  $('sout').onclick=signOutNow;$('wout').onclick=signOutNow;
+  $('sout').onclick=signOutNow;$('wout').onclick=signOutNow;$('mout').onclick=signOutNow;
   /* gate: nothing is playable until the player is signed in and has a wizard name */
-  const lock=()=>{leaveOnline();$('over').classList.add('hide');$('menu').classList.add('hide');demo();mode(false);show('auth');$('aform').style.display=''};
+  const lock=()=>{myName='';leaveGameScreen();leaveOnline();$('over').classList.add('hide');$('menu').classList.add('hide');demo();mode(false);show('auth');$('aform').style.display=''};
   const boot=async()=>{
     const a=A();try{await a.ready()}catch(e){}
     const u=a.user();
