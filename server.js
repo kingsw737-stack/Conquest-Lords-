@@ -33,7 +33,7 @@ const wss = new WebSocketServer({ server, maxPayload: 8192 });
    so nobody can skip the login screen and talk to the WebSocket directly.
    Set FIREBASE_PROJECT_ID in Render (Environment tab). No firebase-admin package needed. */
 const https = require('https');
-const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || '';
+const FIREBASE_PROJECT_ID = (process.env.FIREBASE_PROJECT_ID || '').trim();
 if (!FIREBASE_PROJECT_ID) console.warn('WARNING: FIREBASE_PROJECT_ID is not set. Online play is disabled until you set it.');
 const CERT_URL = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
 let certs = null, certsExp = 0;
@@ -251,7 +251,8 @@ wss.on('connection', ws => {
       }).catch(e => {
         if (e.message === 'auth not configured') return send(ws, { t: 'err', msg: 'Online play is not set up yet.' });
         if (/^profile lookup/.test(e.message)) return send(ws, { t: 'err', msg: 'Could not load your profile. Try again in a moment.' });
-        send(ws, { t: 'err', msg: 'Please sign in again.', needAuth: true });
+        console.warn('sign-in check failed:', e.message);
+        send(ws, { t: 'err', msg: 'Sign-in check failed (' + e.message + '). Please try again.', needAuth: true });
       }).finally(() => { ws.authing = false; });
       return;
     }
