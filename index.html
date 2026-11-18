@@ -201,6 +201,84 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   #menu .hpanel dl{font-size:13px;gap:5px 14px;margin-bottom:10px}#menu .hpanel p{display:none}#menu .hpanel{padding:14px 18px 12px}#menu .hpanel h2{font-size:20px;margin-bottom:8px}
 }
 @media (prefers-reduced-motion:reduce){#menu *,#menu *:before{animation:none!important;transition:none!important}#menu #embers{display:none}}
+/* ================= LOBBY v2 ================= */
+#lobby{padding:calc(env(safe-area-inset-top,0px) + 12px) max(env(safe-area-inset-right,0px),16px) calc(env(safe-area-inset-bottom,0px) + 10px) max(env(safe-area-inset-left,0px),16px);align-items:stretch;justify-content:flex-start;text-align:left;overflow:hidden}
+#lobby .lhead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;width:min(1080px,100%);margin:0 auto 10px}
+#lobby .lhead h1{margin:0;font-size:clamp(26px,6vh,46px);line-height:1;text-align:center}
+#lobby .lbk{justify-self:start;height:38px;padding:0 16px 0 12px;border-radius:19px;border:1px solid #ffffff44;background:#0d0617d6;color:#eadfff;font:700 14px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;cursor:pointer}
+#lobby .lbk:hover{border-color:#ffd86b;background:#24113aee}
+#lobby #who{justify-self:end;margin:0;max-width:100%;padding:7px 14px;border-radius:19px;background:#0d0617d6;border:1px solid #ffd86b66;color:#ffe9b0;font:700 14px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lobby .lgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;flex:1;min-height:0;width:min(1080px,100%);margin:0 auto}
+#lobby .lpan{display:flex;flex-direction:column;min-height:0;border-radius:16px;border:2px solid #c9993a99;background:linear-gradient(#24113af4,#120a20f6);box-shadow:inset 0 1px 0 #ffffff30,0 10px 30px #000a;padding:14px}
+#lobby .phd{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+#lobby h2{margin:0;font:800 clamp(17px,3vh,21px)/1.1 Georgia,"Palatino Linotype",serif;color:#ffd86b}
+#lobby .cnt{min-width:26px;height:26px;padding:0 8px;border-radius:13px;display:grid;place-items:center;background:#ffd86b;color:#2a1204;font:800 13px system-ui,sans-serif}
+#lobby #rl{flex:1;min-height:0;width:auto;max-height:none;margin:0;overflow-y:auto;padding-right:2px;-webkit-overflow-scrolling:touch}
+#lobby .rm{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;min-height:68px;margin:0 0 8px;padding:8px 10px 8px 8px;border-radius:13px;border:1px solid #ffffff2e;background:linear-gradient(#ffffff14,#ffffff08)}
+#lobby .rm:hover{border-color:#ffd86b99;background:linear-gradient(#ffffff1c,#ffffff0e)}
+#lobby .rm.dim{opacity:.62}
+#lobby .rmode{width:56px;height:50px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(#5a3fb8,#2f1f74);border:1px solid #b9a4ff77;box-shadow:inset 0 1px 0 #ffffff55;font:900 20px Georgia,"Palatino Linotype",serif;color:#fff;letter-spacing:.02em}
+#lobby .rmid{min-width:0}
+#lobby .rmid b{display:block;font:800 clamp(15px,2.4vh,18px)/1.2 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lobby .rsub{display:flex;align-items:center;gap:10px;margin-top:5px;flex-wrap:wrap;font:600 12px system-ui,sans-serif;color:#cdbdf0}
+#lobby .rcode{padding:2px 7px;border-radius:6px;background:#0008;border:1px solid #ffffff30;letter-spacing:.14em;font-weight:800;color:#ffe9b0}
+#lobby .rteams{display:inline-flex;align-items:center;gap:6px}
+#lobby .rteams em{font-style:normal;font-size:11px;color:#9d8fc6}
+#lobby .pips{display:inline-flex;gap:3px}
+#lobby .pips i{width:10px;height:10px;border-radius:50%;background:#ffffff1c;border:1px solid #ffffff3a}
+#lobby .pips.a i.f{background:#3d8bff;border-color:#a9cbff;box-shadow:0 0 6px #3d8bffaa}
+#lobby .pips.b i.f{background:#e8466f;border-color:#ffb0c2;box-shadow:0 0 6px #e8466faa}
+#lobby .rjoin{min-width:92px;height:44px;padding:0 18px;border-radius:12px;border:2px solid #ffe08a;background:linear-gradient(#4fe0a0,#1f9a68 55%,#136b48);color:#fff;font:800 15px Georgia,serif;text-shadow:0 1px 0 #0a3a26;box-shadow:inset 0 2px 0 #fff6,inset 0 -3px 0 #0004;cursor:pointer}
+#lobby .rjoin:hover:not(:disabled){filter:brightness(1.1)}
+#lobby .rjoin:active:not(:disabled){transform:translateY(2px)}
+#lobby .rjoin:disabled{background:#ffffff14;border-color:#ffffff2a;color:#cdbdf0;box-shadow:none;text-shadow:none;cursor:default;font:700 13px system-ui,sans-serif}
+#lobby .rempty{height:100%;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:16px;border:2px dashed #ffffff30;border-radius:13px}
+#lobby .rempty b{font:800 19px Georgia,serif;color:#ffe9b0}
+#lobby .rempty span{max-width:300px;font-size:14px;line-height:1.45;color:#cdbdf0}
+#lobby .lside{background:none;border:0;box-shadow:none;padding:0;gap:14px}
+#lobby .lbox{border-radius:16px;border:2px solid #c9993a99;background:linear-gradient(#24113af4,#120a20f6);box-shadow:inset 0 1px 0 #ffffff30,0 10px 30px #000a;padding:14px}
+#lobby .lbox h2{margin-bottom:10px}
+#lobby .seg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:0 0 10px}
+#lobby .seg button{padding:0;height:44px;border-radius:11px;border:2px solid #ffffff33;background:#0b0614cc;color:#eadfff;font:800 15px Georgia,serif;cursor:pointer}
+#lobby .seg button.sel{border-color:#ffe08a;background:linear-gradient(#ffb04a,#e3541f 55%,#a82c16);color:#fff;box-shadow:0 0 14px #ff8a2a77,inset 0 2px 0 #fff5}
+#lobby .priv{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+#lobby .priv .tog{flex:none;height:44px;padding:0 14px;border-radius:11px;border:2px solid #ffffff33;background:#0b0614cc;color:#eadfff;font:700 14px system-ui,sans-serif;white-space:nowrap}
+#lobby .priv .tog.on{border-color:#ffe08a;background:#3a2a10;color:#ffe9b0;box-shadow:0 0 10px #ffd86b55}
+#lobby .priv small{display:block;color:#b9a8f0;font-size:12px;line-height:1.35}
+#lobby #cr{width:100%;margin:0;padding:12px}
+#lobby .row{width:100%;margin:0;gap:8px}
+#lobby .row .fld{height:48px;padding:0 12px;font:800 20px Georgia,serif;letter-spacing:.3em}
+#lobby .row .big{height:48px;padding:0 20px}
+#lobby .st{min-height:20px;margin:8px 0 0;text-align:center;font-size:14px}
+#lobby .lgrid>*{animation:mrise .5s cubic-bezier(.2,.8,.2,1) backwards}#lobby .lside{animation-delay:.1s}
+@media (max-aspect-ratio:1/1),(max-width:700px){
+  #lobby{overflow-y:auto;overflow-x:hidden}
+  #lobby .lgrid{grid-template-columns:minmax(0,1fr);flex:none}
+  #lobby .lside{min-width:0}#lobby .lbox{min-width:0}
+  #lobby .lhead{width:100%}
+  #lobby #rl{max-height:46vh;min-height:150px}
+  #lobby .lpan{padding:12px}
+  #lobby .lhead{grid-template-columns:auto 1fr;grid-template-areas:"b w" "t t"}
+  #lobby .lbk{grid-area:b}#lobby #who{grid-area:w}#lobby .lhead h1{grid-area:t}
+}
+@media (max-height:480px) and (min-aspect-ratio:1/1){
+  #lobby .lhead{margin-bottom:6px}
+  #lobby .lpan,#lobby .lbox{padding:10px}
+  #lobby .lside{gap:8px}
+  #lobby .rm{min-height:56px;padding:6px 8px 6px 6px;margin-bottom:6px}#lobby .rmode{height:42px;width:50px;font-size:18px}
+  #lobby .rjoin{height:38px}
+  #lobby .seg button,#lobby .priv .tog{height:38px}#lobby .seg{margin-bottom:8px}#lobby .priv{margin-bottom:8px}
+  #lobby .priv small{display:none}#lobby .pw{display:none}#lobby .rsub{flex-wrap:nowrap;gap:8px}
+  #lobby .row .fld,#lobby .row .big{height:40px}
+  #lobby .lbox h2,#lobby .phd{margin-bottom:6px}
+  #lobby #cr{padding:9px}
+}
+/* room screen: same panel language */
+#room .tm{border-radius:14px;background:linear-gradient(#24113af4,#120a20f6);box-shadow:inset 0 1px 0 #ffffff30,0 8px 24px #000a}
+#room .tm h3{font:800 16px Georgia,serif;margin-bottom:8px}
+#room .tm.a h3{color:#9cc4ff}#room .tm.b h3{color:#ffa0b4}
+#room .pl{min-height:38px;border:1px solid #ffffff22;background:#ffffff0f;font-weight:600}
+#room .pl.empty{border-style:dashed;background:none}
 </style>
 </head>
 <body>
@@ -301,14 +379,30 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <button class="big" id="oback" style="background:#ffffff22">Back</button>
 </div>
 <div class="ov hide" id="lobby">
-  <h1 style="font-size:clamp(28px,7vw,48px)">LOBBY</h1>
-  <p id="who" style="margin:0 0 6px"></p>
-  <div class="seg" id="cmodes"></div>
-  <div class="row" style="width:auto;gap:8px"><button class="tog" id="clk">&#128275; Open</button><button class="big on" id="cr" style="width:auto;padding:10px 18px;font-size:16px">Create room</button></div>
-  <div class="row"><input class="fld" id="jc" maxlength="4" placeholder="CODE" autocomplete="off"><button class="big alt" id="jn">Join</button></div>
-  <div id="rl"></div>
+  <div class="lhead">
+    <button class="lbk" id="lback">&lsaquo; Leave lobby</button>
+    <h1>LOBBY</h1>
+    <p id="who"></p>
+  </div>
+  <div class="lgrid">
+    <section class="lpan lrooms" aria-label="Open rooms">
+      <div class="phd"><h2>Rooms</h2><span class="cnt" id="rcount">0</span></div>
+      <div id="rl"></div>
+    </section>
+    <div class="lpan lside">
+      <section class="lbox" aria-label="Create a room">
+        <h2>Create a room</h2>
+        <div class="seg" id="cmodes"></div>
+        <div class="priv"><button class="tog" id="clk">&#128275; Open</button><small>Locked rooms stop new players from joining.</small></div>
+        <button class="big" id="cr">Create room</button>
+      </section>
+      <section class="lbox" aria-label="Join with a code">
+        <h2>Join with a code</h2>
+        <div class="row"><input class="fld" id="jc" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="big alt" id="jn">Join</button></div>
+      </section>
+    </div>
+  </div>
   <p class="st"></p>
-  <button class="big" id="lback" style="background:#ffffff22">Leave lobby</button>
 </div>
 <div class="ov hide" id="room">
   <h1 id="rt" style="font-size:clamp(26px,6vw,44px)">ROOM</h1>
@@ -1520,13 +1614,22 @@ function mkSeg(box,pick){
 function setSeg(box,n){for(const b of box.children)b.classList.toggle('sel',+b.dataset.n===n)}
 const lockTxt=(b,l)=>{b.textContent=l?'\u{1F512} Locked':'\u{1F513} Open';b.classList.toggle('on',l)};
 function renderRooms(list){
-  const box=$('rl');box.textContent='';
-  if(!list.length){box.appendChild(el('p','','No rooms yet. Create the first one!'));return}
-  for(const r of list){
-    const row=el('div','ri'),tot=r.a+r.b,full=tot>=r.n*2,st=r.phase!=='lobby'?'In match':full?'Full':r.locked?'Locked':'';
-    row.appendChild(el('b','',(r.locked?'\u{1F512} ':'')+r.host+'\u2019s room'));
-    row.appendChild(el('span','',r.n+'v'+r.n+' \u00B7 '+tot+'/'+r.n*2));
-    const j=el('button','',st||'Join');j.disabled=!!st;j.onclick=()=>{setStatus('Joining\u2026');netSend({t:'join',code:r.code})};
+  const box=$('rl'),cnt=$('rcount');box.textContent='';
+  if(cnt)cnt.textContent=list.length;
+  if(!list.length){const e=el('div','rempty');e.appendChild(el('b','','No rooms yet'));e.appendChild(el('span','','Create one and rivals can join from this list.'));box.appendChild(e);return}
+  const info=r=>{const tot=r.a+r.b,full=tot>=r.n*2;return{tot,st:r.phase!=='lobby'?'In match':full?'Full':r.locked?'Locked':''}};
+  const pips=(n,k,c)=>{const s=el('span','pips '+c);for(let q=0;q<n;q++)s.appendChild(el('i',q<k?'f':''));return s};
+  const rows=list.map(r=>({r,i:info(r)})).sort((x,y)=>(!!x.i.st)-(!!y.i.st)||y.i.tot-x.i.tot);
+  for(const{r,i}of rows){
+    const row=el('div','rm'+(i.st?' dim':''));
+    row.appendChild(el('div','rmode',r.n+'v'+r.n));
+    const mid=el('div','rmid');
+    mid.appendChild(el('b','',(r.locked?'\u{1F512} ':'')+r.host+'\u2019s room'));
+    const sub=el('div','rsub');sub.appendChild(el('span','rcode',r.code));
+    const tm=el('span','rteams');tm.appendChild(pips(r.n,r.a,'a'));tm.appendChild(el('em','','vs'));tm.appendChild(pips(r.n,r.b,'b'));sub.appendChild(tm);
+    {const c=el('span','',i.tot+'/'+r.n*2);c.appendChild(el('span','pw',' players'));sub.appendChild(c)}
+    mid.appendChild(sub);row.appendChild(mid);
+    const j=el('button','rjoin',i.st||'Join');j.disabled=!!i.st;j.onclick=()=>{setStatus('Joining\u2026');netSend({t:'join',code:r.code})};
     row.appendChild(j);box.appendChild(row);
   }
 }
