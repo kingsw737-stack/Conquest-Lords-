@@ -261,7 +261,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 #lobby .st{flex:none;min-height:20px;margin:6px 0 0;text-align:center;font-size:13px;color:var(--gold);max-width:none}
 #lobby .lgrid>*{animation:mrise .5s cubic-bezier(.2,.8,.2,1) backwards}#lobby .lside{animation-delay:.1s}
 /* portrait / phones: rooms flex to fill, create + join stay docked at the bottom, nothing scrolls except the room list */
-@media (max-aspect-ratio:1/1),(max-width:700px){
+@media (max-aspect-ratio:1/1){
   #lobby .lgrid{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:10px}
   #lobby .lhead{grid-template-columns:auto auto minmax(0,1fr);gap:8px;margin-bottom:8px}
   #lobby .lhead h1{font-size:clamp(20px,3.6vh,28px);letter-spacing:.06em;justify-self:center;padding-right:.1em}
@@ -279,7 +279,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   #lobby .hint{display:none}
   #lobby .rempty{min-height:0}
 }
-@media (max-aspect-ratio:1/1) and (max-height:700px),(max-width:700px) and (max-height:700px){
+@media (max-aspect-ratio:1/1) and (max-height:700px){
   #lobby .lbox,#lobby .lrooms{padding:10px}
   #lobby .seg button{height:38px}
   #lobby .crow .tog,#lobby #cr,#lobby .row .fld,#lobby .row .big{height:40px}
@@ -299,26 +299,102 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   #lobby .rempty::before{display:none}
 }
 @media (prefers-reduced-motion:reduce){#lobby *{animation:none!important;transition:none!important}}
-/* room: map picker (host taps a picture to choose the battlefield) */
-#mapsel{width:min(580px,94vw);margin:2px auto 6px;text-align:left}
-#mapsel .mhd{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 4px;font:800 16px Georgia,serif;color:#ffd86b}
-#mapsel .mhd span{font:600 12px system-ui,sans-serif;color:#b9a8f0}
-#mapstrip{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#ffd86b55 transparent}
-#mapstrip .mc{flex:none;width:124px;scroll-snap-align:start;padding:0;border-radius:13px;border:2px solid #ffffff2c;background:#0b0614d0;color:#eadfff;cursor:pointer;overflow:hidden;text-align:center;transition:border-color .12s,box-shadow .12s}
-#mapstrip .mc:hover{border-color:#ffd86b88}
-#mapstrip .th{display:block;height:74px;background:#1a0f2e center/cover no-repeat}
-#mapstrip .rnd .th{display:grid;place-items:center;font-size:30px;background:radial-gradient(circle at 50% 40%,#5a3fb8,#1a0f2e)}
-#mapstrip .nm{display:block;padding:6px 6px 7px;font:700 12px system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#mapstrip .mc.sel{border-color:#ffe08a;box-shadow:0 0 14px #ffd86b77}
-#mapstrip .mc.sel .nm{background:linear-gradient(#ffb04a,#e3541f);color:#fff}
-#mapsel.ro .mc{cursor:default;pointer-events:none}#mapsel.ro .mc:not(.sel){opacity:.5}
-#mapstrip .mc:focus-visible{outline:3px solid #fff;outline-offset:2px}
-/* room screen: same panel language */
-#room .tm{border-radius:14px;background:linear-gradient(#24113af4,#120a20f6);box-shadow:inset 0 1px 0 #ffffff30,0 8px 24px #000a}
-#room .tm h3{font:800 16px Georgia,serif;margin-bottom:8px}
+/* ================= ROOM v3 (same panel language as the lobby; fits one screen) ================= */
+#room{--gold:#ffd86b;--ink:#eadfff;--mute:#b9a8f0;--panel:linear-gradient(#2a1647f2,#140b24f7);
+  padding:calc(env(safe-area-inset-top,0px) + 10px) max(env(safe-area-inset-right,0px),14px) calc(env(safe-area-inset-bottom,0px) + 8px) max(env(safe-area-inset-left,0px),14px);
+  align-items:stretch;justify-content:flex-start;text-align:left;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#room .rhead{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;width:min(1080px,100%);margin:0 auto 10px;flex:none}
+#room .rtitle{text-align:center;min-width:0}
+#room h1{margin:0;font-size:clamp(22px,5vh,38px);line-height:1;letter-spacing:.1em;padding-right:.1em}
+#room #rinfo{margin:5px 0 0;max-width:none;font:600 12px system-ui,sans-serif;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+#room .rbtn{height:36px;padding:0 14px;border-radius:18px;border:1px solid #ffffff3a;background:#0d0617cc;color:var(--ink);font:700 13px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;cursor:pointer;white-space:nowrap;transition:border-color .15s,background .15s}
+#room .rbtn:hover{border-color:var(--gold);background:#24113aee}
+#room #rleave{justify-self:start;padding-left:10px}
+#room #sh{justify-self:end;display:block;width:auto;margin:0;border-color:#ffd86b77;color:#ffe9b0;text-shadow:none;letter-spacing:0;box-shadow:none;background:#0d0617cc}
+#room #sh.hide{display:none!important}
+#room .rgrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;flex:1;min-height:0;width:min(1080px,100%);margin:0 auto}
+#room #teams{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:auto;margin:0;min-height:0}
+#room .tm{display:flex;flex-direction:column;min-width:0;min-height:0;overflow-y:auto;border-radius:16px;border:1px solid #c9993a77;padding:12px;background:var(--panel);box-shadow:inset 0 1px 0 #ffffff2e,0 12px 32px #000b;scrollbar-width:thin}
+#room .tm.a{border-color:#3d8bffaa;background:linear-gradient(#3d8bff26,transparent 42%),var(--panel)}
+#room .tm.b{border-color:#e8466faa;background:linear-gradient(#e8466f26,transparent 42%),var(--panel)}
+#room .tm h3{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 9px;font:800 clamp(15px,2.6vh,18px)/1.1 Georgia,"Palatino Linotype",serif}
 #room .tm.a h3{color:#9cc4ff}#room .tm.b h3{color:#ffa0b4}
-#room .pl{min-height:38px;border:1px solid #ffffff22;background:#ffffff0f;font-weight:600}
-#room .pl.empty{border-style:dashed;background:none}
+#room .tc{font:800 12px system-ui,sans-serif;padding:3px 9px;border-radius:11px;background:#ffffff1a;color:var(--ink)}
+#room .pl{display:flex;align-items:center;gap:6px;min-height:40px;margin:0 0 6px;padding:5px 10px;border-radius:12px;border:1px solid #ffffff22;background:#ffffff10;font:600 14px system-ui,sans-serif;text-align:left}
+#room .pl span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#room .pl.me{border-color:#ffe08a;background:linear-gradient(#ffd86b2a,#ffd86b0e);outline:0}
+#room .pl .yt{flex:none;font:800 10px system-ui,sans-serif;font-style:normal;padding:2px 7px;border-radius:9px;background:#ffd86b;color:#2a1204}
+#room .pl.empty{justify-content:center;border-style:dashed;border-color:#ffffff30;background:none;opacity:1;color:#8f80b8}
+#room .pl button{flex:none;height:28px;padding:0 12px;border-radius:14px;border:1px solid #ffe08a88;background:linear-gradient(#4fe0a0,#1f9a68);color:#fff;font:800 12px system-ui,sans-serif;cursor:pointer}
+#room .pl button.x{width:28px;padding:0;border-radius:50%;border-color:#ffb0b088;background:linear-gradient(#e0524a,#a82219)}
+#room .rside{display:flex;flex-direction:column;gap:12px;min-height:0}
+#room .rbox{border-radius:16px;border:1px solid #c9993a77;background:var(--panel);box-shadow:inset 0 1px 0 #ffffff2e,0 12px 32px #000b;padding:12px;min-width:0}
+#room #mapsel{width:auto;margin:0;text-align:left}
+#room .mhd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 8px}
+#room .mhd h2{margin:0;font:800 clamp(16px,2.8vh,20px)/1.1 Georgia,"Palatino Linotype",serif;color:var(--gold)}
+#room .mhd span{font:600 12px system-ui,sans-serif;color:var(--mute);text-align:right}
+#room #mapstrip{position:relative;display:flex;gap:8px;overflow-x:auto;padding:6px 6px 10px;margin:-4px -6px 0;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#ffd86b55 transparent}
+#room #mapstrip .mc{flex:none;width:clamp(104px,26vw,132px);scroll-snap-align:start;padding:0;border-radius:13px;border:2px solid #ffffff2c;background:#0b0614d0;color:var(--ink);cursor:pointer;overflow:hidden;text-align:center;transition:border-color .12s,box-shadow .12s}
+#room #mapstrip .mc:hover{border-color:#ffd86b88}
+#room #mapstrip .th{display:block;height:clamp(54px,12vh,80px);background:#1a0f2e center/cover no-repeat}
+#room #mapstrip .rnd .th{display:grid;place-items:center;font-size:28px;background:radial-gradient(circle at 50% 40%,#5a3fb8,#1a0f2e)}
+#room #mapstrip .nm{display:block;padding:6px 6px 7px;font:700 12px system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#room #mapstrip .mc.sel{border-color:#ffe08a;box-shadow:0 0 14px #ffd86b77}
+#room #mapstrip .mc.sel .nm{background:linear-gradient(#ffb04a,#e3541f);color:#fff}
+#room #mapsel.ro .mc{cursor:default;pointer-events:none}#room #mapsel.ro .mc:not(.sel){opacity:.5}
+#room #hc{display:flex;gap:8px;align-items:center;margin:0}
+#room #hc .seg{flex:1;min-width:0;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:0}
+#room #hc .seg button{padding:0;height:42px;border-radius:11px;border:2px solid #ffffff2c;background:#0b0614d0;color:var(--ink);font:800 15px Georgia,serif;cursor:pointer;transition:border-color .12s}
+#room #hc .seg button:hover{border-color:#ffd86b88}
+#room #hc .seg button.sel{border-color:#ffe08a;background:linear-gradient(#ffb04a,#e3541f 55%,#a82c16);color:#fff;box-shadow:0 0 14px #ff8a2a66,inset 0 2px 0 #fff5}
+#room #hc .tog{flex:none;height:42px;padding:0 12px;border-radius:11px;border:2px solid #ffffff2c;background:#0b0614d0;color:var(--ink);font:700 14px system-ui,sans-serif;white-space:nowrap;cursor:pointer}
+#room #hc .tog.on{border-color:#ffe08a;background:#3a2a10;color:#ffe9b0;box-shadow:0 0 10px #ffd86b55}
+#room .rdock{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:min(1080px,100%);margin:10px auto 0}
+#room .rdock .st{margin:0;min-height:18px;max-width:none;text-align:center;font-size:13px;color:var(--gold)}
+#room #rstart{width:min(420px,100%);height:50px;margin:0;padding:0 16px;font-size:18px;background:linear-gradient(#4fe0a0,#1f9a68 55%,#136b48);border-color:#ffe08a;text-shadow:0 1px 0 #0a3a26}
+#room #rstart:disabled{filter:grayscale(.6);cursor:default}
+#room button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+/* portrait phones: one column, Start stays docked at the bottom */
+@media (max-aspect-ratio:1/1){
+  #room{overflow-y:auto;overflow-x:hidden}
+  #room .rhead{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"l s" "t t";row-gap:6px;margin-bottom:8px}
+  #room #rleave{grid-area:l}#room #sh{grid-area:s}#room .rtitle{grid-area:t}
+  #room h1{font-size:clamp(24px,4.4vh,32px)}
+  #room #mapstrip .mc{width:clamp(120px,36vw,172px)}
+  #room #mapstrip .th{height:clamp(60px,15vh,120px)}
+  #room .rgrid{grid-template-columns:minmax(0,1fr);grid-auto-rows:min-content;flex:none;gap:10px}
+  #room .rside{gap:10px}
+  #room .tm,#room .rbox{padding:10px}
+  #room .pl{min-height:38px}
+  #room .rdock{position:sticky;bottom:0;margin-top:auto;padding-top:10px;background:linear-gradient(#0e061800,#0e0618e6 28%)}
+}
+@media (max-aspect-ratio:1/1) and (max-height:700px){
+  #room .tm,#room .rbox{padding:8px 10px}
+  #room .tm h3{margin-bottom:6px}
+  #room .pl{min-height:32px;margin-bottom:4px;padding:3px 8px;font-size:13px}
+  #room .pl button{height:24px}#room .pl button.x{width:24px}
+  #room #mapstrip .th{height:52px}#room #mapstrip .mc{width:104px}
+  #room #hc .seg button,#room #hc .tog{height:38px}
+  #room #rstart{height:44px}
+  #room .rgrid,#room .rside{gap:8px}
+}
+@media (max-height:480px) and (min-aspect-ratio:1/1){
+  #room .rhead{margin-bottom:6px}
+  #room h1{font-size:24px}
+  #room #rinfo{margin-top:3px}
+  #room .rgrid{gap:10px}#room #teams{gap:8px}#room .rside{gap:8px}
+  #room .tm,#room .rbox{padding:9px 10px}
+  #room .tm h3{margin-bottom:6px;font-size:14px}
+  #room .pl{min-height:30px;margin-bottom:4px;padding:3px 8px;font-size:13px}
+  #room .pl button{height:24px;font-size:11px}#room .pl button.x{width:24px}
+  #room .mhd{margin-bottom:5px}
+  #room #mapstrip .mc{width:108px}#room #mapstrip .th{height:52px}#room #mapstrip .nm{padding:4px 5px 5px;font-size:11px}
+  #room #hc .seg button,#room #hc .tog{height:36px}
+  #room .rdock{flex-direction:row;justify-content:center;gap:14px;margin-top:6px}
+  #room .rdock .st{flex:1;text-align:right;min-width:0}
+  #room #rstart{width:min(260px,50%);height:42px;font-size:16px;flex:none}
+}
+@media (prefers-reduced-motion:reduce){#room *{transition:none!important}}
 </style>
 </head>
 <body>
@@ -445,15 +521,22 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <p class="st"></p>
 </div>
 <div class="ov hide" id="room">
-  <h1 id="rt" style="font-size:clamp(26px,6vw,44px)">ROOM</h1>
-  <p id="rinfo" style="margin:0"></p>
-  <div id="teams"><div class="tm a" id="ta"></div><div class="tm b" id="tb"></div></div>
-  <div id="mapsel" class="hide"><div class="mhd"><b>Map</b><span id="mapnote"></span></div><div id="mapstrip"></div></div>
-  <div id="hc" class="hide"><div class="seg" id="rmodes"></div><button class="tog" id="rlk">&#128275; Open</button></div>
-  <button class="big on" id="rstart">Start match</button>
-  <button class="big alt hide" id="sh">Share invite link</button>
-  <p class="st"></p>
-  <button class="big" id="rleave" style="background:#ffffff22">Leave room</button>
+  <div class="rhead">
+    <button class="rbtn" id="rleave">&lsaquo; Leave</button>
+    <div class="rtitle"><h1 id="rt">ROOM</h1><p id="rinfo"></p></div>
+    <button class="rbtn hide" id="sh">Invite friends</button>
+  </div>
+  <div class="rgrid">
+    <div id="teams"><div class="tm a" id="ta"></div><div class="tm b" id="tb"></div></div>
+    <div class="rside">
+      <section id="mapsel" class="rbox hide" aria-label="Map"><div class="mhd"><h2>Map</h2><span id="mapnote"></span></div><div id="mapstrip"></div></section>
+      <section id="hc" class="rbox hide" aria-label="Match size"><div class="seg" id="rmodes"></div><button class="tog" id="rlk">&#128275; Open</button></section>
+    </div>
+  </div>
+  <div class="rdock">
+    <p class="st"></p>
+    <button class="big on" id="rstart">Start match</button>
+  </div>
 </div>
 <div id="net" class="hide"></div>
 <div class="ov hide" id="over">
@@ -1702,10 +1785,11 @@ function renderRoom(){
   $('rinfo').textContent=r.n+'v'+r.n+' \u00B7 '+(r.locked?'\u{1F512} Locked, nobody new can join':'Open to everyone');
   const mine=r.teams[0].some(p=>p.id===r.you)?0:1;
   [0,1].forEach(t=>{
-    const box=$(t?'tb':'ta');box.textContent='';box.appendChild(el('h3','',(t?'Team Red':'Team Blue')+' ('+r.teams[t].length+'/'+r.n+')'));
+    const box=$(t?'tb':'ta');box.textContent='';{const h=el('h3','',t?'Team Red':'Team Blue');h.appendChild(el('span','tc',r.teams[t].length+'/'+r.n));box.appendChild(h)}
     for(const p of r.teams[t]){
       const row=el('div','pl'+(p.id===r.you?' me':''));
       row.appendChild(el('span','',(p.id===r.host?'\u{1F451} ':'')+p.name+(p.away?' (away)':'')));
+      if(p.id===r.you)row.appendChild(el('i','yt','you'));
       if(host&&p.id!==r.you){const x=el('button','x','\u2715');x.onclick=()=>netSend({t:'kick',id:p.id});row.appendChild(x)}
       box.appendChild(row);
     }
