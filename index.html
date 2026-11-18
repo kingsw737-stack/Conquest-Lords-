@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#1a1038">
+<meta name="theme-color" content="#0b0614">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -126,6 +126,80 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 #selfp{position:fixed;right:250px;bottom:calc(env(safe-area-inset-bottom) + 112px);z-index:6;padding:12px 16px;font-size:16px;font-weight:800;letter-spacing:1px;color:#fff;border-radius:14px;border:2px solid #fff6;background:linear-gradient(#4fc46a,#1f7a3a);box-shadow:inset 0 2px 0 #fff5,0 0 14px #7be08aaa,0 4px 8px #000a;cursor:pointer}
 #tgtmsg{position:fixed;top:calc(env(safe-area-inset-top) + 84px);left:50%;transform:translateX(-50%);z-index:6;background:linear-gradient(#5a1230ee,#2a0a1cee);border:2px solid #ff5a7a;border-radius:12px;padding:6px 14px;font-weight:800;font-size:13px;letter-spacing:1px;white-space:nowrap;pointer-events:none;box-shadow:0 0 14px #ff5a7a88;animation:tgp .7s ease-in-out infinite alternate}
 @keyframes tgp{from{box-shadow:0 0 6px #ff5a7a66}to{box-shadow:0 0 18px #ff5a7acc}}
+/* ================= MAIN MENU v2 (art-driven) ================= */
+.ov h1{font-family:Cinzel,"Trajan Pro 3","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;font-weight:900;letter-spacing:.06em;background:linear-gradient(#fff6c4 6%,#ffc247 36%,#ff7a1f 66%,#c92a14);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #2a0b04) drop-shadow(0 -1px 0 #2a0b04) drop-shadow(1.5px 0 0 #2a0b04) drop-shadow(-1.5px 0 0 #2a0b04) drop-shadow(0 6px 14px #000c)}
+#online,#lobby,#room{background:linear-gradient(rgba(14,6,24,.8),rgba(14,6,24,.94)),url(menu-bg.webp) 50% 40%/cover no-repeat,#0e0618}
+.big{border:2px solid #ffd86bb0;border-radius:12px;background:linear-gradient(#ffb04a,#e3541f 55%,#b3321a);text-shadow:0 1px 0 #3a0e05;font-weight:800;letter-spacing:.02em;box-shadow:inset 0 2px 0 #fff6,inset 0 -3px 0 #0004,0 4px 12px #0009;transition:transform .12s,filter .12s}
+.big:hover{filter:brightness(1.1)}.big:active{transform:translateY(2px)}.big:focus-visible,.tog:focus-visible,.seg button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.big.alt{background:linear-gradient(#8f7bff,#5a37c4 55%,#3b2394)}
+.big.on{background:linear-gradient(#4fe0a0,#1f9a68 55%,#136b48)}
+.fld{border-color:#ffd86b66;background:#0b0614dd}
+.fld:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px #ffd86b44}
+.tm{background:#12081ccc}
+
+#menu{padding:calc(env(safe-area-inset-top,0px) + clamp(10px,3.2vh,30px)) max(env(safe-area-inset-right,0px),18px) calc(env(safe-area-inset-bottom,0px) + clamp(10px,3vh,28px)) max(env(safe-area-inset-left,0px),18px);overflow:hidden;justify-content:space-between;align-items:stretch;background:#0b0614;isolation:isolate}
+#menu .mbg,#menu .mshade,#menu #embers{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#menu .mbg{z-index:0;overflow:hidden;background:radial-gradient(ellipse at 50% 75%,#6a1d12,#1d0c2c 55%,#0b0614)}
+#menu .mbg b{position:absolute;inset:-2%;display:block;transition:transform .5s ease-out}
+#menu .mbg i{position:absolute;inset:0;display:block;background:url(menu-bg.webp) 50% 42%/cover no-repeat;opacity:0;transition:opacity 1.2s ease;animation:mdrift 40s ease-in-out infinite alternate;will-change:transform}
+#menu.art .mbg i{opacity:1}
+@keyframes mdrift{from{transform:scale(1.02)}to{transform:scale(1.06) translate3d(-.8%,.4%,0)}}
+#menu .mshade{z-index:1;background:linear-gradient(rgba(10,4,18,.78),rgba(10,4,18,0) 36%),linear-gradient(0deg,rgba(10,4,18,.92),rgba(10,4,18,0) 46%),radial-gradient(ellipse at 50% 46%,transparent 52%,rgba(8,3,14,.6))}
+#menu #embers{z-index:2}
+#menu .mtop,#menu .mbot{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center}
+#menu .mtop:before{content:"";position:absolute;inset:-25% -12%;z-index:-1;background:radial-gradient(ellipse,rgba(255,120,30,.26),transparent 66%);animation:mpulse 5s ease-in-out infinite alternate;pointer-events:none}
+@keyframes mpulse{from{opacity:.55}to{opacity:1}}
+#menu .logo{margin:0;font-size:clamp(34px,min(8.2vw,15vh),104px);line-height:.96;letter-spacing:.07em;white-space:nowrap}
+#menu .tag{margin:8px 0 0;max-width:min(780px,92vw);text-wrap:balance;font:italic 600 clamp(13px,1.6vh + .7vw,19px)/1.35 Georgia,"Palatino Linotype",serif;color:#ffeccd;text-shadow:0 1px 0 #000,0 2px 10px #000,0 0 18px #000a}
+#menu .mbot{gap:10px;width:100%}
+#menu .mbtns{display:flex;gap:12px;justify-content:center;width:100%}
+#menu .mb{position:relative;flex:1 1 0;max-width:310px;min-width:0;display:flex;align-items:center;gap:12px;padding:9px 14px 9px 10px;text-align:left;border-radius:14px;border:2px solid #c9993a;background:linear-gradient(#2d1744f2,#160a26f5);color:#fff;cursor:pointer;box-shadow:inset 0 1px 0 #ffffff40,inset 0 -3px 0 #0006,0 6px 18px #000b;transition:transform .15s,border-color .15s,box-shadow .15s}
+#menu .mb:hover{transform:translateY(-2px);border-color:#ffe08a;box-shadow:inset 0 1px 0 #ffffff55,inset 0 -3px 0 #0006,0 0 22px #ffb04a66,0 8px 18px #000b}
+#menu .mb:active{transform:translateY(1px)}
+#menu .mb:focus-visible,#menu .mtools button:focus-visible,#menu .hx:focus-visible{outline:3px solid #fff;outline-offset:3px}
+#menu .mb .ico{flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;box-shadow:inset 0 1px 0 #ffffff55,inset 0 -2px 0 #0005}
+#menu .mb svg{width:25px;height:25px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 0 #0006)}
+#menu .mb .t{min-width:0}
+#menu .mb b{display:block;font:800 clamp(15px,2.1vh + .5vw,19px)/1.15 Georgia,"Palatino Linotype",serif;letter-spacing:.01em;text-shadow:0 1px 0 #0008;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#menu .mb .sub{display:block;margin-top:2px;font:500 12px/1.25 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#cdbdf0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#menu .mb.prime{border-color:#ffe08a;background:linear-gradient(#ffb04a,#e3541f 55%,#a82c16);box-shadow:inset 0 2px 0 #fff7,inset 0 -3px 0 #0005,0 0 26px #ff8a2a77,0 6px 18px #000b}
+#menu .mb.prime .sub{color:#ffe8c4}
+#menu .mb.prime .ico{background:#3a0e0555}
+#menu .mb.net .ico{background:linear-gradient(#4fe0c8,#17806f)}
+#menu .mb.loc .ico{background:linear-gradient(#a58bff,#5a37c4)}
+#menu .mhint{margin:0;max-width:min(520px,92vw);font-size:12px;line-height:1.35;color:#ffeccd;text-shadow:0 1px 3px #000,0 0 10px #000}
+#menu .mtools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+#menu .mtools button{height:34px;padding:0 15px;border-radius:17px;border:1px solid #ffffff44;background:#0d0617d6;color:#eadfff;font:600 13px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;cursor:pointer;transition:border-color .15s,background .15s}
+#menu .mtools button:hover{border-color:#ffd86b;background:#24113aee}
+#menu .howto{position:fixed;inset:0;z-index:6;display:grid;place-items:center;padding:16px;background:rgba(6,2,12,.76)}
+#menu .hpanel{width:min(560px,100%);max-height:88vh;overflow-y:auto;padding:18px 20px 16px;text-align:left;border-radius:16px;border:2px solid #c9993a;background:linear-gradient(#2d1744,#150a25);box-shadow:inset 0 1px 0 #ffffff40,0 16px 40px #000c}
+#menu .hpanel h2{margin:0 0 6px;font:800 24px/1.1 Georgia,"Palatino Linotype",serif;color:#ffd86b}
+#menu .hpanel p{margin:0 0 12px;color:#d9ccff;font-size:14px;line-height:1.45}
+#menu .hpanel dl{display:grid;grid-template-columns:auto 1fr;gap:7px 16px;margin:0 0 14px;font-size:14px;line-height:1.35}
+#menu .hpanel dt{color:#ffd86b;font-weight:700;white-space:nowrap}
+#menu .hpanel dd{margin:0;color:#efe8ff}
+#menu .hx{display:block;margin:0 0 0 auto;padding:9px 22px;border-radius:11px;border:2px solid #ffe08a;background:linear-gradient(#ffb04a,#e3541f 55%,#a82c16);color:#fff;font:800 15px Georgia,serif;text-shadow:0 1px 0 #3a0e05;cursor:pointer}
+/* one orchestrated entrance each time the menu opens */
+#menu .logo{animation:mrise .9s cubic-bezier(.2,.8,.2,1) backwards}
+#menu .tag{animation:mrise .8s .2s cubic-bezier(.2,.8,.2,1) backwards}
+#menu .mb{animation:mrise .6s cubic-bezier(.2,.8,.2,1) backwards}
+#menu .mb:nth-child(1){animation-delay:.35s}#menu .mb:nth-child(2){animation-delay:.45s}#menu .mb:nth-child(3){animation-delay:.55s}
+@keyframes mrise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+/* portrait phones / narrow windows: two-line title, stacked buttons */
+@media (max-aspect-ratio:1/1),(max-width:620px){
+  #menu .logo{font-size:min(15vw,11vh);white-space:normal;line-height:1}
+  #menu .logo span{display:block}
+  #menu .mbtns{flex-direction:column;align-items:center}
+  #menu .mb{width:min(340px,90vw);flex:none;max-width:none}
+}
+/* short landscape phones: tighten everything */
+@media (max-height:480px) and (min-aspect-ratio:1/1){
+  #menu .tag .long{display:none}
+  #menu .mb{padding:7px 12px 7px 8px}#menu .mb .ico{width:36px;height:36px}#menu .mb svg{width:22px;height:22px}#menu .mb .sub{font-size:11px}
+  #menu .mtools button{height:30px;font-size:12px}
+  #menu .hpanel dl{font-size:13px;gap:5px 14px;margin-bottom:10px}#menu .hpanel p{display:none}#menu .hpanel{padding:14px 18px 12px}#menu .hpanel h2{font-size:20px;margin-bottom:8px}
+}
+@media (prefers-reduced-motion:reduce){#menu *,#menu *:before{animation:none!important;transition:none!important}#menu #embers{display:none}}
 </style>
 </head>
 <body>
@@ -183,14 +257,40 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 </div>
 
 <div class="ov" id="menu">
-  <h1>ARCANE<br>WARFARE</h1>
-  <p>Turn-based wizard artillery. Blast the terrain, read the wind, be the last mage standing.</p>
-  <button class="big" id="p1">Play vs AI</button>
-  <button class="big on" id="p3">Play Online</button>
-  <button class="big alt" id="p2">Local 2-Player</button>
-  <p id="iosHint" class="hide" style="font-size:12px;opacity:.75;max-width:320px;margin:4px 0 0">iPhone tip: Safari can't go fullscreen. Tap Share &rarr; <b>Add to Home Screen</b>, then open the game from the icon for true fullscreen. Turn your phone sideways to play.</p>
-  <div id="snd"><button id="mu" aria-label="Sound effects">🔊 Sound</button><button id="mm" aria-label="Music">🎵 Music</button></div>
-  <small>Move: &larr; &rarr; / A D &middot; Jump: W (hold &larr; &rarr; for a side jump) &middot; Enter / Backspace: jump forward / back &middot; Aim: &uarr; &darr; or drag on the battlefield &middot; Power: Q E &middot; Fire: Space (hold to fly with the Jetpack) &middot; Spells: 1&ndash;6 &middot; Zoom: wheel<br>On phones use the on-screen buttons and sliders.</small>
+  <div class="mbg" aria-hidden="true"><b><i></i></b></div>
+  <div class="mshade" aria-hidden="true"></div>
+  <canvas id="embers" aria-hidden="true"></canvas>
+  <div class="mtop">
+    <h1 class="logo"><span>ARCANE</span> <span>WARFARE</span></h1>
+    <p class="tag"><span class="long">Turn-based wizard artillery. </span>Blast the terrain, read the wind, be the last mage standing.</p>
+  </div>
+  <div class="mbot">
+    <p id="iosHint" class="hide mhint">iPhone tip: Safari can't go fullscreen. Tap Share &rarr; <b>Add to Home Screen</b>, then open the game from the icon for true fullscreen. Turn your phone sideways to play.</p>
+    <div class="mbtns">
+      <button class="mb prime" id="p1"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 7.5 14h9z"/><path d="M4 17.5c2.4-1.4 5.2-2 8-2s5.6.6 8 2"/><path d="M6.5 20.5h11"/></svg></span><span class="t"><b>Play vs AI</b><span class="sub">Duel the AI sorceress</span></span></button>
+      <button class="mb net" id="p3"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5S9.4 5.9 12 3.5z"/></svg></span><span class="t"><b>Play online</b><span class="sub">Find a rival anywhere</span></span></button>
+      <button class="mb loc" id="p2"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8.5" r="3"/><circle cx="16.5" cy="8.5" r="3"/><path d="M2.5 19c.4-3.2 2.7-5 5.5-5s5.1 1.8 5.5 5M12.5 14.4c.9-.3 2-.4 4-.4 2.8 0 5 1.8 5.5 5"/></svg></span><span class="t"><b>Local 2-player</b><span class="sub">Two mages, one screen</span></span></button>
+    </div>
+    <div class="mtools"><button id="mu" aria-label="Sound effects">🔊 Sound</button><button id="mm" aria-label="Music">🎵 Music</button><button id="hw" aria-haspopup="dialog">How to play</button></div>
+  </div>
+  <div class="howto hide" id="howto" role="dialog" aria-modal="true" aria-labelledby="hwt">
+    <div class="hpanel">
+      <h2 id="hwt">How to play</h2>
+      <p>Take turns casting spells across the battlefield. Craters tear holes in the ground, wind bends every shot, and the water is deadly. The last mage standing wins.</p>
+      <dl>
+        <dt>Move</dt><dd>&larr; &rarr; or A D</dd>
+        <dt>Jump</dt><dd>W (hold &larr; &rarr; for a side jump)</dd>
+        <dt>Hop forward / back</dt><dd>Enter / Backspace</dd>
+        <dt>Aim</dt><dd>&uarr; &darr; or drag on the battlefield</dd>
+        <dt>Power</dt><dd>Q / E</dd>
+        <dt>Fire</dt><dd>Space (hold to fly with the Jetpack)</dd>
+        <dt>Spells</dt><dd>1&ndash;7</dd>
+        <dt>Zoom</dt><dd>Mouse wheel</dd>
+        <dt>On phones</dt><dd>Use the on-screen buttons and sliders</dd>
+      </dl>
+      <button class="hx" id="hx">Got it</button>
+    </div>
+  </div>
 </div>
 <div class="ov hide" id="online">
   <h1 style="font-size:clamp(30px,8vw,54px)">ONLINE</h1>
@@ -1496,9 +1596,54 @@ let last=0,acc=0;
 function loop(ts){
   const dt=Math.min(.05,(ts-last)/1000||0);last=ts;acc+=dt;
   while(acc>=1/120){update(1/120);acc-=1/120}
-  draw();hud();requestAnimationFrame(loop);
+  if(state!=='menu')draw();hud();requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
+</script>
+<script>
+/* Main-menu polish: art fade-in, how-to panel, mouse parallax, ember sparks. Pure presentation: no game logic. */
+(function(){
+  const m=document.getElementById('menu');if(!m)return;
+  const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* the dark gradient stays until menu-bg.webp has loaded (or forever if the file is missing) */
+  const im=new Image();im.onload=()=>m.classList.add('art');im.src='menu-bg.webp';
+  /* how to play */
+  const ht=document.getElementById('howto'),hx=document.getElementById('hx');
+  const openH=v=>{ht.classList.toggle('hide',!v);if(v)hx.focus({preventScroll:true})};
+  document.getElementById('hw').onclick=()=>openH(true);hx.onclick=()=>openH(false);
+  ht.addEventListener('pointerdown',e=>{if(e.target===ht)openH(false)});
+  addEventListener('keydown',e=>{if(e.code==='Escape'&&!ht.classList.contains('hide'))openH(false)});
+  /* gentle parallax on desktop */
+  if(!calm&&matchMedia('(hover:hover) and (pointer:fine)').matches){
+    const layer=m.querySelector('.mbg b');let q=0,px=0,py=0;
+    m.addEventListener('pointermove',e=>{px=e.clientX/innerWidth*2-1;py=e.clientY/innerHeight*2-1;if(!q)q=requestAnimationFrame(()=>{q=0;layer.style.transform='translate3d('+(px*-14).toFixed(1)+'px,'+(py*-9).toFixed(1)+'px,0)'})});
+  }
+  /* embers drifting up over the art */
+  if(calm)return;
+  const cv=document.getElementById('embers'),g=cv.getContext('2d');
+  const spr=c=>{const s=document.createElement('canvas');s.width=s.height=32;const x=s.getContext('2d'),r=x.createRadialGradient(16,16,0,16,16,16);r.addColorStop(0,'#fff');r.addColorStop(.25,c);r.addColorStop(1,'rgba(255,60,0,0)');x.fillStyle=r;x.fillRect(0,0,32,32);return s};
+  const SP=[spr('#ffd36b'),spr('#ff8a2a'),spr('#ff5a1a')];
+  let W=0,H=0,D=1,P=[],on=false,t0=0;
+  const mk=init=>{const s=Math.random();return{x:Math.random()*W,y:init?Math.random()*H:H+12,r:1.4+s*s*4.5,vy:22+s*70,vx:(Math.random()-.4)*16,ph:Math.random()*6.28,fl:2+Math.random()*4,sp:SP[(Math.random()*3)|0]}};
+  function size(){D=Math.min(devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;cv.width=W*D|0;cv.height=H*D|0;const n=Math.round(Math.min(70,Math.max(26,W*H/17000)));while(P.length<n)P.push(mk(true));P.length=n}
+  function frame(ts){
+    if(m.classList.contains('hide')){on=false;return}
+    const dt=Math.min(.05,(ts-t0)/1000||0),s=ts/1000;t0=ts;
+    g.setTransform(D,0,0,D,0,0);g.clearRect(0,0,W,H);g.globalCompositeOperation='lighter';
+    for(const p of P){
+      p.y-=p.vy*dt;p.x+=(p.vx+Math.sin(s*1.3+p.ph)*14)*dt;
+      if(p.y<-14){Object.assign(p,mk(false))}
+      const k=Math.min(1,Math.max(0,p.y/H));
+      g.globalAlpha=Math.max(0,(.2+.8*k)*(.6+.4*Math.sin(s*p.fl+p.ph)));
+      g.drawImage(p.sp,p.x-p.r*2,p.y-p.r*2,p.r*4,p.r*4);
+    }
+    requestAnimationFrame(frame);
+  }
+  function wake(){if(on||m.classList.contains('hide'))return;on=true;t0=0;size();requestAnimationFrame(frame)}
+  addEventListener('resize',()=>{if(on)size()});
+  new MutationObserver(wake).observe(m,{attributes:true,attributeFilter:['class']});
+  wake();
+})();
 </script>
 </body>
 </html>
