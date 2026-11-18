@@ -218,7 +218,7 @@ wss.on('connection', ws => {
         ws.authing = false;
         if (ws.readyState !== 1 || ws.room) return;
         /* the name comes from the signed-in account, not from the client */
-        const n = clean(p.name || (p.email ? p.email.split('@')[0] : ''));
+        const n = clean(p.name) || clean(p.email ? p.email.split('@')[0] : '') || 'Wizard';
         if (!n) return send(ws, { t: 'err', msg: 'Your account has no wizard name. Sign out and sign up again.' });
         /* one connection per account: take over an idle old one, refuse if that account is mid-match */
         for (const o of wss.clients) {
