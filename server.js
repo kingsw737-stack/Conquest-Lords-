@@ -33,6 +33,13 @@ const newCode = () => { for (; ;) { let c = ''; for (let i = 0; i < 4; i++) c +=
 const clean = n => String(n || '').replace(/[^\w \-.]/g, '').trim().slice(0, 14);
 const send = (ws, o) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); };
 const GRACE = 30000, MAXN = 5;
+/* Host-picked map: core picks the map from the seed (Core.mapFor), so find a seed that gives the chosen map.
+   Returns null when the id is not a real map. Core.Game and the client need no change. */
+const seedForMap = id => {
+  if (typeof id !== 'string' || !id || id.length > 40) return null;
+  for (let i = 0; i < 4000; i++) { const s = (Math.random() * 0xffffffff) >>> 0; try { if (Core.mapFor(s).id === id) return s; } catch (e) { return null; } }
+  return null;
+};
 let lobbyDirty = true; const dirty = () => { lobbyDirty = true; };
 const roomsMsg = () => ({
   t: 'rooms', list: [...rooms.values()].slice(0, 60).map(r => ({
@@ -44,7 +51,7 @@ const roomsMsg = () => ({
 class Room {
   constructor(n, locked) {
     this.code = newCode(); this.n = n; this.locked = locked; this.players = []; this.hostId = 0; this.nid = 1;
-    this.phase = 'lobby'; this.game = null; this.loop = null; this.order = [];
+    this.phase = 'lobby'; this.game = null; this.loop = null; this.order = []; this.map = '';   /* '' = random */
     rooms.set(this.code, this); dirty();
   }
   team(t) { return this.players.filter(p => p.team === t); }
@@ -61,7 +68,7 @@ class Room {
   }
   info(id) {
     return {
-      t: 'room', code: this.code, n: this.n, locked: this.locked, host: this.hostId, phase: this.phase, you: id,
+      t: 'room', code: this.code, n: this.n, locked: this.locked, host: this.hostId, phase: this.phase, you: id, map: this.map,
       teams: [0, 1].map(t => this.team(t).map(p => ({ id: p.id, name: p.name, away: !p.ws })))
     };
   }
@@ -83,7 +90,7 @@ class Room {
     /* alternate the teams in turn order: A1, B1, A2, B2 ... */
     this.order = []; for (let i = 0; i < A.length; i++) this.order.push(A[i], B[i]);
     this.order.forEach((q, i) => { q.idx = i; q.out = false; q.gone = false; });
-    this.phase = 'game'; this.seed = (Math.random() * 0xffffffff) >>> 0;
+    this.phase = 'game'; this.seed = (this.map && seedForMap(this.map)) ?? ((Math.random() * 0xffffffff) >>> 0);
     this.game = new Core.Game({ seed: this.seed, players: this.order.map(q => ({ name: q.name, team: q.team })) });
     for (const w of this.game.wiz) w.grounded = true;
     this.evBuf = []; this.order.forEach(q => this.sendStart(q));
@@ -91,7 +98,7 @@ class Room {
     this.loop = setInterval(() => this.tick(), 16); this.sync();
   }
   sendStart(p) {
-    send(p.ws, { t: 'start', code: this.code, token: p.token, idx: p.idx, seed: this.seed, names: this.order.map(x => x.name), teams: this.order.map(x => x.team), carves: this.game.carves });
+    send(p.ws, { t: 'start', code: this.code, token: p.token, idx: p.idx, seed: this.seed, map: this.map, names: this.order.map(x => x.name), teams: this.order.map(x => x.team), carves: this.game.carves });
   }
   tick() {
     const g = this.game, now = Date.now(); const dt = Math.min(.1, (now - this.last) / 1000); this.last = now;
@@ -197,6 +204,12 @@ wss.on('connection', ws => {
         if (n >= Math.max(r.team(0).length, r.team(1).length)) { r.n = n; r.sync(); }
         break;
       }
+      case 'map': {
+        if (!host || r.phase !== 'lobby') break;
+        const id = typeof m.id === 'string' ? m.id : '';
+        if (id === '' || seedForMap(id) !== null) { r.map = id; r.sync(); }
+        break;
+      }
       case 'lock': if (host) { r.locked = !!m.locked; r.sync(); } break;
       case 'kick': {
         if (!host || r.phase !== 'lobby') break;
@@ -204,7 +217,12 @@ wss.on('connection', ws => {
         if (t && t !== me) { send(t.ws, { t: 'left', msg: 'The host removed you from the room.' }); const tw = t.ws; r.remove(t); send(tw, roomsMsg()); }
         break;
       }
-      case 'start': if (host) r.start(ws); break;
+      case 'start':
+        if (host) {
+          if (r.phase === 'lobby' && typeof m.map === 'string' && (m.map === '' || seedForMap(m.map) !== null)) r.map = m.map;   /* the pick travels with Start too */
+          r.start(ws);
+        }
+        break;
       case 'act': if (r && r.phase === 'game' && r.game && r.game.state !== 'over' && me && !me.out && m.m && typeof m.m === 'object') r.game.act(me.idx, m.m); break;
       case 'leave': leave(ws); send(ws, roomsMsg()); break;
     }

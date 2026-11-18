@@ -299,6 +299,20 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   #lobby .rempty::before{display:none}
 }
 @media (prefers-reduced-motion:reduce){#lobby *{animation:none!important;transition:none!important}}
+/* room: map picker (host taps a picture to choose the battlefield) */
+#mapsel{width:min(580px,94vw);margin:2px auto 6px;text-align:left}
+#mapsel .mhd{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 4px;font:800 16px Georgia,serif;color:#ffd86b}
+#mapsel .mhd span{font:600 12px system-ui,sans-serif;color:#b9a8f0}
+#mapstrip{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#ffd86b55 transparent}
+#mapstrip .mc{flex:none;width:124px;scroll-snap-align:start;padding:0;border-radius:13px;border:2px solid #ffffff2c;background:#0b0614d0;color:#eadfff;cursor:pointer;overflow:hidden;text-align:center;transition:border-color .12s,box-shadow .12s}
+#mapstrip .mc:hover{border-color:#ffd86b88}
+#mapstrip .th{display:block;height:74px;background:#1a0f2e center/cover no-repeat}
+#mapstrip .rnd .th{display:grid;place-items:center;font-size:30px;background:radial-gradient(circle at 50% 40%,#5a3fb8,#1a0f2e)}
+#mapstrip .nm{display:block;padding:6px 6px 7px;font:700 12px system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mapstrip .mc.sel{border-color:#ffe08a;box-shadow:0 0 14px #ffd86b77}
+#mapstrip .mc.sel .nm{background:linear-gradient(#ffb04a,#e3541f);color:#fff}
+#mapsel.ro .mc{cursor:default;pointer-events:none}#mapsel.ro .mc:not(.sel){opacity:.5}
+#mapstrip .mc:focus-visible{outline:3px solid #fff;outline-offset:2px}
 /* room screen: same panel language */
 #room .tm{border-radius:14px;background:linear-gradient(#24113af4,#120a20f6);box-shadow:inset 0 1px 0 #ffffff30,0 8px 24px #000a}
 #room .tm h3{font:800 16px Georgia,serif;margin-bottom:8px}
@@ -434,6 +448,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   <h1 id="rt" style="font-size:clamp(26px,6vw,44px)">ROOM</h1>
   <p id="rinfo" style="margin:0"></p>
   <div id="teams"><div class="tm a" id="ta"></div><div class="tm b" id="tb"></div></div>
+  <div id="mapsel" class="hide"><div class="mhd"><b>Map</b><span id="mapnote"></span></div><div id="mapstrip"></div></div>
   <div id="hc" class="hide"><div class="seg" id="rmodes"></div><button class="tog" id="rlk">&#128275; Open</button></div>
   <button class="big on" id="rstart">Start match</button>
   <button class="big alt hide" id="sh">Share invite link</button>
@@ -1530,7 +1545,7 @@ function onNet(m){
 }
 function startOnline(m){
   mode='online';inMatch=true;me=m.idx;myTeam=m.teams[me];gotSnap=false;overShown=false;lastDir=0;lastThr=0;
-  useMap(Core.mapFor(m.seed));
+  useMap((m.map&&typeof MAPS!=='undefined'&&MAPS.find(x=>x.id===m.map))||Core.mapFor(m.seed));   /* host-picked map (m.map) wins; otherwise the server's seeded random one */
   for(const c of m.carves)carve(c[0],c[1],c[2]);
   for(const g of (m.grows||[])){Core.genRise(mask,g,0,1);growLog.push(g);paintGrowFull(g)}   /* late join: land that already rose (server sends game.growLog as m.grows) */
   const rank=[0,0];
@@ -1659,6 +1674,27 @@ function renderRooms(list){
     row.appendChild(j);box.appendChild(row);
   }
 }
+let selMap='',selRoom='';
+const mapName=m=>m.name||String(m.id).replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+function buildMaps(){
+  const st=$('mapstrip');if(st.dataset.b||typeof MAPS==='undefined'||!MAPS.length)return;st.dataset.b='1';
+  const add=(id,name,img)=>{const b=el('button','mc'+(id?'':' rnd'));b.dataset.id=id;b.title=name;
+    const th=el('span','th',id?'':'\u{1F3B2}');if(id)th.style.backgroundImage='url("'+img+'")';
+    b.appendChild(th);b.appendChild(el('span','nm',name));b.onclick=()=>chooseMap(id);st.appendChild(b)};
+  add('','Random');for(const m of MAPS)add(m.id,mapName(m),m.img);
+}
+function chooseMap(id){if(!roomS||roomS.host!==roomS.you)return;selMap=id;netSend({t:'map',id});updMaps()}
+function updMaps(){
+  const box=$('mapsel');buildMaps();
+  if(roomS&&roomS.code!==selRoom){selRoom=roomS.code;selMap=''}
+  const host=!!roomS&&roomS.host===roomS.you,has=!!$('mapstrip').children.length;
+  if(host&&roomS.map!==undefined)selMap=roomS.map||'';
+  box.classList.toggle('hide',!has||(!host&&roomS.map===undefined));
+  box.classList.toggle('ro',!host);$('mapnote').textContent=host?'Tap a picture to choose':'Chosen by the host';
+  const cur=host?selMap:(roomS&&roomS.map)||'';
+  const st=$('mapstrip');let on=null;for(const b of st.children){const f=b.dataset.id===cur;b.classList.toggle('sel',f);if(f)on=b}
+  if(on&&st.dataset.cur!==cur&&!box.classList.contains('hide')){st.dataset.cur=cur;st.scrollLeft=on.offsetLeft-(st.clientWidth-on.offsetWidth)/2}   /* bring the chosen picture into view */
+}
 function renderRoom(){
   const r=roomS;if(!r)return;
   const host=r.host===r.you;
@@ -1679,6 +1715,7 @@ function renderRoom(){
       box.appendChild(row);
     }
   });
+  updMaps();
   $('hc').classList.toggle('hide',!host);setSeg($('rmodes'),r.n);lockTxt($('rlk'),r.locked);
   const a=r.teams[0].length,b=r.teams[1].length,ok=a>0&&a===b;
   $('rstart').classList.toggle('hide',!host);$('rstart').disabled=!ok;$('rstart').style.opacity=ok?1:.5;
@@ -1706,9 +1743,9 @@ function initOnlineUI(){
     setStatus('Joining\u2026');netSend({t:'join',code});
   };
   $('lback').onclick=()=>{leaveOnline();show(null);$('menu').classList.remove('hide')};
-  $('rleave').onclick=()=>{netSend({t:'leave'});roomS=null;show('lobby');setStatus('')};
+  $('rleave').onclick=()=>{netSend({t:'leave'});roomS=null;selMap='';show('lobby');setStatus('')};
   $('rlk').onclick=()=>{if(roomS)netSend({t:'lock',locked:!roomS.locked})};
-  $('rstart').onclick=()=>netSend({t:'start'});
+  $('rstart').onclick=()=>netSend(selMap?{t:'start',map:selMap}:{t:'start'});
   $('sh').onclick=()=>{
     if(!roomS)return;const url=location.origin+'/?room='+roomS.code;
     if(navigator.share)navigator.share({title:'Arcane Warfare',text:'Join my wizard battle!',url}).catch(()=>{});
