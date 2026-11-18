@@ -410,6 +410,47 @@ body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
   #room #rstart{width:min(260px,50%);height:42px;font-size:16px;flex:none}
 }
 @media (prefers-reduced-motion:reduce){#room *{transition:none!important}}
+
+.gate{overflow-y:auto;justify-content:safe center;gap:14px;background:radial-gradient(ellipse at 50% 75%,#6a1d12,#1d0c2c 55%,#0b0614);padding:calc(env(safe-area-inset-top,0px) + 14px) max(env(safe-area-inset-right,0px),16px) calc(env(safe-area-inset-bottom,0px) + 14px) max(env(safe-area-inset-left,0px),16px)}
+.gate .gbg,.gate .gsh{position:fixed;inset:0;pointer-events:none}
+.gate .gbg{z-index:0;background:var(--menuart) 50% 42%/cover no-repeat;animation:mdrift 40s ease-in-out infinite alternate;will-change:transform}
+.gate .gsh{z-index:1;background:linear-gradient(rgba(10,4,18,.72),rgba(10,4,18,.1) 38%),linear-gradient(0deg,rgba(10,4,18,.88),rgba(10,4,18,0) 52%),radial-gradient(ellipse at 50% 46%,transparent 45%,rgba(8,3,14,.66))}
+.gate .ghead,.gate .gcard{position:relative;z-index:2}
+.gate .ghead{text-align:center;flex:none}
+.gate .ghead:before{content:"";position:absolute;inset:-34% -26%;z-index:-1;background:radial-gradient(ellipse,rgba(8,3,16,.82) 0,rgba(8,3,16,.55) 38%,transparent 70%),radial-gradient(ellipse,rgba(255,120,30,.2),transparent 66%);pointer-events:none}
+.glogo{font:900 clamp(32px,min(9vw,11vh),76px)/.98 Georgia,"Palatino Linotype",serif;letter-spacing:.07em;background:linear-gradient(#fff3a8,#ff9a3c 55%,#e0408a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 8px #000b)}
+.gate .gtag{margin:8px auto 0;max-width:min(420px,88vw);font:italic 600 clamp(13px,1.5vh + .6vw,17px)/1.35 Georgia,"Palatino Linotype",serif;color:#ffeccd;text-shadow:0 1px 0 #000,0 2px 10px #000}
+.gcard{width:min(400px,92vw);padding:16px 16px 12px;text-align:center;border-radius:18px;border:2px solid #c9993a;background:linear-gradient(#2d1744ee,#160a26f2);box-shadow:inset 0 1px 0 #ffffff40,0 16px 44px #000c,0 0 34px #ff8a2a26;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:grise .6s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes grise{from{opacity:0;transform:translateY(14px)}}
+.gcard h2{margin:0 0 4px;font:800 22px/1.15 Georgia,"Palatino Linotype",serif;color:#ffd86b;text-shadow:0 1px 0 #000a}
+.gcard p.gp{margin:0 0 12px;color:#d9ccff;font-size:13.5px;line-height:1.4;max-width:none}
+.gtabs{display:flex;gap:3px;padding:3px;margin-bottom:12px;border-radius:13px;background:#0b0620b8;border:1px solid #ffffff22}
+.gtabs button{flex:1;padding:9px 6px;border:0;border-radius:10px;background:transparent;color:#cdbdf0;font:800 14px Georgia,"Palatino Linotype",serif;cursor:pointer;transition:background .15s,color .15s}
+.gtabs button.on{color:#fff;text-shadow:0 1px 0 #3a0e05;background:linear-gradient(#ffb04a,#e3541f 55%,#a82c16);box-shadow:inset 0 1px 0 #fff7,0 2px 8px #000a}
+.gcard .gg{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:0;padding:11px;border-radius:12px;border:2px solid #fff8;background:#fff;color:#222;font:700 15px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;cursor:pointer;box-shadow:inset 0 -3px 0 #0002,0 4px 10px #0008}
+.gcard .gg:active{transform:translateY(2px)}
+.gcard .gg svg{width:20px;height:20px;flex:none}
+.gor{display:flex;align-items:center;gap:10px;margin:11px 0;color:#a998d8;font:700 11px system-ui,sans-serif;letter-spacing:.12em}
+.gor:before,.gor:after{content:"";flex:1;height:1px;background:#ffffff2e}
+.gf{display:flex;flex-direction:column;gap:8px}
+.gcard .fld{width:100%;margin:0;padding:12px 14px;text-align:left;font-size:16px;text-transform:none;letter-spacing:0;border-radius:12px;border:1.5px solid #ffffff33;background:#0b0620d9}
+.gcard .fld:focus{outline:none;border-color:#ffd86b;box-shadow:0 0 0 3px #ffd86b33}
+.gcard .fld.wn{text-align:center;font:700 22px Georgia,serif;letter-spacing:.04em;padding:14px}
+.gcard .big{width:100%;margin:10px 0 0;padding:13px;font:800 17px Georgia,"Palatino Linotype",serif;text-shadow:0 1px 0 #0006;border-color:#ffe08a;background:linear-gradient(#ffb04a,#e3541f 55%,#a82c16);box-shadow:inset 0 2px 0 #fff7,inset 0 -3px 0 #0005,0 0 22px #ff8a2a55,0 5px 14px #000a}
+.gcard .big:disabled{opacity:.6}
+.gcard .big:active{transform:translateY(2px)}
+.gcard .glink{display:inline-block;margin-top:10px;padding:4px 8px;border:0;background:none;color:#cdbdf0;font:600 13px system-ui,sans-serif;text-decoration:underline;cursor:pointer}
+.gcard .st{min-height:20px;margin:8px 0 0;font-size:13px}
+.gwarn{margin:0 0 10px;padding:8px 10px;border-radius:10px;background:#ffb04a1f;border:1px solid #ffb04a66;color:#ffe8c4;font-size:12.5px;line-height:1.35}
+@media(max-height:520px) and (orientation:landscape){
+  .gate{flex-direction:row;gap:clamp(16px,4vw,44px)}
+  .gate .ghead{max-width:38vw}.gtag{display:none}
+  .gcard{width:min(440px,56vw);padding:10px 12px 8px}
+  .gtabs{margin-bottom:8px}.gor{margin:7px 0}
+  .gcard .gg{padding:8px}.gcard .fld{padding:9px 12px}.gcard .big{padding:10px;margin-top:8px}
+  .gcard .gp{margin-bottom:8px}.gcard h2{font-size:19px}.gwarn{margin-bottom:6px}
+  .gf{flex-direction:row}
+}
 </style>
 </head>
 <body>
@@ -514,19 +555,36 @@ body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
   <button class="big" id="oback" style="background:#ffffff22">Back</button>
   <button class="big" id="sout" style="background:#ffffff12;font-size:14px;padding:9px">Sign out</button>
 </div>
-<div class="ov" id="auth">
-  <h1 style="font-size:clamp(30px,8vw,54px)" id="atitle">SIGN IN</h1>
-  <p id="asub">Create a free account to play.</p>
-  <div id="aform" style="display:none;width:100%">
-    <button class="big" id="agg" style="background:#fff;color:#222;border-color:#fff8">Continue with Google</button>
-    <input class="fld" id="anm" maxlength="14" placeholder="Wizard name" autocomplete="nickname" autocapitalize="off" spellcheck="false" style="display:none">
-    <input class="fld" id="aem" type="email" placeholder="Email" autocomplete="email" autocapitalize="off" spellcheck="false">
-    <input class="fld" id="apw" type="password" placeholder="Password" autocomplete="current-password">
-    <button class="big on" id="ago">Sign in</button>
-    <button class="big alt" id="aswap">New here? Create account</button>
-    <button class="big" id="afg" style="background:#ffffff12;font-size:14px;padding:9px">Forgot password?</button>
+<div class="ov gate" id="auth">
+  <div class="gbg" aria-hidden="true"></div><div class="gsh" aria-hidden="true"></div>
+  <div class="ghead"><div class="glogo">ARCANE<br>WARFARE</div><p class="gtag">Turn-based wizard artillery. Blast the terrain, read the wind, be the last mage standing.</p></div>
+  <div class="gcard">
+    <div id="aform" style="display:none">
+      <div class="gtabs"><button id="tin" class="on">Sign in</button><button id="tup">Create account</button></div>
+      <button class="gg" id="agg"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Continue with Google</span></button>
+      <div class="gor">OR</div>
+      <div class="gf">
+        <input class="fld" id="aem" type="email" placeholder="Email" autocomplete="email" autocapitalize="off" spellcheck="false">
+        <input class="fld" id="apw" type="password" placeholder="Password" autocomplete="current-password">
+      </div>
+      <button class="big" id="ago">Sign in</button>
+      <button class="glink" id="afg">Forgot password?</button>
+    </div>
+    <p class="st">Loading&hellip;</p>
   </div>
-  <p class="st">Loading&hellip;</p>
+</div>
+<div class="ov gate hide" id="nameset">
+  <div class="gbg" aria-hidden="true"></div><div class="gsh" aria-hidden="true"></div>
+  <div class="ghead"><div class="glogo">ARCANE<br>WARFARE</div><p class="gtag">Turn-based wizard artillery. Blast the terrain, read the wind, be the last mage standing.</p></div>
+  <div class="gcard">
+    <h2>Choose your wizard name</h2>
+    <p class="gp">This is how other players will see you in every battle.</p>
+    <div class="gwarn">&#9888; Your name is <b>permanent</b>. You can&rsquo;t change it later, so choose carefully.</div>
+    <input class="fld wn" id="wn" maxlength="14" placeholder="Wizard name" autocomplete="off" autocapitalize="words" spellcheck="false">
+    <button class="big" id="wgo">Choose name</button>
+    <p class="st"></p>
+    <button class="glink" id="wout">Sign out</button>
+  </div>
 </div>
 <div class="ov hide" id="lobby">
   <div class="lhead">
@@ -584,24 +642,44 @@ body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
          sendPasswordResetEmail, updateProfile, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDiPRhDCZt1DdBSXfw6DifBijCw0p6I44E",
   authDomain: "arcane-warfare.firebaseapp.com",
   projectId: "arcane-warfare",
   appId: "1:606888424123:web:6bdddb17d292ae2ea56f9e"
 };
-const auth = getAuth(initializeApp(firebaseConfig));
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+const bad = (code, msg) => Object.assign(new Error(msg), { code });
 window.AWAuth = {
   ready: () => auth.authStateReady(),
   user: () => auth.currentUser,
   onChange: cb => onAuthStateChanged(auth, cb),
   token: () => auth.currentUser.getIdToken(),
   signIn: async (email, pw) => (await signInWithEmailAndPassword(auth, email, pw)).user,
-  signUp: async (email, pw, name) => {
-    const c = await createUserWithEmailAndPassword(auth, email, pw);
-    await updateProfile(c.user, { displayName: name });
-    await c.user.getIdToken(true);   /* refresh so the token carries the wizard name */
-    return c.user;
+  signUp: async (email, pw) => (await createUserWithEmailAndPassword(auth, email, pw)).user,
+  /* wizard names live in Firestore: players/{uid} = this player's name, names/{lowercase} = who owns it (create-only, so unique and permanent) */
+  getName: async () => {
+    const u = auth.currentUser; if (!u) return "";
+    const d = await getDoc(doc(db, "players", u.uid));
+    return d.exists() ? String(d.data().name || "") : "";
+  },
+  claimName: async name => {
+    const u = auth.currentUser, key = name.toLowerCase();
+    try {
+      const ex = await getDoc(doc(db, "names", key));
+      if (ex.exists()) throw bad("aw/name-taken", "That name is taken. Try another.");
+    } catch (e) {
+      if (e.code === "aw/name-taken") throw e;
+      throw bad("aw/no-db", "Name service is not set up yet (Firestore).");
+    }
+    const b = writeBatch(db);
+    b.set(doc(db, "names", key), { uid: u.uid, name });
+    b.set(doc(db, "players", u.uid), { name });
+    try { await b.commit(); }
+    catch (e) { throw bad("aw/name-taken", "That name was just taken. Try another."); }
   },
   google: async () => (await signInWithPopup(auth, new GoogleAuthProvider())).user,
   reset: email => sendPasswordResetEmail(auth, email),
@@ -1628,7 +1706,7 @@ const netSend=o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))};
 const sendAct=m=>netSend({t:'act',m});
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
 function setStatus(t){for(const p of document.querySelectorAll('.st'))p.textContent=t||''}
-function show(id){for(const x of['auth','online','lobby','room'])$(x).classList.toggle('hide',x!==id)}
+function show(id){for(const x of['auth','nameset','online','lobby','room'])$(x).classList.toggle('hide',x!==id)}
 function netBanner(t){const b=$('net');b.textContent=t||'';b.classList.toggle('hide',!t)}
 function aimChanged(){
   if(mode!=='online')return;aimT=performance.now();
@@ -1692,6 +1770,7 @@ function onNet(m){
     case 'err':
       setStatus(m.msg);
       if(m.needAuth){try{AWAuth.signOut()}catch(e){}show('auth');setStatus(m.msg)}
+      if(m.needName&&window.awShowName)window.awShowName();
       if(m.fatal){netBanner(m.msg);sess=null;setTimeout(toMenu,2000)}
       break;
   }
@@ -1877,54 +1956,73 @@ function renderRoom(){
   setStatus(!host?'Waiting for the host to start\u2026':ok?'Ready when you are!':'Teams need the same number of players to start.');
 }
 function initAuthUI(){
-  let signup=false;
+  let signup=false,armed='';
   const A=()=>window.AWAuth;
   const msgs={'auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong email or password.','auth/user-not-found':'Wrong email or password.','auth/email-already-in-use':'That email already has an account. Try signing in.','auth/weak-password':'Password must be at least 6 characters.','auth/invalid-email':'That email address looks wrong.','auth/too-many-requests':'Too many tries. Wait a moment and try again.','auth/network-request-failed':'No connection. Check your internet.','auth/user-disabled':'This account has been disabled.','auth/popup-blocked':'Your browser blocked the Google window. Allow pop-ups and try again.','auth/unauthorized-domain':'This website is not authorized in Firebase yet.','auth/operation-not-allowed':'Google sign-in is not enabled in Firebase yet.'};
-  const afterLogin=()=>{setStatus('');if(pendingJoin)$('p3').onclick();else{show(null);$('menu').classList.remove('hide')}};
-  const nice=n=>String(n||'').replace(/[^\w \-.]/g,'').trim().slice(0,14);
   const err=e=>(e&&(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'))?setStatus(''):setStatus(msgs[e&&e.code]||(e&&e.message)||'Something went wrong.');
+  const toMenuScreen=()=>{show(null);$('menu').classList.remove('hide')};
+  function showName(){
+    $('menu').classList.add('hide');show('nameset');armed='';
+    $('wn').value='';$('wgo').textContent='Choose name';setStatus('');
+    setTimeout(()=>{try{$('wn').focus()}catch(e){}},80);
+  }
+  window.awShowName=showName;
+  const afterLogin=async()=>{
+    setStatus('');
+    try{if(!(await A().getName())){showName();return}}
+    catch(e){show('auth');$('aform').style.display='';setStatus('Could not load your profile. Check your connection and try again.');return}
+    if(pendingJoin)$('p3').onclick();else toMenuScreen();
+  };
   function mode(v){
-    signup=v;$('anm').style.display=v?'':'none';
-    $('atitle').textContent=v?'CREATE ACCOUNT':'SIGN IN';
+    signup=v;$('tin').classList.toggle('on',!v);$('tup').classList.toggle('on',v);
     $('ago').textContent=v?'Create account':'Sign in';
-    $('aswap').textContent=v?'Have an account? Sign in':'New here? Create account';
     $('afg').style.display=v?'none':'';
     $('apw').autocomplete=v?'new-password':'current-password';setStatus('');
   }
   async function go(){
     if(!A()){setStatus('Sign-in is unavailable right now. Reload the page.');return}
-    const em=$('aem').value.trim(),pw=$('apw').value,nm=$('anm').value.trim();
+    const em=$('aem').value.trim(),pw=$('apw').value;
     if(!em||!pw){setStatus('Enter your email and password.');return}
-    if(signup&&!/^[\w \-.]{2,14}$/.test(nm)){setStatus('Wizard name: 2-14 letters, numbers, spaces, - or .');return}
     $('ago').disabled=true;setStatus(signup?'Creating account\u2026':'Signing in\u2026');
-    try{
-      const u=signup?await A().signUp(em,pw,nm):await A().signIn(em,pw);
-      $('apw').value='';afterLogin();
-    }catch(e){err(e)}
+    try{signup?await A().signUp(em,pw):await A().signIn(em,pw);$('apw').value='';afterLogin()}
+    catch(e){err(e)}
     $('ago').disabled=false;
   }
+  $('ago').onclick=go;
+  $('tin').onclick=()=>mode(false);$('tup').onclick=()=>mode(true);
   $('agg').onclick=async()=>{
     if(!A()){setStatus('Sign-in is unavailable right now. Reload the page.');return}
     $('agg').disabled=true;setStatus('Opening Google\u2026');
-    try{await A().google();afterLogin()}
-    catch(e){err(e)}
+    try{await A().google();afterLogin()}catch(e){err(e)}
     $('agg').disabled=false;
   };
-  $('ago').onclick=go;
-  $('aswap').onclick=()=>mode(!signup);
   $('afg').onclick=async()=>{
     const em=$('aem').value.trim();if(!em){setStatus('Type your email above first.');return}
     try{await A().reset(em);setStatus('Reset link sent. Check your inbox.')}catch(e){err(e)}
   };
-  $('apw').onkeydown=$('aem').onkeydown=$('anm').onkeydown=e=>{if(e.key==='Enter')go()};
-  $('sout').onclick=async()=>{leaveOnline();try{await A().signOut()}catch(e){}$('aem').value='';mode(false);show('auth')};
-  /* gate: nothing is playable until the player is signed in */
+  $('apw').onkeydown=$('aem').onkeydown=e=>{if(e.key==='Enter')go()};
+  /* permanent wizard name: tap once to review, tap again to lock it in */
+  $('wgo').onclick=async()=>{
+    const n=$('wn').value.trim().replace(/\s+/g,' ');
+    if(!/^[A-Za-z0-9][\w \-.]{1,13}$/.test(n)){armed='';$('wgo').textContent='Choose name';setStatus('Use 2-14 letters, numbers, spaces, - or . (start with a letter or number)');return}
+    if(armed!==n){armed=n;$('wgo').textContent='Lock in \u201c'+n+'\u201d forever';setStatus('Tap again to confirm. Names are unique and cannot be changed.');return}
+    $('wgo').disabled=true;setStatus('Saving\u2026');
+    try{await A().claimName(n);armed='';$('wgo').textContent='Choose name';afterLogin()}
+    catch(e){err(e)}
+    $('wgo').disabled=false;
+  };
+  $('wn').oninput=()=>{armed='';$('wgo').textContent='Choose name';setStatus('')};
+  $('wn').onkeydown=e=>{if(e.key==='Enter')$('wgo').onclick()};
+  const signOutNow=async()=>{leaveOnline();try{await A().signOut()}catch(e){}$('aem').value='';mode(false);show('auth')};
+  $('sout').onclick=signOutNow;$('wout').onclick=signOutNow;
+  /* gate: nothing is playable until the player is signed in and has a wizard name */
   const lock=()=>{leaveOnline();$('over').classList.add('hide');$('menu').classList.add('hide');demo();mode(false);show('auth');$('aform').style.display=''};
   const boot=async()=>{
     const a=A();try{await a.ready()}catch(e){}
-    if(a.user()){if(pendingJoin)$('p3').onclick();else{show(null);$('menu').classList.remove('hide')}}
+    const u=a.user();
+    if(u)await afterLogin();
     else{$('aform').style.display='';setStatus(pendingJoin?'Sign in to join room '+pendingJoin:'')}
-    a.onChange(u=>{if(!u)lock()});   /* signed out (here or in another tab): back to the login screen */
+    a.onChange(x=>{if(!x)lock()});
   };
   if(A())boot();
   else{addEventListener('awauth-ready',boot,{once:true});setTimeout(()=>{if(!A())setStatus('Could not load sign-in. Check your connection and reload.')},8000)}
@@ -1938,7 +2036,7 @@ function initOnlineUI(){
     const A=window.AWAuth;
     if(A){try{await A.ready()}catch(e){}}
     const u=A&&A.user();
-    if(u){$('nm').value=(u.displayName||'').replace(/[^\w \-.]/g,'').trim().slice(0,14)||'Wizard';show('online')}else show('auth');
+    if(u){let nm='';try{nm=await A.getName()}catch(e){}if(!nm){window.awShowName&&window.awShowName();return}$('nm').value=nm;show('online')}else show('auth');
     setStatus(pendingJoin?(u?'Tap Enter Lobby to join room ':'Sign in to join room ')+pendingJoin:'');
   };
   $('oback').onclick=()=>{leaveOnline();show(null);$('menu').classList.remove('hide')};

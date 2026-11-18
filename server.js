@@ -52,6 +52,22 @@ const getCerts = () => new Promise((resolve, reject) => {
   }).on('error', reject);
 });
 const b64u = s => Buffer.from(s.replace(/-/g, '+').replace(/_/g, '/'), 'base64');
+/* the permanent, unique wizard name lives in Firestore at players/{uid}; read it with the player's own token (the rules allow that) */
+const fetchPlayerName = (uid, idToken) => new Promise((resolve, reject) => {
+  const req = https.get({
+    host: 'firestore.googleapis.com', timeout: 5000, headers: { Authorization: 'Bearer ' + idToken },
+    path: '/v1/projects/' + encodeURIComponent(FIREBASE_PROJECT_ID) + '/databases/(default)/documents/players/' + encodeURIComponent(uid)
+  }, res => {
+    let b = ''; res.on('data', d => b += d);
+    res.on('end', () => {
+      if (res.statusCode === 404) return resolve('');
+      if (res.statusCode !== 200) return reject(new Error('profile lookup ' + res.statusCode));
+      try { resolve(String(JSON.parse(b).fields.name.stringValue || '')); } catch (e) { reject(new Error('profile lookup parse')); }
+    });
+  });
+  req.on('timeout', () => req.destroy(new Error('profile lookup timeout')));
+  req.on('error', reject);
+});
 async function verifyFirebaseToken(token, getCertsFn = getCerts, projectId = FIREBASE_PROJECT_ID) {
   if (!projectId) throw new Error('auth not configured');
   if (typeof token !== 'string' || token.length > 4000) throw new Error('bad token');
@@ -214,12 +230,13 @@ wss.on('connection', ws => {
     if (m.t === 'hello') {
       if (r || ws.authing) return;
       ws.authing = true;
-      verifyFirebaseToken(m.token).then(p => {
-        ws.authing = false;
+      verifyFirebaseToken(m.token).then(async p => {
         if (ws.readyState !== 1 || ws.room) return;
         /* the name comes from the signed-in account, not from the client */
-        const n = clean(p.name) || clean(p.email ? p.email.split('@')[0] : '') || 'Wizard';
-        if (!n) return send(ws, { t: 'err', msg: 'Your account has no wizard name. Sign out and sign up again.' });
+        /* the name comes from the account's permanent Firestore profile, never from the client */
+        const n = clean(await fetchPlayerName(p.sub, m.token));
+        if (ws.readyState !== 1 || ws.room) return;
+        if (!n) return send(ws, { t: 'err', msg: 'Choose your wizard name first.', needName: true });
         /* one connection per account: take over an idle old one, refuse if that account is mid-match */
         for (const o of wss.clients) {
           if (o !== ws && o.uid === p.sub) {
@@ -232,9 +249,10 @@ wss.on('connection', ws => {
         if (ws.name) names.delete(ws.name.toLowerCase());
         ws.uid = p.sub; ws.name = n; names.set(k, ws); send(ws, { t: 'hello', name: n }); send(ws, roomsMsg());
       }).catch(e => {
-        ws.authing = false;
-        send(ws, { t: 'err', msg: e.message === 'auth not configured' ? 'Online play is not set up yet.' : 'Please sign in again.', needAuth: e.message !== 'auth not configured' });
-      });
+        if (e.message === 'auth not configured') return send(ws, { t: 'err', msg: 'Online play is not set up yet.' });
+        if (/^profile lookup/.test(e.message)) return send(ws, { t: 'err', msg: 'Could not load your profile. Try again in a moment.' });
+        send(ws, { t: 'err', msg: 'Please sign in again.', needAuth: true });
+      }).finally(() => { ws.authing = false; });
       return;
     }
     if (!ws.name) return;
