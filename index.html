@@ -473,11 +473,8 @@ body:has(.ov:not(.hide)) #leave,body:has(.ov:not(.hide)) #lvq{display:none}
 #sp button.poor .cs{color:#ff9a9a;border-color:#ff5a5a99}
 #sp button:disabled{filter:saturate(.3) brightness(.72);cursor:default}
 /* fire button */
-#bf{position:relative;width:92px;height:92px;border:0;padding:0;border-radius:50%;color:#fff;font:900 20px/1 system-ui;letter-spacing:1.5px;text-shadow:0 2px 0 #0009,0 0 8px #0006;cursor:pointer;touch-action:manipulation;background:radial-gradient(circle at 50% 22%,#ffe9a0 0,#ff9a2e 36%,#e0382a 76%,#a81a3e 100%);box-shadow:0 0 0 3px #0b0620,0 0 0 6px var(--gold),0 0 0 8px #0b0620,inset 0 4px 0 #fff8,inset 0 -10px 14px #6a0a2a99,0 8px 12px #000b;filter:drop-shadow(0 0 8px var(--sc))}
-#bf:before{content:"";position:absolute;left:15%;right:15%;top:5%;height:38%;border-radius:50%;background:linear-gradient(#ffffffa8,#fff0);pointer-events:none}
-#bf:active{transform:scale(.94);filter:drop-shadow(0 0 8px var(--sc)) brightness(1.12)}
-@media (prefers-reduced-motion:no-preference){#ctrl:not(.off) #bf{animation:bfp 1.7s ease-in-out infinite}}
-@keyframes bfp{50%{filter:drop-shadow(0 0 16px var(--sc))}}
+#bf{position:relative;width:80px;height:80px;border-radius:50%;padding:0;color:#fff;font:800 17px/1 system-ui;letter-spacing:1.2px;text-shadow:0 1px 0 #0007;cursor:pointer;touch-action:manipulation;border:2px solid #0b0620;background:linear-gradient(#ff9440,#e8483f 62%,#c92f4a);box-shadow:inset 0 2px 0 #ffffff55,inset 0 -4px 0 #0003,0 0 0 1px #ffffff2a,0 4px 8px #0008;filter:none}
+#bf:active{transform:translateY(2px);filter:brightness(1.08);box-shadow:inset 0 2px 0 #fff6,0 0 0 1px #ffffff2a,0 2px 4px #0008}
 </style>
 </head>
 <body>
